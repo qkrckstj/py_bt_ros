@@ -41,7 +41,6 @@ class ActionWithROSAction(Node):
     """
     심플 ROS Action 클라이언트 베이스.
       - action_spec: (ActionType, action_name)
-      - _fingerprint(): 목표 바뀜 판정 (None이면 실행 불가)
       - _build_goal(): Goal 생성
       - _interpret_result(): 완료 시 SUCCESS/FAILURE 매핑
     """

@@ -1,0 +1,9 @@
+# Inserted into the TurtleBot3 extensionSlot by robot_launch.py.
+Camera {
+  translation 0.08 0 0.12
+  name "front_camera"
+  width 320
+  height 240
+  fieldOfView 1.0472
+  near 0.02
+}

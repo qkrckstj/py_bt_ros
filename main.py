@@ -1,34 +1,35 @@
-import asyncio
+"""Entry point for the homework behavior tree process."""
 import argparse
-import cProfile
+import asyncio
+from pathlib import Path
 
 from modules.utils import set_config
 
-# Parse command line arguments
-parser = argparse.ArgumentParser(description='py_bt_ros')
-parser.add_argument('--config', type=str, default='config.yaml', help='Path to the configuration file (default: --config=config.yaml)')
-args = parser.parse_args()
 
-# Load configuration and initialize the environment
-set_config(args.config)
-from modules.utils import config
-from modules.bt_runner import BTRunner
-bt_runner = BTRunner(config)
+async def run(config):
+    # Agent imports the configuration, so import only after set_config().
+    from modules.bt_runner import BTRunner
 
-
-async def loop():
-    while bt_runner.running:
-        bt_runner.handle_keyboard_events()
-        if not bt_runner.paused:
-            await bt_runner.step()
-        bt_runner.render()
-
-    bt_runner.close()
+    runner = BTRunner(config)
+    try:
+        while True:
+            await runner.step()
+    finally:
+        runner.close()
 
 
+def main():
+    parser = argparse.ArgumentParser(description='py_bt_ros photo mission')
+    parser.add_argument('--config', default=str(Path(__file__).with_name('config.yaml')))
+    args = parser.parse_args()
+    set_config(args.config)
+    from modules.utils import config
 
-if __name__ == "__main__":
-    if config['bt_runner']['profiling_mode']:
-        cProfile.run('main()', sort='cumulative')
-    else:
-        asyncio.run(loop())
+    try:
+        asyncio.run(run(config))
+    except KeyboardInterrupt:
+        pass
+
+
+if __name__ == '__main__':
+    main()

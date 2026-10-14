@@ -1,7 +1,2 @@
-pygame 
-py-trees 
-pyyaml
-imageio
-pandas
-matplotlib
-seaborn
+# ROS packages (rclpy, nav2_msgs, tf2_ros, cv_bridge, etc.) come from ROS 2 Jazzy.
+PyYAML

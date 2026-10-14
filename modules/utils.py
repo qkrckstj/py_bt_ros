@@ -13,7 +13,6 @@ config = None
 def set_config(config_file):
     global config
     config = load_config(config_file)
-    config['config_file_path'] = config_file
 
 def get_file_dirname(file):
     return os.path.dirname(os.path.abspath(file))  # 모듈 파일 기준

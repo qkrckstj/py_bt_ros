@@ -1,13 +1,22 @@
-scenario: scenarios.example_turtlesim
-
+scenario: scenarios.turtlebot3_photo
 agent:
-  namespaces: "/turtle1"
-  behavior_tree_xml: "default_bt.xml"
-
+  behavior_tree_xml: default_bt.xml
+ros:
+  node_name: photo_mission_bt
+  use_sim_time: true
+  threaded: false
 bt_runner:
-  bt_tick_rate: 10.0 
-  bt_visualiser:
-    enabled: True       # Set to True to enable BT visualisation, False to disable
-    screen_width: 600 
-    screen_height: 600 
-  profiling_mode: False
+  bt_tick_rate: 20.0
+photo_mission:
+  goal_topic: /bt/goal_pose
+  navigation_action: /navigate_to_pose
+  capture_service: /bt/capture_image
+  global_frame: map
+  odom_frame: odom
+  robot_frame: base_link
+  tf_max_age: 2.0
+  # Separate Condition nodes check TF position and yaw after navigation.
+  # Slightly wider than Nav2's 0.15 m / 0.15 rad completion tolerance.
+  arrival_position_tolerance: 0.20  # metres
+  arrival_heading_tolerance: 0.20  # radians
+  server_timeout: 15.0
