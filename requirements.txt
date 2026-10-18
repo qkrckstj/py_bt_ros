@@ -1,2 +1,2 @@
-# ROS packages (rclpy, nav2_msgs, tf2_ros, cv_bridge, etc.) come from ROS 2 Jazzy.
+# ROS packages (rclpy, nav2_msgs, tf2_ros, cv_bridge, etc.) come from ROS 2 Humble/Jazzy.
 PyYAML

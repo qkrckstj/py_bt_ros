@@ -36,6 +36,9 @@ from webots_ros2_driver.wait_for_controller_connection import WaitForControllerC
 
 
 def launch_robot(context):
+    ros_distro = os.environ.get('ROS_DISTRO', '')
+    if ros_distro not in ('humble', 'jazzy'):
+        raise RuntimeError('Source ROS 2 Humble or Jazzy before launching.')
     package_dir = get_package_share_directory('webots_ros2_turtlebot')
     world = LaunchConfiguration('world')
     mode = LaunchConfiguration('mode')
@@ -57,7 +60,7 @@ def launch_robot(context):
             selected_world = Path(package_dir) / 'worlds' / selected_world
         sim_time = launch.conditions.IfCondition(use_sim_time).evaluate(context)
         resources = prepare_resources(root, Path(package_dir),
-            Path(get_package_share_directory('nav2_bringup')), selected_world, sim_time)
+            Path(get_package_share_directory('nav2_bringup')), selected_world, sim_time, ros_distro)
         resource_dir = Path(resources.name)
         world_source = str(resource_dir / 'photo_mission.wbt')
         robot_description_path = str(resource_dir / 'robot.urdf')
@@ -108,14 +111,17 @@ def launch_robot(context):
     )
     ros_control_spawners = [diffdrive_controller_spawner, joint_state_broadcaster_spawner]
 
-    ros2_control_params = os.path.join(package_dir, 'resource', 'ros2control.yml')
-    use_twist_stamped = 'ROS_DISTRO' in os.environ and (os.environ['ROS_DISTRO'] in ['rolling', 'jazzy'])
+    ros2_control_params = (str(resource_dir / 'ros2control.yaml') if homework else
+                          os.path.join(package_dir, 'resource', 'ros2control.yml'))
+    use_twist_stamped = ros_distro == 'jazzy'
     if use_twist_stamped:
         mappings = [('/diffdrive_controller/cmd_vel', '/cmd_vel'), ('/diffdrive_controller/odom', '/odom')]
     else:
         mappings = [('/diffdrive_controller/cmd_vel_unstamped', '/cmd_vel'), ('/diffdrive_controller/odom', '/odom')]
     if homework:
         mappings.append(('/robot_description', '/control_robot_description'))
+        if ros_distro == 'humble':
+            mappings.append(('/controller_manager/robot_description', '/control_robot_description'))
     turtlebot_driver = WebotsController(
         robot_name='TurtleBot3Burger',
         parameters=[
@@ -158,7 +164,7 @@ def launch_robot(context):
                                 '-p', ['output_dir:=', LaunchConfiguration('output_dir')]],
                            cwd=str(root), output='screen'),
             Node(package='rviz2', executable='rviz2',
-                 arguments=['-d', str(root / 'scenarios/turtlebot3_photo/photo_mission.rviz')],
+                 arguments=['-d', str(resource_dir / 'photo_mission.rviz')],
                  parameters=[{'use_sim_time': use_sim_time}], output='screen'),
         ])
 

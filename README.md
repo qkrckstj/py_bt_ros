@@ -1,11 +1,12 @@
 # TurtleBot3 이동 · 촬영 · 복귀 과제
 
-ROS 2 Jazzy와 Webots의 TurtleBot3를 사용한다. RViz에서 목표를 지정하면
+ROS 2 Humble 또는 Jazzy와 Webots의 TurtleBot3를 사용한다. RViz에서 목표를 지정하면
 Python Behaviour Tree가 **이동 → 도착 검사 → 사진 저장 → 출발점 복귀 → 복귀 검사**를 수행한다.
 
 ## 실행 환경
 
-- ROS 2 Jazzy, Webots 및 `webots_ros2_turtlebot`
+- ROS 2 Humble 또는 Jazzy, Webots 및 `webots_ros2_turtlebot`
+- 이 launch는 Webots ROS 2 2025.0.0의 API와 리소스 구조를 기준으로 작성했다.
 - Nav2와 RViz2
 - Python 의존성: ROS의 `rclpy`, `tf2_ros`, `cv_bridge` 및 메시지 패키지, OpenCV, PyYAML
 
@@ -20,13 +21,44 @@ Python Behaviour Tree가 **이동 → 도착 검사 → 사진 저장 → 출발
 ```bash
 git clone https://github.com/qkrckstj/py_bt_ros.git ~/ros2_ws/src/py_bt_ros
 cd ~/ros2_ws/src/py_bt_ros
-sudo bash scripts/install_webots_launch.sh
 ```
+
+설치 스크립트는 선택한 `/opt/ros/<배포판>/share/webots_ros2_turtlebot/launch/robot_launch.py`를 수정한다.
 
 설치 스크립트는 기존 Webots `robot_launch.py`를 백업하고 과제 자동 실행용 파일로 교체한다.
 다른 경로에 두었다면 실행 터미널에서 `PY_BT_ROS_ROOT`를 해당 저장소의 절대 경로로 설정한다.
 
-## 실행 순서
+## Humble 실행
+
+Humble용 Webots·Nav2가 설치된 PC에서 최초 설치 또는 이 launch 수정본을 업데이트할 때 적용한다.
+
+```bash
+cd ~/ros2_ws/src/py_bt_ros
+sudo bash scripts/install_webots_launch.sh humble
+```
+
+첫 번째 터미널에서 실행하고 유지한다.
+
+```bash
+source /opt/ros/humble/setup.bash
+ros2 launch webots_ros2_turtlebot robot_launch.py nav:=true
+```
+
+두 번째 터미널에서 카메라를 구독하고 촬영이 끝날 때까지 유지한다.
+
+```bash
+source /opt/ros/humble/setup.bash
+ros2 topic echo /TurtleBot3Burger/front_camera/image_color sensor_msgs/msg/Image
+```
+
+## Jazzy 실행
+
+Jazzy용 Webots·Nav2가 설치된 PC에서 최초 설치 또는 이 launch 수정본을 업데이트할 때 적용한다.
+
+```bash
+cd ~/ros2_ws/src/py_bt_ros
+sudo bash scripts/install_webots_launch.sh jazzy
+```
 
 첫 번째 터미널에서 실행하고 유지한다.
 
@@ -35,12 +67,16 @@ source /opt/ros/jazzy/setup.bash
 ros2 launch webots_ros2_turtlebot robot_launch.py nav:=true
 ```
 
-두 번째 터미널에서 카메라를 구독한다. 촬영이 끝날 때까지 유지한다.
+두 번째 터미널에서 카메라를 구독하고 촬영이 끝날 때까지 유지한다.
 
 ```bash
 source /opt/ros/jazzy/setup.bash
 ros2 topic echo /TurtleBot3Burger/front_camera/image_color sensor_msgs/msg/Image
 ```
+
+## 공통 조작
+
+설치한 배포판과 source한 배포판을 맞추고, 한 터미널에서 Humble과 Jazzy를 함께 source하지 않는다.
 
 토픽이 이미 발견된 상태라면 메시지 타입은 생략할 수 있다.
 픽셀 배열 출력을 줄이려면 마지막에 `--no-arr`를 붙인다.
@@ -78,8 +114,25 @@ BT 노드들은 같은 딕셔너리를 읽는다. 별도 Mission 클래스는 �
 | `launch/robot_launch.py` | 기존 명령으로 전체 실행 연결 |
 | `scenarios/turtlebot3_photo/launch_support.py` | 카메라·Nav2·BT 실행용 설정 생성 |
 | `scenarios/turtlebot3_photo/control_description.py` | 로봇 설명을 바퀴 제어기와 TF 발행기에 전달 |
-| `scenarios/turtlebot3_photo/nav2_overrides.yaml` | 로봇 크기·속도·도착 오차 및 Jazzy 호환 설정 |
+| `scenarios/turtlebot3_photo/nav2_overrides.yaml` | 두 배포판의 공통 로봇 크기·속도·도착 오차 설정 |
 | `config.yaml` | BT 주기, 토픽, Condition 허용 오차 |
+
+## Humble / Jazzy 자동 분기
+
+launch가 현재 터미널의 `ROS_DISTRO`를 읽어 설정을 생성한다.
+
+| 항목 | Humble | Jazzy |
+| --- | --- | --- |
+| 속도 메시지 | `Twist` | `TwistStamped` |
+| 바퀴 컨트롤러 입력 | `cmd_vel_unstamped` | `cmd_vel` |
+| 기본 Nav2 제어기 | 설치된 DWB 설정에 속도 적용 | 설치된 MPPI 또는 DWB에 맞춰 속도 적용 |
+| 로봇 설명 전달 | Humble의 private 구독 경로도 연결 | Jazzy의 로봇 설명 토픽 연결 |
+| RViz | 해당 PC의 Humble 기본 설정 + `2D Goal Pose` | 저장소의 Jazzy 기본 설정 + `2D Goal Pose` |
+
+Humble의 기본 Nav2 launch는 속도 smoother 출력을 `/cmd_vel`로 전달한다.
+Jazzy에서는 설치된 Nav2 launch의 collision monitor 경로를 사용한다.
+BT XML과 Action/Service 통신은 공통으로 사용한다.
+실행용 설정 생성과 정적 검사를 수행했으며, Humble에서 시뮬레이터를 실행한 검증은 아직 없다.
 
 ## 통신과 상태 확인
 

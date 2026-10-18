@@ -1,21 +1,15 @@
-# Keep Nav2's installed controller and planning defaults.
-# Only adapt the example world, Burger dimensions/speeds and Jazzy message type.
+# Shared Humble/Jazzy settings. launch_support.py adapts controller speed
+# parameter names and enables TwistStamped only on Jazzy.
 amcl:
   ros__parameters:
     set_initial_pose: true
     initial_pose: {x: 0.0, y: 0.0, z: 0.0, yaw: 0.0}
 controller_server:
   ros__parameters:
-    enable_stamped_cmd_vel: true
     general_goal_checker:
       # Nav2 must finish inside the separate BT conditions' 0.20 tolerance.
       xy_goal_tolerance: 0.15
       yaw_goal_tolerance: 0.15
-    FollowPath:
-      # The installed default controller is MPPI; retain its other parameters.
-      vx_max: 0.22
-      vx_min: -0.15
-      wz_max: 1.0
 local_costmap:
   local_costmap:
     ros__parameters:
@@ -24,18 +18,7 @@ global_costmap:
   global_costmap:
     ros__parameters:
       robot_radius: 0.105
-behavior_server:
-  ros__parameters:
-    enable_stamped_cmd_vel: true
 velocity_smoother:
   ros__parameters:
-    enable_stamped_cmd_vel: true
-    stamp_smoothed_velocity_with_smoothing_time: true
     max_velocity: [0.22, 0.0, 1.0]
     min_velocity: [-0.15, 0.0, -1.0]
-collision_monitor:
-  ros__parameters:
-    enable_stamped_cmd_vel: true
-docking_server:
-  ros__parameters:
-    enable_stamped_cmd_vel: true

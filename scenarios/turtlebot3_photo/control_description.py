@@ -1,8 +1,8 @@
 """Webots plugin: publish complete URDF and reliably initialize the TF publisher.
 
-Recent controller_manager versions require ros2_control tags on the description
-topic. Retry robot_state_publisher initialization until its service responds;
-the driver's one-shot startup service call can run before discovery completes.
+Jazzy's controller_manager reads the complete description from a topic; Humble's
+Webots plugin normally loads the control URDF directly. Publish for either path
+and retry robot_state_publisher initialization until its service responds.
 """
 from copy import deepcopy
 from pathlib import Path
