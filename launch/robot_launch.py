@@ -18,6 +18,7 @@
 
 import os
 import sys
+import tempfile
 from pathlib import Path
 from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
@@ -28,11 +29,22 @@ import launch
 from ament_index_python.packages import get_package_share_directory, get_packages_with_prefixes
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import IncludeLaunchDescription
-from launch.actions import ExecuteProcess, OpaqueFunction, SetEnvironmentVariable, RegisterEventHandler
-from launch.event_handlers import OnShutdown
+from launch.actions import ExecuteProcess, OpaqueFunction, SetEnvironmentVariable, RegisterEventHandler, EmitEvent, LogInfo
+from launch.event_handlers import OnShutdown, OnProcessExit
+from launch.events import Shutdown
 from webots_ros2_driver.webots_launcher import WebotsLauncher
 from webots_ros2_driver.webots_controller import WebotsController
 from webots_ros2_driver.wait_for_controller_connection import WaitForControllerConnection
+
+
+def source_root():
+    configured = os.environ.get('PY_BT_ROS_ROOT')
+    if configured:
+        return Path(configured).expanduser().resolve()
+    local = Path(__file__).resolve().parents[1]
+    if (local / 'main.py').is_file():
+        return local
+    return Path.home() / 'ros2_ws/src/py_bt_ros'
 
 
 def launch_robot(context):
@@ -46,8 +58,12 @@ def launch_robot(context):
     use_slam = LaunchConfiguration('slam', default=False)
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
     homework = launch.conditions.IfCondition(use_nav).evaluate(context)
-    root = Path(os.environ.get('PY_BT_ROS_ROOT', str(Path.home() / 'ros2_ws/src/py_bt_ros')))
+    root = source_root()
     setup_actions = []
+    if os.environ.get('SNAP') and not os.environ.get('WEBOTS_TMPDIR'):
+        # Keep Webots' controller sockets in the same temp directory as its
+        # external controllers when launched from Snap VS Code.
+        setup_actions.append(SetEnvironmentVariable('WEBOTS_TMPDIR', tempfile.gettempdir()))
     world_source = PathJoinSubstitution([package_dir, 'worlds', world])
     robot_description_path = os.path.join(package_dir, 'resource', 'turtlebot_webots.urdf')
     if homework:
@@ -55,6 +71,14 @@ def launch_robot(context):
             raise RuntimeError(f'py_bt_ros not found: {root}. Set PY_BT_ROS_ROOT to its source directory.')
         sys.path.insert(0, str(root))
         from scenarios.turtlebot3_photo.launch_support import prepare_resources
+        from scenarios.turtlebot3_photo.compat import tf2_library_directory
+        tf2_library = tf2_library_directory(root, ros_distro)
+        if tf2_library is not None:
+            setup_actions.extend([
+                SetEnvironmentVariable('LD_LIBRARY_PATH', str(tf2_library) + os.pathsep +
+                                       os.environ.get('LD_LIBRARY_PATH', '')),
+                LogInfo(msg=f'Using fixed Humble tf2 from {tf2_library}'),
+            ])
         selected_world = Path(world.perform(context))
         if not selected_world.is_absolute():
             selected_world = Path(package_dir) / 'worlds' / selected_world
@@ -72,6 +96,7 @@ def launch_robot(context):
     webots = WebotsLauncher(
         world=world_source,
         mode=mode,
+        gui=LaunchConfiguration('gui'),
         ros2_supervisor=True
     )
 
@@ -91,6 +116,12 @@ def launch_robot(context):
         output='screen',
         arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'base_footprint'],
     )
+
+    # Snap VS Code can export its own GNOME schema directory, which makes a
+    # system RViz abort before opening a window. Use the host schemas for RViz.
+    rviz_environment = {}
+    if os.environ.get('SNAP') and Path('/usr/share/glib-2.0/schemas').is_dir():
+        rviz_environment['GSETTINGS_SCHEMA_DIR'] = '/usr/share/glib-2.0/schemas'
 
     # ROS control spawners
     controller_manager_timeout = ['--controller-manager-timeout', '50']
@@ -165,6 +196,8 @@ def launch_robot(context):
                            cwd=str(root), output='screen'),
             Node(package='rviz2', executable='rviz2',
                  arguments=['-d', str(resource_dir / 'photo_mission.rviz')],
+                 condition=launch.conditions.IfCondition(LaunchConfiguration('gui')),
+                 additional_env=rviz_environment,
                  parameters=[{'use_sim_time': use_sim_time}], output='screen'),
         ])
 
@@ -179,10 +212,43 @@ def launch_robot(context):
             condition=launch.conditions.IfCondition(use_slam))
         navigation_nodes.append(turtlebot_slam)
 
-    # Wait for the simulation to be ready to start navigation nodes
+    # A connected driver may still have a zero clock while Webots is paused or
+    # the supervisor is starting. Switching controllers then times out in Humble.
+    if homework:
+        clock_ready = ExecuteProcess(
+            cmd=[sys.executable, str(root / 'scripts/wait_for_sim_clock.py')],
+            output='screen')
+        controllers_ready = Node(
+            package='controller_manager', executable='spawner', output='screen',
+            prefix=controller_manager_prefix,
+            arguments=['joint_state_broadcaster', 'diffdrive_controller',
+                       '--activate-as-group', '--controller-manager-timeout', '60',
+                       '--service-call-timeout', '60', '--switch-timeout', '60'])
+
+        def after_success(next_actions, label):
+            def callback(event, context):
+                if event.returncode == 0:
+                    return next_actions
+                reason = f'{label} failed; localization cannot start without working controllers.'
+                return [LogInfo(msg=reason), EmitEvent(event=Shutdown(reason=reason))]
+            return callback
+
+        setup_actions.extend([
+            RegisterEventHandler(OnProcessExit(
+                target_action=clock_ready,
+                on_exit=after_success([controllers_ready], 'Simulation clock readiness'))),
+            RegisterEventHandler(OnProcessExit(
+                target_action=controllers_ready,
+                on_exit=after_success(navigation_nodes, 'Controller activation'))),
+        ])
+        connected_actions = [clock_ready]
+    else:
+        connected_actions = navigation_nodes + ros_control_spawners
+
+    # Start navigation only after an advancing clock and activated controllers.
     waiting_nodes = WaitForControllerConnection(
         target_driver=turtlebot_driver,
-        nodes_to_start=navigation_nodes + ros_control_spawners
+        nodes_to_start=connected_actions
     )
 
     return setup_actions + [
@@ -208,10 +274,11 @@ def launch_robot(context):
 
 
 def generate_launch_description():
-    root = Path(os.environ.get('PY_BT_ROS_ROOT', str(Path.home() / 'ros2_ws/src/py_bt_ros')))
+    root = source_root()
     return LaunchDescription([
         DeclareLaunchArgument('world', default_value='turtlebot3_burger_example.wbt'),
         DeclareLaunchArgument('mode', default_value='realtime'),
+        DeclareLaunchArgument('gui', default_value='true'),
         DeclareLaunchArgument('nav', default_value='false'),
         DeclareLaunchArgument('slam', default_value='False'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),

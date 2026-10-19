@@ -1,5 +1,4 @@
-# Shared Humble/Jazzy settings. launch_support.py adapts controller speed
-# parameter names and enables TwistStamped only on Jazzy.
+# Common mission settings. compat.py selects velocity types and controller limits.
 amcl:
   ros__parameters:
     set_initial_pose: true
@@ -7,7 +6,6 @@ amcl:
 controller_server:
   ros__parameters:
     general_goal_checker:
-      # Nav2 must finish inside the separate BT conditions' 0.20 tolerance.
       xy_goal_tolerance: 0.15
       yaw_goal_tolerance: 0.15
 local_costmap:
@@ -22,3 +20,8 @@ velocity_smoother:
   ros__parameters:
     max_velocity: [0.22, 0.0, 1.0]
     min_velocity: [-0.15, 0.0, -1.0]
+planner_server:
+  ros__parameters:
+    GridBased:
+      # A 0.5 m fallback goal can violate the separate BT arrival check.
+      tolerance: 0.05

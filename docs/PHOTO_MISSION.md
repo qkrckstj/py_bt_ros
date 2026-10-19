@@ -129,17 +129,16 @@ BT가 이를 blackboard에 저장해 `SUCCESS`를 반환한다.
 | `scenarios/turtlebot3_photo/photo_mission.rviz` | `/bt/goal_pose`로 보내는 RViz 설정 |
 | `scenarios/turtlebot3_photo/nav2_overrides.yaml` | TurtleBot3에 맞춘 Nav2 설정 |
 | `scenarios/turtlebot3_photo/front_camera.wbt` | 기본 Webots 로봇에 추가하는 전방 카메라 |
-| `scenarios/turtlebot3_photo/control_description.py` | Webots와 Humble/Jazzy ros2_control의 로봇 설명 전달 호환 처리 |
+| `scenarios/turtlebot3_photo/control_description.py` | Webots와 설치된 ros2_control의 로봇 설명 전달 호환 처리 |
 
 ## 최초 한 번: 기존 launch에 연결
 
-`/opt/ros/<배포판>/share/webots_ros2_turtlebot/launch/robot_launch.py`는 관리자 소유다.
-아래는 Humble 예시이며, Jazzy에서는 설치 인수와 source 경로를 `jazzy`로 바꾼다.
-다음 명령으로 원본을 백업하고 수정본을 적용한다. 이 명령은 시뮬레이터를 실행하지 않는다.
+`/opt/ros/humble/share/webots_ros2_turtlebot/launch/robot_launch.py`는 관리자 소유다.
+다음 명령으로 원본을 백업하고 소스를 읽는 진입점을 설치한다. Jazzy는 아래 경로와 배포판 인자를 jazzy로 바꾼다. 이 명령은 시뮬레이터를 실행하지 않는다.
 
 ```bash
 cd ~/ros2_ws/src/py_bt_ros
-sudo bash scripts/install_webots_launch.sh humble
+sudo bash scripts/install_webots_launch.sh humble  # Jazzy에서는 jazzy
 ```
 
 원본은 같은 디렉터리의 `robot_launch.py.before_py_bt_ros`에 보관한다.
@@ -168,7 +167,7 @@ Jazzy는 저장소의 RViz 파일을, Humble은 설치된 Nav2의 기본 RViz �
 종료는 `Ctrl+C`다.
 
 `nav:=false`이면 과제 BT·촬영 서버를 자동 실행하지 않는다.
-기본 소스 경로는 `~/ros2_ws/src/py_bt_ros`다. 다른 경로로 옮겼다면
+소스 직접 실행 시 저장소 경로를 자동 인식하고, 설치 진입점은 설치 당시 경로를 기록한다. 이후 다른 경로로 옮겼다면
 `PY_BT_ROS_ROOT` 환경 변수에 그 절대 경로를 지정한다.
 
 ## 토픽, 서비스, 저장 위치
@@ -235,26 +234,15 @@ xdg-open ~/ros2_ws/src/py_bt_ros/output/captures
 ## 환경 의존성과 확인 범위
 
 `launch_support.py`는 설치된 Nav2 기본 YAML에 overrides를 합친다.
-공통 YAML은 위치·크기·속도 범위·도착 허용 오차만 담는다.
-`ROS_DISTRO`가 Humble이면 stamped 속도 설정을 추가하지 않으며,
-바퀴 컨트롤러의 `use_stamped_vel=false`와 `cmd_vel_unstamped` 입력을 사용한다.
-Jazzy에서는 Nav2의 `enable_stamped_cmd_vel=true`와 바퀴 컨트롤러의 stamped 입력을 사용한다.
-설치된 제어기가 DWB이면 `max_vel_x`, `max_vel_theta` 등으로,
-MPPI이면 `vx_max`, `vx_min`, `wz_max`로 속도를 적용한다.
-이외 제어기는 설정 오류로 알려준다.
-Humble의 로봇 설명 private 토픽 `/controller_manager/robot_description`도
-`/control_robot_description`에 연결한다. Webots가 control URDF를 직접 읽는
-Humble 버전에서도 같은 플러그인으로 robot_state_publisher를 설정한다.
-Humble RViz는 해당 환경의 기본 파일에서 생성하므로 Jazzy 전용 패널을 가져오지 않는다.
-Webots ROS 2 2025.0.0 소스와 Humble의 Nav2 기본 설정을 기준으로 분기를 구현했다.
-이전 Webots 패키지에는 `WebotsController` 등 필요한 API가 없을 수 있으므로
-사용 중인 배포판용 패키지를 업데이트해야 한다.
+`compat.py`가 실제 FollowPath 플러그인을 확인해 DWB 또는 MPPI의 속도 파라미터를 설정한다.
+Humble은 Twist, Jazzy는 TwistStamped를 사용한다. RViz는 Humble의 경우 설치된 Nav2 기본 파일, Jazzy의 경우 저장소 RViz 파일을 바탕으로 생성한다.
+Nav2 패키지 버전이 달라지면 기본 설정·플러그인도 달라질 수 있다.
 `control_description.py`와 카메라 월드 설정은 현재 launch에서 사용하므로
 파일만 삭제하면 실행할 수 없다.
 
-정적 구문·참조 검사와 두 배포판의 실행용 리소스 생성 검사를 수행했다.
-Humble 런타임 및 최종 호환 수정본의 시뮬레이터 실행 검증은 수행하지 않았다. 제출 환경에서 목표 이동, 별도 도착 검사, PNG 저장,
-출발 위치·방향 복귀 및 `COMPLETE` 상태를 확인한다.
+2026-10-19 설치된 Humble/Webots에서 직접 Nav2 목표 이동과 과제의 이동·도착 검사·PNG 저장·복귀·복귀 검사·`COMPLETE`를 확인했다.
+Humble tf2 0.25.21~0.25.23의 교착 문제는 `scripts/prepare_humble_tf2.sh`로 준비한 공식 수정본을 과제 launch에서만 사용해 해결한다.
+자세한 원인과 검증 결과는 [Humble 호환 보고서](HUMBLE_COMPATIBILITY.md)를 참고한다.
 
 ## 기존 Webots launch 원본 복원
 

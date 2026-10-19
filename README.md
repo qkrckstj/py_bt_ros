@@ -6,7 +6,7 @@ Python Behaviour Tree가 **이동 → 도착 검사 → 사진 저장 → 출발
 ## 실행 환경
 
 - ROS 2 Humble 또는 Jazzy, Webots 및 `webots_ros2_turtlebot`
-- 이 launch는 Webots ROS 2 2025.0.0의 API와 리소스 구조를 기준으로 작성했다.
+- Webots ROS 2 2025.0.0의 API와 리소스 구조 기준
 - Nav2와 RViz2
 - Python 의존성: ROS의 `rclpy`, `tf2_ros`, `cv_bridge` 및 메시지 패키지, OpenCV, PyYAML
 
@@ -19,14 +19,25 @@ Python Behaviour Tree가 **이동 → 도착 검사 → 사진 저장 → 출발
 저장소를 `~/ros2_ws/src/py_bt_ros`에 둔다. 이미 클론했다면 다시 클론할 필요 없다.
 
 ```bash
-git clone https://github.com/qkrckstj/py_bt_ros.git ~/ros2_ws/src/py_bt_ros
+git clone --branch humble https://github.com/qkrckstj/py_bt_ros.git ~/ros2_ws/src/py_bt_ros
 cd ~/ros2_ws/src/py_bt_ros
+bash scripts/prepare_humble_tf2.sh  # Humble tf2 0.25.21~0.25.23일 때, sudo 불필요
+sudo bash scripts/install_webots_launch.sh humble  # Jazzy에서는 jazzy
 ```
 
-설치 스크립트는 선택한 `/opt/ros/<배포판>/share/webots_ros2_turtlebot/launch/robot_launch.py`를 수정한다.
+설치 스크립트는 기존 Webots `robot_launch.py`를 백업하고 현재 저장소의 launch 소스를 읽는 진입점을 설치한다.
+저장소 경로를 자동 기록하므로 `~/new_bt_ws/src/py_bt_ros`에서도 사용할 수 있다.
+설치 후 저장소를 옮겼다면 설치 스크립트를 다시 실행하거나 `PY_BT_ROS_ROOT`를 지정한다.
+Humble tf2 0.25.21~0.25.23에는 TF 수신이 멈추는 버그가 있다. 위 준비 스크립트는
+수정된 공식 tf2 패키지를 `output/compat/tf2`에만 풀고 과제 launch에서 사용한다.
+시스템에 tf2 0.25.24 이상이 설치돼 있으면 로컬 라이브러리는 사용하지 않는다.
 
-설치 스크립트는 기존 Webots `robot_launch.py`를 백업하고 과제 자동 실행용 파일로 교체한다.
-다른 경로에 두었다면 실행 터미널에서 `PY_BT_ROS_ROOT`를 해당 저장소의 절대 경로로 설정한다.
+시스템 launch를 교체하지 않고 저장소에서 직접 실행할 수도 있다:
+
+```bash
+source /opt/ros/humble/setup.bash
+ros2 launch ./launch/robot_launch.py nav:=true
+```
 
 ## Humble 실행
 
@@ -114,7 +125,7 @@ BT 노드들은 같은 딕셔너리를 읽는다. 별도 Mission 클래스는 �
 | `launch/robot_launch.py` | 기존 명령으로 전체 실행 연결 |
 | `scenarios/turtlebot3_photo/launch_support.py` | 카메라·Nav2·BT 실행용 설정 생성 |
 | `scenarios/turtlebot3_photo/control_description.py` | 로봇 설명을 바퀴 제어기와 TF 발행기에 전달 |
-| `scenarios/turtlebot3_photo/nav2_overrides.yaml` | 두 배포판의 공통 로봇 크기·속도·도착 오차 설정 |
+| `scenarios/turtlebot3_photo/nav2_overrides.yaml` | 공통 로봇 크기·속도·도착 오차 설정 |
 | `config.yaml` | BT 주기, 토픽, Condition 허용 오차 |
 
 ## Humble / Jazzy 자동 분기
@@ -132,7 +143,7 @@ launch가 현재 터미널의 `ROS_DISTRO`를 읽어 설정을 생성한다.
 Humble의 기본 Nav2 launch는 속도 smoother 출력을 `/cmd_vel`로 전달한다.
 Jazzy에서는 설치된 Nav2 launch의 collision monitor 경로를 사용한다.
 BT XML과 Action/Service 통신은 공통으로 사용한다.
-실행용 설정 생성과 정적 검사를 수행했으며, Humble에서 시뮬레이터를 실행한 검증은 아직 없다.
+Humble에서 실제 목표 이동과 촬영·복귀 후 COMPLETE를 확인했다. Jazzy는 설정 분기 검사 범위이며 실제 실행은 검증하지 않았다.
 
 ## 통신과 상태 확인
 
@@ -154,6 +165,10 @@ ros2 topic echo /bt/mission_status --qos-durability transient_local
 외부 구독자가 없거나 촬영에 실패하면 자동 복귀하지 않는다.
 진행 중 추가 목표는 무시한다. 요청 전송 이후 서버 응답이 끊기면
 `RUNNING`에 머물 수 있으며, 종료 시 취소 완료까지 보장하지는 않는다.
+
+[새 clone 및 수정 요약](HUMBLE_MIGRATION_GUIDE.md)
+
+[Humble 호환 수정 및 확인 결과](docs/HUMBLE_COMPATIBILITY.md)
 
 [상세 작동 원리와 설정](docs/PHOTO_MISSION.md)
 
