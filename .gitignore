@@ -23,3 +23,6 @@ log/
 
 # Ignore py_bt_ros generated files
 results/
+
+# Versioned factory camera overlay configuration
+!simulation/webots_ros2_limo/worlds/.limo_factory_hall.wbproj

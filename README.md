@@ -69,3 +69,9 @@ The framework is designed to be **scenario-agnostic** — easily define new scen
 **Inmo Jang**  
 Assistant Professor, Korea Aerospace University  
 📧 [inmo.jang@kau.ac.kr](mailto:inmo.jang@kau.ac.kr)
+
+## Factory simulation package
+
+The reproducible LIMO factory world, map, Nav2 settings and camera integration are in
+[simulation/README.md](simulation/README.md). Build instructions use an isolated workspace
+to avoid a duplicate `webots_ros2_limo` package in an existing workspace.
