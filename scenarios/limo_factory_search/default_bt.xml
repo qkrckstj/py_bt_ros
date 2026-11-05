@@ -2,10 +2,10 @@
 <root BTCPP_format="4">
   <BehaviorTree ID="FactoryPersonSearch">
     <ReactiveFallback>
-      <Sequence>
+      <ReactiveSequence>
         <IsPerson />
         <RecordPerson />
-      </Sequence>
+      </ReactiveSequence>
       <Sequence>
         <MoveToGoal region="1" />
         <MoveToGoal region="2" />

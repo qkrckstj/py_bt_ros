@@ -13,7 +13,10 @@ from geometry_msgs.msg import PointStamped,PoseStamped
 
 class FakeModel:
     names={0:'rescue_dummy'}
+    def add_callback(self,event,callback):
+        self.callback=callback
     def predict(self,pixels,**kwargs):
+        self.callback(self)
         boxes=[]
         if pixels[0,0,0]:
             boxes=[S(cls=np.array([0]),conf=np.array([.9]),xyxy=np.array([[16.,8.,48.,56.]]))]
@@ -57,6 +60,11 @@ def test_detection_position_depth_failure_and_camera_timeout(monkeypatch):
         send();wait(lambda:received.get('detected') and received.get('valid') and bool(points))
         assert points[-1].header.frame_id=='camera_color_optical_frame'
         assert points[-1].point.z==pytest.approx(1.2)
+        wait(lambda:received.get('person') is False)
+        assert 'pose' not in received
+        for _ in range(5):
+            time.sleep(.17)
+            send()
         wait(lambda:received.get('person') is True and 'pose' in received)
         assert received['pose'].pose.position.z==pytest.approx(1.2)
         send(valid_depth=False);wait(lambda:received.get('detected') and received.get('valid') is False)

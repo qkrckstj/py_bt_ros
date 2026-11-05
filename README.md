@@ -24,7 +24,7 @@ The framework is designed to be **scenario-agnostic** — easily define new scen
 ### LIMO Factory Search
 
 공장 1→2→3 구역을 이동하면서 매 틱 `IsPerson`을 확인한다. 발견하면 이동을
-취소하고 사람의 지도 좌표를 기록한 뒤 SUCCESS로 종료한다. 현재는 모의 감지를 사용한다.
+취소하고 사람의 지도 좌표를 기록한 뒤 SUCCESS로 종료한다. 기본 공장 실행은 학습된 인간 더미 YOLO의 감지·깊이 좌표를 사용한다.
 실행 명령: [scenarios/limo_factory_search/README.md](scenarios/limo_factory_search/README.md).
 
 ### LIMO Round Trip (Webots + Nav2)

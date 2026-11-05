@@ -65,6 +65,17 @@ class SearchTest(unittest.TestCase):
     def test_sensor_loss_cancels_travel(self):
         self.tick();self.found=None;self.tick();self.seconds+=5.
         self.assertEqual(self.tick(),Status.FAILURE);self.assertEqual(self.moves[0].client.cancels,1)
+    def test_detection_lost_while_waiting_for_pose_resumes_unfinished_region(self):
+        self.tick();self.arrive(1)
+        self.found=True;self.saved=None
+        self.assertEqual(self.tick(),Status.RUNNING)
+        self.assertEqual(self.moves[1].client.cancels,1)
+        self.found=False;self.seconds+=6.
+        self.assertEqual(self.tick(),Status.RUNNING)
+        self.assertEqual(self.board['error'],'')
+        self.assertEqual(self.board['checked_regions'],[1])
+        self.assertEqual(len(self.moves[0].client.goals),1)
+        self.assertEqual(len(self.moves[1].client.goals),2)
     def test_rejected_navigation_does_not_send_next_goal(self):
         self.moves[0].client.accepted=False
         self.assertEqual(self.tick(),Status.FAILURE);self.assertEqual(self.moves[1].client.goals,[])

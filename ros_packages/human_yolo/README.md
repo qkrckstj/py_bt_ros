@@ -136,3 +136,16 @@ main의 `limo_factory_search`가 사용하는 `/perception/is_person` (`Bool`)�
 `/perception/is_person`은 **유효한 깊이 좌표까지 있는 경우에만 true**입니다. RGB에서만 보이는 경우는 `/human/detected=true`지만 이 호환 출력은 false로 유지하여 이전 Pose가 잘못 사용되는 것을 줄입니다. Pose의 촬영 시각·frame_id·위치는 PointStamped와 같고, orientation은 추정하지 않으므로 identity이며 BT는 위치만 사용해야 합니다. main의 기록 노드가 카메라→map TF를 조회하므로 기존 시뮬레이터의 TF와 Nav2/SLAM이 필요합니다.
 
 시뮬레이터 저장소의 공장 월드·launch는 이 PR의 파일이 아닙니다. 해당 파일들이 없는 시뮬레이터 main에 이 인식 패키지만 추가해도 공장 시나리오 자체가 생성되지는 않습니다.
+
+## 연속 감지 확인 (공장 BT)
+
+기본 confidence는 0.85이며, 유효한 깊이를 가진 동일 후보가 최소 5개 새 프레임에서
+0.6초 이상 연속 관측돼야 `/perception/is_person=true`와 `/perception/person_pose`를 발행한다.
+후보 박스 겹침(IoU) 0.3 미만, 미검출, 유효 깊이 없음, 프레임 간격 0.5초 초과,
+중복/역행 시각 또는 입력 시간 초과면 확인 상태를 초기화한다.
+`/human/detected`와 `/human/position_valid`는 원래의 프레임별 결과이며 BT 확정 결과와 다르다.
+`/human/detections`의 `confirmed`, `confirmation_count`로 확정 상태를 확인한다.
+`/human/annotated_image`는 구독 시 탐지 박스·신뢰도가 표시된 BGR 영상을 제공한다.
+`cpu_threads`(기본 2)는 Ultralytics의 지연 초기화 이후 매 추론 시작 때 다시 적용한다.
+초기화 전에만 제한하면 라이브러리가 스레드 수를 늘려 시뮬레이터와 Nav2의 CPU를 과도하게 사용할 수 있다.
+반복되는 배경 오탐은 연속 확인으로도 통과할 수 있으므로 해당 장면을 음성 학습 데이터로 추가해야 한다.

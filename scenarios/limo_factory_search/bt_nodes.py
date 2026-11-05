@@ -1,5 +1,5 @@
 """Existing Nav2/ROS condition style, with ordered region search semantics."""
-from modules.base_bt_nodes import BTNodeList as BaseBTNodeList, Fallback, Sequence, Status, Node, AlwaysFailure
+from modules.base_bt_nodes import BTNodeList as BaseBTNodeList, Fallback, Sequence, ReactiveSequence, Status, Node, AlwaysFailure
 from modules.base_bt_nodes_ros import ConditionWithROSTopics
 from scenarios.limo_round_trip.bt_nodes import MoveToGoal as NavMoveToGoal, WaitForSecond
 
@@ -26,6 +26,9 @@ class MoveToGoal(NavMoveToGoal):
         # A navigation/sensor failure must not be interpreted as "no person".
         if blackboard.get('error'):
             self.status = Status.FAILURE
+            return self.status
+        if self.region in blackboard.get('checked_regions', []):
+            self.status = Status.SUCCESS
             return self.status
         if self.started_at is None:
             agent.begin_region(self.region)
@@ -65,6 +68,7 @@ class ReactiveFallback(Node):
 
 
 class IsPerson(ConditionWithROSTopics):
+    """Use fresh /perception/is_person from YOLO; no robot-to-dummy distance test."""
     def __init__(self, name, agent):
         super().__init__(name, agent, [])
         self.missing_since = None

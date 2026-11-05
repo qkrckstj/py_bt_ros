@@ -1,5 +1,6 @@
 """Human YOLO inference ROS node. Publishes perception only; no motion commands."""
 from collections import deque
+import array
 import json
 from pathlib import Path
 import threading
@@ -13,6 +14,7 @@ from sensor_msgs.msg import Image, CameraInfo
 from geometry_msgs.msg import PointStamped, PoseStamped
 from std_msgs.msg import Bool, String
 from .geometry import perception_result, seconds
+from .confirmation import DetectionConfirmation
 
 
 def default_model():
@@ -26,11 +28,12 @@ def default_model():
 class HumanDetector(Node):
     def __init__(self):
         super().__init__('human_yolo')
-        defaults={'model_path':default_model(),'target_class':'rescue_dummy','confidence':.5,
+        defaults={'model_path':default_model(),'target_class':'rescue_dummy','confidence':.85,
                   'image_size':320,'device':'cpu','cpu_threads':2,
                   'rgb_topic':'/camera/color/image_raw','depth_topic':'/camera/depth/image_raw',
                   'camera_info_topic':'/camera/color/camera_info','sync_tolerance':.10,
-                  'input_timeout':1.,'min_depth':.15,'max_depth':3.}
+                  'input_timeout':1.,'min_depth':.15,'max_depth':3.,
+                  'confirmation_frames':5,'confirmation_duration':.6,'confirmation_max_gap':.5}
         for key,value in defaults.items():
             self.declare_parameter(key,value)
         self.settings={key:self.get_parameter(key).value for key in defaults}
@@ -41,12 +44,20 @@ class HumanDetector(Node):
             raise ValueError('Invalid depth/time parameters')
         if cfg['input_timeout']<=0 or not Path(cfg['model_path']).is_file():
             raise ValueError('Missing model or invalid input timeout')
+        if cfg['confirmation_frames'] < 1 or cfg['confirmation_duration'] < 0 or cfg['confirmation_max_gap'] <= 0:
+            raise ValueError('Invalid confirmation parameters')
+        self.confirmation = DetectionConfirmation(cfg['confirmation_frames'], cfg['confirmation_duration'], cfg['confirmation_max_gap'])
+        self.was_confirmed = False
         # Lazy import keeps geometry/tests independent of the inference runtime.
         import torch
         from ultralytics import YOLO
         torch.set_num_threads(cfg['cpu_threads'])
         torch.backends.nnpack.set_flags(False)
         self.model=YOLO(cfg['model_path'])
+        # Ultralytics select_device resets torch's thread count during lazy setup.
+        # Reapply after setup, in the inference worker, before each prediction.
+        self.model.add_callback('on_predict_start',
+                                lambda _: torch.set_num_threads(cfg['cpu_threads']))
         if cfg['target_class'] not in self.model.names.values():
             raise ValueError('target_class does not exist in the supplied model')
         self.lock=threading.Lock();self.stop_event=threading.Event()
@@ -57,6 +68,7 @@ class HumanDetector(Node):
         self.position_pub=self.create_publisher(PointStamped,'/human/position',10)
         self.person_pub=self.create_publisher(Bool,'/perception/is_person',10)
         self.person_pose_pub=self.create_publisher(PoseStamped,'/perception/person_pose',10)
+        self.annotated_pub=self.create_publisher(Image,'/human/annotated_image',1)
         self.details_pub=self.create_publisher(String,'/human/detections',10)
         self.rgb_sub=self.create_subscription(Image,cfg['rgb_topic'],self.receive_rgb,qos_profile_sensor_data)
         self.depth_sub=self.create_subscription(Image,cfg['depth_topic'],self.receive_depth,qos_profile_sensor_data)
@@ -82,6 +94,8 @@ class HumanDetector(Node):
         return 0<=age<=self.settings['input_timeout']
 
     def clear(self):
+        self.confirmation.reset()
+        self.was_confirmed = False
         if not self.context.ok():return
         self.detected_pub.publish(Bool(data=False));self.valid_pub.publish(Bool(data=False))
         self.person_pub.publish(Bool(data=False))
@@ -116,16 +130,31 @@ class HumanDetector(Node):
                     if not self.fresh(msg):
                         self.clear();continue
                     self.last_input=msg
+                    selected = payload['selected_index']
+                    box = payload['detections'][selected]['xyxy'] if selected is not None else None
+                    confirmed = self.confirmation.update(seconds(msg.header.stamp), box)
+                    payload['confirmed'] = confirmed
+                    payload['confirmation_count'] = self.confirmation.count
+                    if confirmed and not self.was_confirmed:
+                        self.get_logger().info(f"PERSON CONFIRMED: {json.dumps(payload['detections'][selected])}")
+                    self.was_confirmed = confirmed
                     self.detected_pub.publish(Bool(data=payload['detected']))
                     self.valid_pub.publish(Bool(data=payload['position_valid']))
                     if point is not None:
                         out=PointStamped();out.header=msg.header
                         out.point.x=point['x'];out.point.y=point['y'];out.point.z=point['z']
                         self.position_pub.publish(out)
-                        pose=PoseStamped();pose.header=msg.header;pose.pose.position=out.point;pose.pose.orientation.w=1.
-                        self.person_pose_pub.publish(pose)
-                    self.person_pub.publish(Bool(data=payload['position_valid']))
+                        if confirmed:
+                            pose=PoseStamped();pose.header=msg.header;pose.pose.position=out.point;pose.pose.orientation.w=1.
+                            self.person_pose_pub.publish(pose)
+                    self.person_pub.publish(Bool(data=confirmed))
                     self.details_pub.publish(String(data=json.dumps(payload,allow_nan=False)))
+                    if self.annotated_pub.get_subscription_count():
+                        annotated=result.plot()
+                        image=Image();image.header=msg.header;image.height=msg.height;image.width=msg.width
+                        image.encoding='bgr8';image.step=msg.width*3
+                        image.data=array.array('B', annotated.tobytes())
+                        self.annotated_pub.publish(image)
             except Exception as exc:
                 with self.lock:self.clear()
                 self.get_logger().error(f'Frame rejected: {exc}')
