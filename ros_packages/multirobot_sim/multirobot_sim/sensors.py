@@ -16,8 +16,7 @@ unchanged on the robot:
             depth-to-color alignment, so color, depth and IR are all stamped with
             camera_color_optical_frame and share the color intrinsics.
 
-Camera streams are rendered only while somebody subscribes to them, which keeps the
-simulation light when nobody looks at the camera.
+Camera streams render on demand, with an optional always-on Webots RGB preview.
 
 Message payloads are assigned as array.array: rclpy validates a `bytes` value element by
 element (~90 ms for one 640x480 RGB frame), while array.array is copied directly.
@@ -123,8 +122,11 @@ def _bgra(camera, crop, width, height):
 
 
 class LimoSensors:
+    _standby = False
+
     def init(self, webots_node, properties):
         self.__robot = webots_node.robot
+        self._standby = properties.get('standby', 'false') == 'true'
         step = int(self.__robot.getBasicTimeStep())
 
         if not rclpy.ok():
@@ -137,7 +139,8 @@ class LimoSensors:
 
         # LiDAR: the Webots device spans exactly SCAN_ANGLE_MIN..MAX with one ray per beam.
         self.__lidar = self.__robot.getDevice('laser')
-        self.__lidar.enable(int(SCAN_PERIOD * 1000))
+        if not self._standby:
+            self.__lidar.enable(int(SCAN_PERIOD * 1000))
         self.__scan_pub = self.__lidar_node.create_publisher(LaserScan, '/' + self.__ns + '/scan', qos_profile_sensor_data)
         self.__scan = LaserScan()
         self.__scan.angle_min = SCAN_ANGLE_MIN
@@ -199,6 +202,7 @@ class LimoSensors:
         self.__ir_info = _camera_info(IR_W, IR_H, [0.0] * 8)
         self.__wanted = {}
         self.__enabled = {'color': False, 'depth': False, 'ir': False}
+        self.__camera_preview = properties.get('camera_preview', 'true') != 'false'
         self.__ready = {}  # stream -> sim time of its first frame after enable()
         self.__tf = TransformBroadcaster(cn)
 
@@ -226,9 +230,8 @@ class LimoSensors:
         self.__wanted = {k: c > 0 for k, c in count.items()}
         w = self.__wanted
         need = {
-            # Keep the Webots RGB camera preview alive without ROS viewers.
-            # ROS publishing remains controlled by subscriptions.
-            'color': True,
+            'color': (self.__camera_preview or w['color'] or w['color_info']
+                      or w['color_jpeg'] or w['colored_points']),
             'depth': (w['depth'] or w['depth_info'] or w['depth_jpeg'] or w['depth_png']
                       or w['points'] or w['colored_points']),
             'ir': w['ir'] or w['ir_info'] or w['ir_jpeg'],
@@ -446,7 +449,7 @@ class LimoSensors:
             self.__publish_imu(t)
         if self.__due('odom', t, ODOM_PERIOD):
             self.__publish_odom(t)
-        if self.__due('scan', t, SCAN_PERIOD):
+        if not self._standby and self.__due('scan', t, SCAN_PERIOD):
             self.__publish_scan(t)
         if self.__due('tf', t, CAMERA_TF_PERIOD):
             self.__publish_camera_tf(t)
