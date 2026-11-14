@@ -100,6 +100,22 @@ class PatrolPublisher(Node):
             f'Patrol tasks: {msg.data}'
         )
 
+        self.get_logger().info('===== MRTA 업무 할당 결과 =====')
+
+        zones = {
+            (1.0, 8.6): '1구역',
+            (1.2, -8.6): '2구역',
+            (4.85, 0.65): '3구역'
+        }
+
+        for robot, goals in assignments.items():
+            if goals:
+                x, y = goals[0][:2]
+                zone = zones.get((x, y), '알 수 없는 구역')
+                self.get_logger().info(f'{robot} → {zone}')
+
+        self.get_logger().info('============================')
+
         self.published = True
         self.timer.cancel()
 
