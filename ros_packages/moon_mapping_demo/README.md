@@ -68,3 +68,8 @@ ros2 topic echo /robot1/in_terrain_shadow
 ```
 
 단독 실행용 `moon_map_release`에는 ROS 토픽 및 로봇별 그림자 판정 표시가 없습니다. 위 기능은 `moon_mapping_demo`에 포함됩니다.
+
+
+## 브랜치 호환 모듈
+
+가연 브랜치의 지도 변환, 매핑용 드라이버·센서, 센서 준비 확인 코드를 이 패키지 내부에 포함합니다. 따라서 기존 `multirobot_sim`에 `map_grid`나 매핑용 heartbeat 선택 기능이 없는 브랜치에서도 실행할 수 있습니다. 기존 `multirobot_sim` 파일은 덮어쓰지 않으며 달 맵 URDF만 내부 드라이버를 사용합니다. robot1만 매핑 모드에서 BT heartbeat 없이 Nav2 명령을 수행하고 나머지는 대기합니다.

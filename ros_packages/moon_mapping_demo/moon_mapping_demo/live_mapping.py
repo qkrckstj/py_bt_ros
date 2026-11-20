@@ -15,7 +15,7 @@ from rclpy.qos import DurabilityPolicy, QoSProfile, qos_profile_sensor_data
 from sensor_msgs.msg import LaserScan
 from tf2_ros import StaticTransformBroadcaster
 
-from multirobot_sim.map_grid import Grid, align_grid
+from moon_mapping_demo.map_grid import Grid, align_grid
 
 
 class LiveMapping(Node):
