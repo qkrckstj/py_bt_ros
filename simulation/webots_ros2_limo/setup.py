@@ -1,3 +1,4 @@
+from pathlib import Path
 from setuptools import find_packages, setup
 
 package_name = 'webots_ros2_limo'
@@ -25,6 +26,7 @@ data_files.append(('share/' + package_name + '/resource', [
     'resource/limo_factory_map.yaml',
     'resource/limo_factory_map.pgm',
     'resource/limo_factory_map.survey.json',
+    'resource/exploration_nav2_template.yaml',
 ]))
 for drive in ('diff', 'mecanum'):
     data_files.append(('share/' + package_name + '/resource/' + drive, [
@@ -37,9 +39,17 @@ data_files.append(('share/' + package_name + '/launch', [
     'launch/nav2_launch.py',
     'launch/bt_round_trip_launch.py',
     'launch/factory_search_launch.py',
+    'launch/exploration_allocation_launch.py',
+    'launch/exploration_flat_launch.py',
+    'launch/exploration_visualization_launch.py',
 ]))
-data_files.append(('share/' + package_name + '/rviz', ['rviz/limo_cartographer.rviz', 'rviz/limo_round_trip.rviz', 'rviz/limo_factory_search.rviz']))
+data_files.append(('share/' + package_name + '/rviz', ['rviz/limo_cartographer.rviz', 'rviz/limo_round_trip.rviz', 'rviz/limo_factory_search.rviz', 'rviz/exploration_flat.rviz']))
 data_files.append(('share/' + package_name, ['package.xml']))
+moon_root = Path('resource/moon_map_release')
+for directory in [moon_root, *sorted(p for p in moon_root.rglob('*') if p.is_dir())]:
+    files = [str(p) for p in sorted(directory.iterdir()) if p.is_file()]
+    if files:
+        data_files.append(('share/' + package_name + '/' + str(directory), files))
 
 
 setup(
@@ -58,6 +68,12 @@ setup(
         'console_scripts': [
             'cmd_vel_stamper = webots_ros2_limo.cmd_vel_stamper:main',
             'slam_scan_adapter = webots_ros2_limo.slam_scan_adapter:main',
+            'exploration_team = webots_ros2_limo.exploration_ros:team_main',
+            'exploration_robot = webots_ros2_limo.exploration_ros:robot_main',
+            'exploration_flat_map = webots_ros2_limo.exploration_flat_map:main',
+            'exploration_traffic = webots_ros2_limo.exploration_traffic:main',
+            'exploration_viewer = webots_ros2_limo.exploration_viewer:main',
+            'exploration_startup = webots_ros2_limo.exploration_startup:main',
         ],
     },
 )

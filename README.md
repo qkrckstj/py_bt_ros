@@ -75,3 +75,7 @@ Assistant Professor, Korea Aerospace University
 The reproducible LIMO factory world, map, Nav2 settings and camera integration are in
 [simulation/README.md](simulation/README.md). Build instructions use an isolated workspace
 to avoid a duplicate `webots_ros2_limo` package in an existing workspace.
+
+## Four-robot lunar exploration demo
+
+Team/robot BT, frontier or radar-style allocation, multihop range constraint, SLAM and Webots assets: [simulation/webots_ros2_limo/EXPLORATION.md](simulation/webots_ros2_limo/EXPLORATION.md).

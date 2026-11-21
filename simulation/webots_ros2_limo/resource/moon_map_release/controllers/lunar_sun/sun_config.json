@@ -1,0 +1,6 @@
+{
+  "mode": "constant_elevation",
+  "elevation_deg": 15.0,
+  "initial_azimuth_deg": 270.0,
+  "azimuth_period_sim_seconds": 240.0
+}
