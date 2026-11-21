@@ -12,31 +12,30 @@ class TerrainShadow:
     """Ground-truth triangle ray tests, restricted to terrain DEF nodes."""
     def __init__(self, supervisor):
         self.meshes = []
-        for kind in ('HILL', 'CRATER'):
-            for index in range(1, 7):
-                node = supervisor.getFromDef(f'DEMO_{kind}_{index}')
-                if node is None:
-                    continue
-                mesh = supervisor.getFromDef(f'DEMO_{kind}_{index}_MESH')
-                points = mesh.getField('coord').getSFNode().getField('point')
-                vertices = np.array([points.getMFVec3f(i) for i in range(points.getCount())])
-                rotation = np.array(node.getOrientation()).reshape(3, 3)
-                vertices = vertices @ rotation.T + np.array(node.getPosition())
-                field = mesh.getField('coordIndex')
-                faces, face = [], []
-                for i in range(field.getCount()):
-                    value = field.getMFInt32(i)
-                    if value == -1:
-                        for j in range(1, len(face)-1):
-                            faces.append((face[0], face[j], face[j+1]))
-                        face = []
-                    else:
-                        face.append(value)
-                triangles = vertices[np.array(faces)]
-                self.meshes.append((vertices.min(axis=0), vertices.max(axis=0),
-                                    triangles[:, 0], triangles[:, 1]-triangles[:, 0],
-                                    triangles[:, 2]-triangles[:, 0]))
-
+        names = ['LUNAR_GROUND'] + [f'DEMO_{kind}_{i}' for kind in ('HILL', 'CRATER') for i in range(1,7)]
+        for name in names:
+            node = supervisor.getFromDef(name)
+            if node is None:
+                continue
+            mesh = supervisor.getFromDef(name+'_MESH')
+            points = mesh.getField('coord').getSFNode().getField('point')
+            vertices = np.array([points.getMFVec3f(i) for i in range(points.getCount())])
+            rotation = np.array(node.getOrientation()).reshape(3, 3)
+            vertices = vertices @ rotation.T + np.array(node.getPosition())
+            field = mesh.getField('coordIndex')
+            faces, face = [], []
+            for i in range(field.getCount()):
+                value = field.getMFInt32(i)
+                if value == -1:
+                    for j in range(1, len(face)-1):
+                        faces.append((face[0], face[j], face[j+1]))
+                    face = []
+                else:
+                    face.append(value)
+            triangles = vertices[np.array(faces)]
+            self.meshes.append((vertices.min(axis=0), vertices.max(axis=0),
+                                triangles[:, 0], triangles[:, 1]-triangles[:, 0],
+                                triangles[:, 2]-triangles[:, 0]))
     def shaded(self, origin, direction):
         origin, direction = np.asarray(origin), np.asarray(direction)
         for low, high, v0, e1, e2 in self.meshes:
@@ -73,7 +72,7 @@ class TerrainShadow:
         for x in (-.16, 0., .16):
             for y in (-.105, 0., .105):
                 offset = rotation @ np.array([x, y, 0.])
-                point = [position[0]+offset[0], position[1]+offset[1], .02]
+                point = [position[0]+offset[0], position[1]+offset[1], max(.02, position[2]-.13)]
                 if self.shaded(point, direction):
                     return True
         return False
@@ -121,7 +120,7 @@ def main():
     while robot.step(int(robot.getBasicTimeStep())) != -1:
         vector, azimuth = sun_direction(robot.getTime()-origin, elevation, initial_azimuth, period)
         direction.setSFVec3f([-value for value in vector])
-        marker.setSFVec3f([30*value for value in vector])
+        marker.setSFVec3f([70*value for value in vector])
         if robot.getTime() >= next_check:
             states = [shadow.robot_shaded(node, vector) for node in robots]
             for i, (publisher, state) in enumerate(zip(publishers, states), 1):
