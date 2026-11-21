@@ -12,6 +12,7 @@
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>tf2_ros</depend>
+  <depend>tf2_msgs</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
   <depend>nav2_msgs</depend>
@@ -36,6 +37,7 @@
   <exec_depend>slam_toolbox</exec_depend>
   <exec_depend>nav2_map_server</exec_depend>
   <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rosidl_runtime_py</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

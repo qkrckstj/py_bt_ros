@@ -34,8 +34,8 @@ class TeamBT:
                                radius=sweep_radius, slot_slack=sweep_slot_slack) if strategy == 'radar' else None
         self.require_radio_measurement = require_radio_measurement
         self.radio_measurement, self.radio_received = {}, -math.inf
-        if not math.isfinite(min_goal_distance) or min_goal_distance < .5:
-            raise ValueError('Minimum exploration goal distance must be at least 0.5 m')
+        if not math.isfinite(min_goal_distance) or min_goal_distance < .3:
+            raise ValueError('Minimum exploration goal distance must be at least 0.3 m')
         self.min_goal_distance = min_goal_distance
         if not math.isfinite(claim_radius) or claim_radius < 0:
             raise ValueError('Invalid exploration claim radius')

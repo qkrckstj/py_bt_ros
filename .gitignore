@@ -24,5 +24,9 @@ log/
 # Ignore py_bt_ros generated files
 results/
 
+# Keep measured LIMO maps and scenes generated from them local.
+simulation/webots_ros2_limo/resource/real_maps/
+simulation/webots_ros2_limo/worlds/limo_real*.wbt
+
 # Versioned factory camera overlay configuration
 !simulation/webots_ros2_limo/worlds/.limo_factory_hall.wbproj

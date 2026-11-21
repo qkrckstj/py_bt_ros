@@ -2,6 +2,8 @@
 
 For this bundled Jazzy factory setup, start with [../README.md](../README.md).
 
+Real LIMO single-robot exploration and pose-replica integration are described in [REAL_LIMO.md](REAL_LIMO.md). Measured maps and credentials are kept outside this repository.
+
 AgileX **LIMO Pro** (four-wheel differential drive, or mecanum wheels) in [Webots](https://cyberbotics.com), driven by `webots_ros2_driver` + `ros2_control`, with cartographer SLAM and Nav2 navigation.
 
 Tested on **Ubuntu 22.04 / ROS 2 Humble / Webots R2025a**.

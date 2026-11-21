@@ -7,6 +7,7 @@ data_files.append(('share/ament_index/resource_index/packages', ['resource/' + p
 data_files.append(('share/' + package_name + '/protos', [
     'protos/LimoFourDiff.proto',
     'protos/LimoMecanum.proto',
+    'protos/LimoReplica.proto',
 ]))
 data_files.append(('share/' + package_name + '/protos/meshes', [
     'protos/meshes/limo_base.dae',
@@ -27,6 +28,8 @@ data_files.append(('share/' + package_name + '/resource', [
     'resource/limo_factory_map.pgm',
     'resource/limo_factory_map.survey.json',
     'resource/exploration_nav2_template.yaml',
+    'resource/real_slam.yaml',
+    'resource/real_single_nav2.yaml',
 ]))
 for drive in ('diff', 'mecanum'):
     data_files.append(('share/' + package_name + '/resource/' + drive, [
@@ -42,8 +45,20 @@ data_files.append(('share/' + package_name + '/launch', [
     'launch/exploration_allocation_launch.py',
     'launch/exploration_flat_launch.py',
     'launch/exploration_visualization_launch.py',
+    'launch/real_mapping_launch.py',
+    'launch/real_single_exploration_launch.py',
+    'launch/real_fleet_launch.py',
+    'launch/real_twin_robot.launch.py',
 ]))
-data_files.append(('share/' + package_name + '/rviz', ['rviz/limo_cartographer.rviz', 'rviz/limo_round_trip.rviz', 'rviz/limo_factory_search.rviz', 'rviz/exploration_flat.rviz']))
+data_files.append(('share/' + package_name + '/rviz', ['rviz/limo_cartographer.rviz', 'rviz/limo_round_trip.rviz', 'rviz/limo_factory_search.rviz', 'rviz/exploration_flat.rviz', 'rviz/real_single_exploration.rviz']))
+data_files.append(('share/' + package_name + '/scripts', [
+    'scripts/real_single_bt.py',
+    'scripts/real_single_exploration.sh',
+    'scripts/real_twin.sh',
+    'scripts/twin_robot.sh',
+    'scripts/twin_keyboard.py',
+    'scripts/package_twin_robot.py',
+]))
 data_files.append(('share/' + package_name, ['package.xml']))
 moon_root = Path('resource/moon_map_release')
 for directory in [moon_root, *sorted(p for p in moon_root.rglob('*') if p.is_dir())]:
@@ -74,6 +89,9 @@ setup(
             'exploration_traffic = webots_ros2_limo.exploration_traffic:main',
             'exploration_viewer = webots_ros2_limo.exploration_viewer:main',
             'exploration_startup = webots_ros2_limo.exploration_startup:main',
+            'map_to_webots = webots_ros2_limo.map_to_webots:main',
+            'twin_bridge = webots_ros2_limo.twin_bridge:main',
+            'peer_relay = webots_ros2_limo.peer_relay:main',
         ],
     },
 )
