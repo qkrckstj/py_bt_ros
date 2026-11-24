@@ -1,0 +1,31 @@
+{
+  "bounds_m": [
+    -30.0,
+    -30.0,
+    30.0,
+    30.0
+  ],
+  "base_xy": null,
+  "connectivity_mode": "mobile_team",
+  "base_definition": "No fixed base constraint; the four robots maintain a moving connected network",
+  "radio_range_m": 10.0,
+  "radio_definition": "10m distance-gated simulated communication links, requested by user; not measured RF",
+  "minimum_relays": 0,
+  "maximum_explorers": 4,
+  "travel_budget_m": 1000.0,
+  "budget_definition": "Unmeasured distance proxy set to 1000m per robot to avoid a 100m demo cap truncating whole-map exploration",
+  "coverage_resolution_m": 0.1,
+  "completion_definition": "No unknown potentially accessible cells remain within the mission bounds, and no reachable frontier remains; map-based estimate only",
+  "shadow_definition": "Simulator terrain oracle; triangle projections onto z=0.02 with footprint and angular margins; elevated terrain excluded conservatively",
+  "world_commit": "97b4759786232b77591530c9604326c325e93fbf",
+  "max_leg_m": 3.0,
+  "staging_hold_s": 8.0,
+  "compactness_weight": 0,
+  "spacing_weight": 25,
+  "preferred_spacing_m": 10.0,
+  "navigation_speed_mps": 0.22,
+  "solver_seconds": 5.0,
+  "maximum_wait_s": 10.0,
+  "movement_reward": 1000,
+  "rolling_dispatch": true
+}

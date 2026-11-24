@@ -23,3 +23,16 @@ log/
 
 # Ignore py_bt_ros generated files
 results/
+
+# Lunar runtime/builds and live telemetry
+/artifacts/
+/build_lunar/
+/install_lunar/
+/lunar_cp_env/
+/scenarios/lunar_exploration/artifacts/
+!ros_packages/moon_mapping_demo/worlds/textures/moon_ground.jpg
+!/scenarios/lunar_chanseo_cp_sat/results/
+!/scenarios/lunar_chanseo_cp_sat/results/*.json
+# Local real-world map captures used by the imported ROS package
+simulation/webots_ros2_limo/resource/real_maps/
+simulation/webots_ros2_limo/worlds/limo_real*.wbt
