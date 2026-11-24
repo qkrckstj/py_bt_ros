@@ -2,6 +2,11 @@
 
 **A Behaviour Tree (BT) based multi-robot coordination framework integrated with ROS 2**
 
+
+## 달 탐사: CP-SAT / 공간 A* + RViz
+
+60×60m 달 지형에서 네 로봇이 통신 연결과 그림자를 고려하며 탐사한다. CP-SAT 공동 목표 배정 + A* 경로 조합과 별도 공간 A* 탐사를 선택할 수 있다. Webots/RViz 실행, 장애물 지도, 상태 확인/종료, 로봇별 역할과 실제 시간 대비 관측률은 [달 탐사 README](scenarios/lunar_chanseo_cp_sat/README.md)에 정리했다. 2026-11-25 01:50 기록은 실제 42.09분 경과에 관측률 25.89%이며, 전체 탐사 완료는 아직 검증되지 않았다.
+
 ## Overview
 
 `py_bt_ros` is a modular framework that combines **Behaviour Trees** with **ROS 2** for autonomous multi-robot task coordination. It provides:

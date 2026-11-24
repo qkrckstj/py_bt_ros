@@ -1,0 +1,147 @@
+{
+  "world_bounds_m": [
+    -30,
+    -30,
+    30,
+    30
+  ],
+  "method": "CP-SAT joint frontier allocation + spatial A* routes; actual Nav2 route replanning",
+  "start_local_time": "2026-11-25 01:08:24 KST",
+  "milestones": [
+    {
+      "local_time": "2026-11-25 01:34:50 KST",
+      "elapsed_real_minutes": 26.44,
+      "sim_time_s": 372.8,
+      "observed_percent": 19.2267
+    },
+    {
+      "local_time": "2026-11-25 01:37:53 KST",
+      "elapsed_real_minutes": 29.49,
+      "sim_time_s": 410.03,
+      "observed_percent": 21.0606
+    },
+    {
+      "local_time": "2026-11-25 01:45:01 KST",
+      "elapsed_real_minutes": 36.61,
+      "sim_time_s": null,
+      "observed_percent": 25.6939
+    },
+    {
+      "local_time": "2026-11-25 01:50:29 KST",
+      "elapsed_real_minutes": 42.09,
+      "sim_time_s": 572.89,
+      "observed_percent": 25.8922
+    }
+  ],
+  "snapshot": {
+    "checked_at_local": "2026-11-25 01:50:29 KST",
+    "checked_epoch": 1795539029.8492608,
+    "start_epoch": 1795536504.2620168,
+    "elapsed_real_minutes": 42.09312073389689,
+    "sim_time_s": 572.89,
+    "coverage": {
+      "definition": "Observed cells in mission bounds; includes observed obstacles, not robot visits",
+      "total_cells": 360000,
+      "observed_cells": 93212,
+      "observed_free_cells": 90422,
+      "unknown_cells": 266788,
+      "observed_percent": 25.892222222222223,
+      "observed_area_m2": 932.120027779341,
+      "bounds_fully_known": false
+    },
+    "phase": "EXPLORING",
+    "inputs_ready": true,
+    "positions": {
+      "robot1": [
+        -19.68462065424396,
+        -13.333830329196749
+      ],
+      "robot2": [
+        -8.039308834862311,
+        -22.769274155697097
+      ],
+      "robot3": [
+        -18.46507029374988,
+        -4.154740162109267
+      ],
+      "robot4": [
+        -10.700643834583211,
+        -16.436388765964985
+      ]
+    },
+    "links_within_10m": [
+      [
+        "robot1",
+        "robot3"
+      ],
+      [
+        "robot1",
+        "robot4"
+      ],
+      [
+        "robot2",
+        "robot4"
+      ]
+    ],
+    "structural_relays_at_snapshot": [
+      "robot1",
+      "robot4"
+    ],
+    "robots": {
+      "robot1": {
+        "active_goal": null,
+        "travel_m": 57.78009211793514,
+        "motion_permit": false,
+        "requested_command": [
+          0.0,
+          0.0
+        ]
+      },
+      "robot2": {
+        "active_goal": {
+          "task_id": "af99c40e16024b5f8f61a2f4a7e23de1:42",
+          "goal": [
+            -8.149999674409628,
+            -20.149999853223562,
+            2.5582775157104023
+          ],
+          "purpose": "explore",
+          "created_at": 3449.228343873,
+          "map_revision": 375
+        },
+        "travel_m": 61.45353076146557,
+        "motion_permit": true,
+        "requested_command": [
+          0.22,
+          -0.0751745145788402
+        ]
+      },
+      "robot3": {
+        "active_goal": null,
+        "travel_m": 60.436601254751814,
+        "motion_permit": false,
+        "requested_command": [
+          0.0,
+          0.0
+        ]
+      },
+      "robot4": {
+        "active_goal": null,
+        "travel_m": 61.62448088163336,
+        "motion_permit": false,
+        "requested_command": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "role_definition": "All four are exploration candidates; CP-SAT selects goals/hold, not fixed exploration/relay roles. Articulation nodes are geometric connectivity relays at this instant only. No measured RF or full-coverage claim."
+  },
+  "limitations": [
+    "One ongoing live run with code/visualization changes and task-owner restarts, not a controlled benchmark.",
+    "Wall time includes startup, waiting, rotation and debugging; simulation ran slower than real time.",
+    "Observed area includes obstacles and is not the area driven over.",
+    "No standalone space_astar long-run comparison was completed.",
+    "Full reachability and 100% observation remain unverified."
+  ]
+}
