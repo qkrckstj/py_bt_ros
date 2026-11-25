@@ -1,71 +1,68 @@
-# py_bt_ros
+# LIMO 4대 달 탐사 실행
 
-**A Behaviour Tree (BT) based multi-robot coordination framework integrated with ROS 2**
+`dev_gayeon` 브랜치의 ROS 2 Jazzy · Webots R2025a 실행 안내입니다. Docker 이미지에 ROS 2와 Webots가 포함됩니다.
 
-## Overview
+## 준비
 
-`py_bt_ros` is a modular framework that combines **Behaviour Trees** with **ROS 2** for autonomous multi-robot task coordination. It provides:
+- Ubuntu 데스크톱의 터미널에서 실행합니다. X11 또는 Xwayland 화면과 읽을 수 있는 X 인증 파일이 필요합니다.
+- Docker Engine과 Docker Compose가 설치되어 있고, 현재 사용자로 `docker info`와 `docker compose version`이 실행되어야 합니다.
+- 아래 명령은 Intel/AMD 또는 nouveau의 Mesa GPU와 `/dev/dri`를 사용합니다. NVIDIA 독점 드라이버 환경은 `LUNAR_GPU=nvidia`와 NVIDIA Container Toolkit이 필요합니다.
 
-- **Flexible BT Architecture**: Define robot behaviors using XML-based Behaviour Tree specifications, editable with the visual editor [Groot2](https://www.behaviortree.dev/groot/)
-- **Pluggable MRTA Algorithms**: Swap between different Multi-Robot Task Allocation plugins (Greedy, GRAPE, CBBA, Hungarian)
-- **Distributed Decision Making**: Robots coordinate via ROS 2 messaging without centralized control
-- **Simulation-Ready**: Works with [Webots](https://cyberbotics.com/) physics simulator and others within ROS 2
+## 처음 다운로드하고 이미지 빌드
 
-The framework is designed to be **scenario-agnostic** — easily define new scenarios by creating BT nodes and MRTA configurations.
+```bash
+git clone --branch dev_gayeon --single-branch \
+  https://github.com/qkrckstj/py_bt_ros.git lunar_hungarian_project
+cd lunar_hungarian_project
 
-## ROS perception packages
+export LUNAR_REPO="$(pwd -P)"
+export LUNAR_UID="$(id -u)"
+export LUNAR_GID="$(id -g)"
+docker compose -f docker/lunar/compose.yaml build lunar
+```
 
-- [human_yolo](ros_packages/human_yolo/README.md): RGB-D human-dummy detection, trained weights and ROS detection/position topics for existing BTs. This package does not launch a simulator or control robot motion. Its Python dependencies are separate from the framework's root `requirements.txt`.
+이미 작업 폴더가 있으면 그 폴더에서 실행합니다. 이미지를 빌드한 뒤에는 아래 실행 명령만 사용하면 됩니다.
 
----
+## Webots와 RViz 실행
 
-## Scenarios
+프로젝트 루트에서 실행합니다. 기존 실행이 열려 있으면 해당 터미널에서 **Ctrl+C로 종료한 뒤** 다시 실행합니다.
 
-### LIMO Factory Search
+```bash
+export LUNAR_XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}"
+test -r "$LUNAR_XAUTHORITY"
 
-공장 1→2→3 구역을 이동하면서 매 틱 `IsPerson`을 확인한다. 발견하면 이동을
-취소하고 사람의 지도 좌표를 기록한 뒤 SUCCESS로 종료한다. 현재는 모의 감지를 사용한다.
-실행 명령: [scenarios/limo_factory_search/README.md](scenarios/limo_factory_search/README.md).
+LUNAR_GPU=mesa \
+LUNAR_DEPARTURE_POLICY=simultaneous \
+LUNAR_RISK_STAGE=candidates \
+bash docker/lunar/run_demo.sh explore-wide
+```
 
-### LIMO Round Trip (Webots + Nav2)
+`test -r`이 실패하면 현재 데스크톱 세션의 실제 인증 파일을 `LUNAR_XAUTHORITY`에 지정합니다. 예: `export LUNAR_XAUTHORITY=/실제/인증파일/경로`.
 
-`dev_chanseo`에 LIMO용 시나리오를 추가했다. XML BT와 Pygame 시각화를 사용하여
-**목적지 이동 → 시뮬레이션 시간 10초 대기 → 출발점 복귀**를 수행한다.
-시뮬레이터는 별도 `webots_ros2_limo` 레포에서 실행한다.
+스크립트는 현재 소스를 빌드하고 자동 검사를 통과한 뒤 Webots와 RViz를 실행합니다. 종료는 **Ctrl+C**입니다.
 
-실행 명령과 구성 파일 → [scenarios/limo_round_trip/README.md](scenarios/limo_round_trip/README.md)
+| 마지막 인자 | 실행 내용 |
+| --- | --- |
+| `bt-fixed` | 4대 고정 목표 주행 |
+| `explore` | 400 m² 영역 단기 탐사, 최대 시뮬레이션 180초 |
+| `explore-wide` | 3364 m² 영역 탐사, 최대 시뮬레이션 1800초 |
+| `gpu-check` | GPU 연결과 렌더러 확인 |
 
----
+먼저 `bt-fixed`, 다음 `explore`, 이후 `explore-wide` 순서로 확인할 수 있습니다. 설정된 최대 시간 전에 완료 조건이나 오류로 종료될 수 있습니다.
 
-### 1. 🐢 [Turtle Catcher (Turtlesim)](scenarios/turtle_catcher/README.md)
+## 실행 중 상태 확인
 
-**Lightweight BT + ROS 2 example using turtlesim**
+다른 터미널의 같은 프로젝트 루트에서 실행합니다.
 
-- **Environment**: ROS 2 turtlesim (lightweight, no physics simulation needed)
-- **Objective**: One turtle pursues a target turtle using BT-based navigation
-- **Best For**: Quick prototyping, testing BT logic, learning the framework
-- **Single Algorithm**: Simple greedy nearest-target approach
+```bash
+bash docker/lunar/run_demo.sh status
+bash docker/lunar/run_demo.sh diagnose
+```
 
-📍 For quick start → [See `scenarios/turtle_catcher/README.md`](scenarios/turtle_catcher/README.md)
+`diagnose`는 12초간 시계와 로봇 위치 입력을 확인합니다. 결과와 ROS 로그는 실행 터미널에 출력된 `results/gui_<모드>_<날짜와 시각>_<PID>/`에 저장됩니다.
 
----
+Docker 접근 오류는 Docker를 사용할 수 있는 호스트 터미널에서 확인합니다. `DISPLAY` 또는 X 인증 오류는 로그인한 데스크톱 세션의 터미널에서 확인합니다. GPU 오류는 같은 환경에서 `LUNAR_GPU=mesa bash docker/lunar/run_demo.sh gpu-check`로 확인합니다.
 
-### 2. 🔥 [Fire Suppression (Webots)](scenarios/simple/README.md)
+현재 장시간 탐사는 모의 299.4초에서 대피 계산 예산 초과가 남아 있으며, 최신 mesh 코드의 실제 Webots 주행은 아직 재검증하지 못했습니다.
 
-**Multi-robot autonomous fire suppression using Webots physics simulator**
-
-- **Environment**: Fire suppression arena with n Husky UGVs
-- **Objective**: Robots collaboratively detect, approach, and suppress spreading fires
-- **Algorithms**: Various decentralised multi-robot task allocation algorithms such as GRAPE, CBBA, and Hungarian
-- **Features**: Network-aware task allocation, communication topology visualization, fire spread simulation
-- **Validation Workflow**: Ported from [space-simulator](https://github.com/inmo-jang/space-simulator) — test algorithms there first, then validate with Webots physics simulation
-
-📍 For detailed setup and usage → [See `scenarios/simple/README.md`](scenarios/simple/README.md)
-
----
-
-## Maintainer
-
-**Inmo Jang**  
-Assistant Professor, Korea Aerospace University  
-📧 [inmo.jang@kau.ac.kr](mailto:inmo.jang@kau.ac.kr)
+상세 설정은 [Docker 안내](docker/lunar/README.md), 작업 상태는 [다음 세션 안내](NEXT_SESSION.md)를 참고하세요.

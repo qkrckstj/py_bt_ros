@@ -1,0 +1,236 @@
+{
+  "작성시각": "2026-11-24T07:05:16.603478+00:00",
+  "요청": "과도한 그림자 확대 제거와 경로 생성부터 적극적으로 수정",
+  "원인": [
+    "비평탄 삼각형을0.5m 높이 기둥으로 확대",
+    "기둥 그림자의 축 정렬 AABB",
+    "전체 이동/대기 구간을 한 사각형으로 합쳐 다른 시각의 점유도 차단",
+    "격자 축 위주 이동과 몸체0.26m/목표추가0.05m 여유"
+  ],
+  "최종변경": {
+    "terrain_geometry": "mesh",
+    "shadow_plane_height_m": 0.02,
+    "safety_time_step_seconds": 0.1,
+    "robot_radius_m": 0.22,
+    "warning_position_margin_m": 0.02,
+    "guide_grid_m": 0.5,
+    "time_step_seconds": 0.5,
+    "direct_goal_links": true,
+    "충돌판정": "원본 삼각형-원형 몸체의 거리, 같은 시간의 투영, 꼭짓점 회전 이동량 상한과 재귀 분할",
+    "검색": "KD-tree/공간시간 후보 목록 캐시는 제외 검색에만 사용, 실제 삼각형으로 최종 판정",
+    "표시": "RViz BT marker terrain_shadow_mesh에 같은 형상의 현재 시각 그림자",
+    "계산예산": {
+      "wall_seconds": 8.0,
+      "sim_seconds": 5.0,
+      "result_margin_seconds": 0.4
+    }
+  },
+  "그림자비교": {
+    "roi": [
+      -29.0,
+      -29.0,
+      -9.0,
+      -9.0
+    ],
+    "sampling_resolution_m": 0.1,
+    "comparisons": [
+      {
+        "sim_seconds": 30.0,
+        "legacy_flat_shadow_m2": 32.53000000000001,
+        "mesh_flat_shadow_m2": 6.190000000000001,
+        "reduction_percent": 80.97141100522595
+      },
+      {
+        "sim_seconds": 90.0,
+        "legacy_flat_shadow_m2": 104.59000000000002,
+        "mesh_flat_shadow_m2": 41.60000000000001,
+        "reduction_percent": 60.22564298690123
+      }
+    ]
+  },
+  "회귀": {
+    "통과": 146,
+    "로그": "regression_final_cached.log"
+  },
+  "최종모의": {
+    "final_short_180": {
+      "passed": true,
+      "phase": "PARTIAL_COMPLETE",
+      "reason": "round_limit",
+      "sim_time": 148.9,
+      "rounds_completed": 4,
+      "replans": 0,
+      "elapsed_wall_seconds": 9.804989118999856,
+      "observed_area_m2": 245.8125,
+      "coverage_fraction": 0.61453125
+    },
+    "final_fixed": {
+      "passed": true,
+      "phase": "COMPLETE",
+      "reason": "fixed_goals_observed",
+      "sim_time": 46.1,
+      "rounds_completed": 1,
+      "replans": 0,
+      "elapsed_wall_seconds": 2.7589986119996865,
+      "observed_area_m2": 126.875,
+      "coverage_fraction": 0.3171875
+    },
+    "mesh_cached_wide_600": {
+      "passed": false,
+      "phase": "ERROR",
+      "reason": "no_safe_evacuation: PLANNING_BUDGET: 경로 계산이 취소되었거나 계산 예산을 초과했습니다.",
+      "sim_time": 299.40000000000003,
+      "rounds_completed": 6,
+      "replans": 3,
+      "elapsed_wall_seconds": 57.61336656699996,
+      "observed_area_m2": 456.5625,
+      "coverage_fraction": 0.13572012485136742
+    }
+  },
+  "독립검증": {
+    "계획수": 30,
+    "모두통과": true,
+    "광선출발점수": 1061148,
+    "기존그림자가막은새이동구간수_동일반경": 42,
+    "기존지형이막은새이동구간수_동일반경": 10,
+    "연속그림자증명": false,
+    "방식": "원본3D Moller-Trumbore ray / .2초 / 원판33점 표본 + 연속 동료 원판 검사. 실행하지 않은 성공 대안도 포함.",
+    "종류별": {
+      "final_short_180": {
+        "plans": 4,
+        "passed": true,
+        "method": "independent_3D_Moller_Trumbore_rays_0.2s_33_body_points_plus_continuous_peer_check",
+        "continuous_shadow_proof": false,
+        "body_radius_m": 0.22,
+        "shadow_plane_height_m": 0.02,
+        "ray_origins": 180048,
+        "old_shadow_rejected_transitions": 2,
+        "old_static_rejected_transitions": 2
+      },
+      "final_fixed": {
+        "plans": 1,
+        "passed": true,
+        "method": "independent_3D_Moller_Trumbore_rays_0.2s_33_body_points_plus_continuous_peer_check",
+        "continuous_shadow_proof": false,
+        "body_radius_m": 0.22,
+        "shadow_plane_height_m": 0.02,
+        "ray_origins": 24552,
+        "old_shadow_rejected_transitions": 0,
+        "old_static_rejected_transitions": 0
+      },
+      "mesh_cached_wide_600": {
+        "plans": 25,
+        "passed": true,
+        "method": "independent_3D_Moller_Trumbore_rays_0.2s_33_body_points_plus_continuous_peer_check",
+        "continuous_shadow_proof": false,
+        "body_radius_m": 0.22,
+        "shadow_plane_height_m": 0.02,
+        "ray_origins": 856548,
+        "old_shadow_rejected_transitions": 40,
+        "old_static_rejected_transitions": 8
+      }
+    }
+  },
+  "몸체근거": {
+    "source": "ros_packages/moon_mapping_demo/protos/LimoFourDiff.proto",
+    "wheel_center_xy_bound_m": [
+      0.1,
+      0.0875
+    ],
+    "wheel_cylinder_enclosing_sphere_m": 0.05031152949374527,
+    "wheel_body_circle_bound_m": 0.1831883521529284,
+    "scope": "현재 시뮬레이터 충돌 형상. 실제 추가 장착물/다른 모델 검증은 아님."
+  },
+  "검사실행": [
+    {
+      "name": "final_short_180",
+      "exit_code": 0,
+      "wall_seconds": 10.672332134000044
+    },
+    {
+      "name": "final_fixed",
+      "exit_code": 0,
+      "wall_seconds": 3.5683913000002576
+    },
+    {
+      "name": "regression_final_cached",
+      "exit_code": 0,
+      "wall_seconds": 12.399823921000007
+    },
+    {
+      "name": "geometry_comparison",
+      "exit_code": 0,
+      "wall_seconds": 4.670486069999697
+    },
+    {
+      "name": "short_rays",
+      "exit_code": 0,
+      "wall_seconds": 23.988325280000026
+    },
+    {
+      "name": "fixed_rays",
+      "exit_code": 0,
+      "wall_seconds": 4.862068514999919
+    },
+    {
+      "name": "wide_rays",
+      "exit_code": 0,
+      "wall_seconds": 108.27694218800025
+    }
+  ],
+  "소스해시파일수": 66,
+  "변경파일": [
+    "ros_packages/moon_mapping_demo/moon_mapping_demo/experiment.py",
+    "ros_packages/moon_mapping_demo/moon_mapping_demo/exploration.py",
+    "ros_packages/moon_mapping_demo/moon_mapping_demo/exploration_ros.py",
+    "ros_packages/moon_mapping_demo/moon_mapping_demo/mesh_geometry.py",
+    "ros_packages/moon_mapping_demo/moon_mapping_demo/space_time.py",
+    "ros_packages/moon_mapping_demo/moon_mapping_demo/terrain.py",
+    "ros_packages/moon_mapping_demo/config/exploration_short.yaml",
+    "ros_packages/moon_mapping_demo/config/exploration_wide.yaml",
+    "ros_packages/moon_mapping_demo/config/shadow_experiment.yaml",
+    "ros_packages/moon_mapping_demo/config/shadow_single.yaml",
+    "ros_packages/moon_mapping_demo/tests/test_mesh_geometry.py",
+    "ros_packages/moon_mapping_demo/tests/test_space_time.py",
+    "ros_packages/moon_mapping_demo/tests/test_terrain.py",
+    "NEXT_SESSION.md",
+    "docs/resume_prompt_2026-11-24.txt",
+    "ros_packages/moon_mapping_demo/README.md"
+  ],
+  "호스트기록": {
+    "run": "results/gui_explore-wide_20261124_152440_10300",
+    "이번변경전": true,
+    "ended_sim_seconds": 144.89,
+    "rounds_completed": 2,
+    "reason": "shutdown",
+    "새모델실제성공아님": true
+  },
+  "한계": [
+    "넓은600초 시도는 절대sim299.4/경과298.4초에 대피 계산 예산 초과 종료. 600/1800초·85% 목표 미달성.",
+    "새 모델의 실제 Webots 물리·ROS/DDS·주행 추종·RViz 표시 재검증은 Docker API permission denied로 미수행.",
+    "합성 센서는 기존 정적 기둥 광선 모델을 사용한다. 실제 센서 검증이 아님.",
+    "모의 계산 중 sim 시계는 정지하며 결과 전달에3 sim초 지연을 주입했다.",
+    "독립 광선 표본 검사는 연속 안전 증명이 아니다. 연속 검사 구현의 형상/시간 경계는 별도 단위 검사로 확인했다.",
+    "수신 평면 z=.02m인 평지 모델이며 경사 주행은 지원하지 않는다.",
+    "면적 비교는 시작20x20m ROI·30/90초·0.1m 중심 표본이며 전 월드/모든 시각으로 일반화하지 않는다.",
+    "0.25m 안내 격자는 계산 비용 때문에 기본에서 제외했다.",
+    "계산 중 전체 정지·공동 회차 구조는 남아 있다.",
+    "과거 기둥/사각형 oracle은 과대 차단 비교 자료이며 새 안전 정답으로 쓰지 않는다."
+  ],
+  "보존": {
+    "변경전": "before/ 61개 파일",
+    "패치": "changes.patch",
+    "해시": "source_sha256.json",
+    "중간실패": [
+      "mesh_short_180",
+      "mesh_direct_wide_600"
+    ],
+    "이전보고서": "results/aggressive_exploration_20261124_001/report.json"
+  },
+  "documentation_checkpoint_update": {
+    "time": "2026-11-24T16:07:20.028315+09:00",
+    "checkpoint": "/home/gayeon/lunar_hungarian_checkpoints/20261124_160720_mesh_shadow",
+    "implementation_changed": false,
+    "tests_rerun": false
+  }
+}

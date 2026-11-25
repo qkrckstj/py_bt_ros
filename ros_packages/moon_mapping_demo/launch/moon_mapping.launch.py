@@ -1,4 +1,4 @@
-"""Run the three-LIMO factory simulator with optional single-robot mapping."""
+"""달 월드: 기본 단일 SLAM/Nav2 또는 별도 시간 경로 실행 모드."""
 import os
 import sys
 import tempfile
@@ -52,12 +52,13 @@ def mapping_test_assets(descriptions, rviz_config, active_robot, directory):
 def runtime(context):
     share=Path(get_package_share_directory('moon_mapping_demo'))
     env=yaml.safe_load((share/'config/environment.yaml').read_text())
-    slam = enabled(context, 'slam')
-    if not slam:
+    shadow_mode = enabled(context, 'shadow_mode')
+    slam = enabled(context, 'slam') and not shadow_mode
+    if not slam and not shadow_mode:
         raise ValueError('Moon mapping demo requires slam:=true; factory-map mode is unavailable.')
     robots = list(ROBOTS)
     mapping_robot = LaunchConfiguration('mapping_robot').perform(context)
-    if mapping_robot and (not slam or mapping_robot not in robots):
+    if mapping_robot and not shadow_mode and (not slam or mapping_robot not in robots):
         raise ValueError('mapping_robot requires slam:=true and one of the three LIMO robots')
     if slam and not mapping_robot:
         mapping_robot = 'robot1'
@@ -77,6 +78,44 @@ def runtime(context):
     if slam:
         descriptions, rviz_config = mapping_test_assets(
             descriptions, rviz_config, mapping_robot, temporary)
+    if shadow_mode:
+        from moon_mapping_demo.experiment import load_experiment
+        config_path = LaunchConfiguration('shadow_config').perform(context) or str(share/'config/shadow_experiment.yaml')
+        experiment, _, _, _ = load_experiment(config_path, share)
+        controlled = experiment['robots']
+        shadow_descriptions = {}
+        for robot, description in descriptions.items():
+            urdf = ET.parse(description)
+            plugin = urdf.find('./webots/plugin')
+            ET.SubElement(plugin, 'camera_preview').text = 'false'
+            ET.SubElement(plugin, 'require_bt_heartbeat').text = 'true'
+            ET.SubElement(plugin, 'standby').text = 'false' if robot in controlled else 'true'
+            target = temporary / description.name
+            urdf.write(target, encoding='unicode')
+            shadow_descriptions[robot] = target
+        descriptions = shadow_descriptions
+        rviz = yaml.safe_load(rviz_config.read_text())
+        manager = rviz['Visualization Manager']
+        manager['Displays'] = [d for d in manager['Displays'] if d['Class'] not in ('rviz_default_plugins/Path','rviz_default_plugins/Map')]
+        manager['Tools'] = [d for d in manager['Tools'] if d['Class'] != 'rviz_default_plugins/SetGoal']
+        for robot in controlled:
+            manager['Displays'].append({'Class': 'rviz_default_plugins/Path', 'Name': robot+' 시간 경로',
+                'Enabled': True, 'Line Style': 'Lines', 'Line Width': .05,
+                'Topic': {'Value': f'/{robot}/shadow_path', 'Durability Policy': 'Transient Local',
+                          'Reliability Policy': 'Reliable', 'Depth': 1}})
+        manager['Displays'].append({'Class': 'rviz_default_plugins/MarkerArray', 'Name': '도착시각·대기',
+            'Enabled': True, 'Marker Topic': {'Value': '/shadow_mission/markers',
+                                            'Durability Policy': 'Transient Local', 'Depth': 1}})
+        if enabled(context, 'exploration_mode'):
+            manager['Displays'].append({'Class': 'rviz_default_plugins/Map', 'Name': '실제 관측·미관측 영역',
+                'Enabled': True, 'Alpha': .65, 'Color Scheme': 'map',
+                'Topic': {'Value': '/exploration/observations', 'Durability Policy': 'Transient Local',
+                          'Reliability Policy': 'Reliable', 'Depth': 1}})
+            manager['Displays'].append({'Class': 'rviz_default_plugins/MarkerArray', 'Name': '탐사율·팀·로봇 BT',
+                'Enabled': True, 'Marker Topic': {'Value': '/exploration/bt_markers',
+                                                 'Durability Policy': 'Transient Local', 'Depth': 1}})
+        rviz_config = temporary / 'shadow.rviz'
+        rviz_config.write_text(yaml.safe_dump(rviz, sort_keys=False, allow_unicode=True))
     # Isolate preferences and enable shadow rendering for this demo.
     config_home = Path(tempfile.gettempdir()) / 'moon_mapping_demo_gui_config'
     config_dir = config_home / 'Cyberbotics'
@@ -99,7 +138,7 @@ def runtime(context):
             package='moon_mapping_demo', executable='moon_live_mapping', output='screen',
             parameters=[{'use_sim_time': True, 'robot': mapping_robot}],
             on_exit=[EmitEvent(event=Shutdown(reason='Live map publisher stopped'))]))
-    else:
+    elif not shadow_mode:
         stacks.extend([
             Node(package='nav2_map_server',executable='map_server',name='multi_map_server',parameters=[{'yaml_filename':str(share/'config'/env['map']),'use_sim_time':True}]),
             Node(package='nav2_lifecycle_manager',executable='lifecycle_manager',name='multi_map_lifecycle',parameters=[{'use_sim_time':True,'autostart':True,'node_names':['multi_map_server']}])])
@@ -107,6 +146,12 @@ def runtime(context):
         actions.append(WebotsController(robot_name=ns,namespace=ns,parameters=[{'robot_description':str(descriptions[ns]),'use_sim_time':True,'set_robot_state_publisher':False}],output='screen'))
         for child,xyz in [('laser_link',(.103,0.,-.034)),('camera_link',(.096,.015,.03))]:
             actions.append(Node(package='tf2_ros',executable='static_transform_publisher',name=ns+'_'+child+'_tf',arguments=['--x',str(xyz[0]),'--y',str(xyz[1]),'--z',str(xyz[2]),'--frame-id',ns+'/base_link','--child-frame-id',ns+'/'+child]))
+        if shadow_mode:
+            start = env['starts'][ns]
+            actions.append(Node(package='tf2_ros', executable='static_transform_publisher',
+                name=f'{ns}_prior_odom_tf', arguments=['--x', str(start['x']), '--y', str(start['y']),
+                '--yaw', str(start['yaw']), '--frame-id', 'map', '--child-frame-id', f'{ns}/odom']))
+            continue
         if slam and ns != mapping_robot:
             start = env['starts'][ns]
             actions.append(Node(
@@ -173,7 +218,7 @@ def runtime(context):
             for key,value in [('rgb_topic','camera/color/image_raw'),('depth_topic','camera/depth/image_raw'),('camera_info_topic','camera/color/camera_info')]:cmd+=['-p',key+':=/'+ns+'/'+value]
             for topic in ['/human/detected','/human/position_valid','/human/position','/human/detections','/perception/is_person','/perception/person_pose']:cmd+=['-r',topic+':=/'+ns+topic]
             stacks.append(ExecuteProcess(cmd=cmd,additional_env={'OMP_NUM_THREADS':'1','MKL_NUM_THREADS':'1','OPENBLAS_NUM_THREADS':'1','YOLO_CONFIG_DIR':str(temporary/'yolo')},output='screen'))
-    if not slam:
+    if not slam and not shadow_mode:
         bt=Path(get_package_share_directory('multirobot_bt'))/'launch/multirobot_bt.launch.py'
         factory_regions_file = ''
         if enabled(context, 'use_main_regions'):
@@ -187,9 +232,9 @@ def runtime(context):
                 'pygame': LaunchConfiguration('pygame').perform(context),
                 'factory_regions_file': factory_regions_file,
             }.items()))
-    stacks.append(Node(package='rviz2',executable='rviz2',arguments=['-d',str(rviz_config)],parameters=[{'use_sim_time':True}],additional_env={'LIBGL_ALWAYS_SOFTWARE':'1'},condition=IfCondition(LaunchConfiguration('rviz'))))
+    stacks.append(Node(package='rviz2',executable='rviz2',arguments=['-d',str(rviz_config)],parameters=[{'use_sim_time':True}],condition=IfCondition(LaunchConfiguration('rviz'))))
     gate = Node(package='moon_mapping_demo', executable='moon_ready', output='screen',
-                parameters=[{'robots': robots, 'scan_robots': [mapping_robot] if slam else robots}])
+                parameters=[{'robots': robots, 'scan_robots': controlled if shadow_mode else ([mapping_robot] if slam else robots)}])
     def sensors_ready(event,context):
         if context.is_shutdown:return []
         return [TimerAction(period=2.,actions=stacks)] if event.returncode==0 else [EmitEvent(event=Shutdown(reason='Required robot sensors failed'))]
@@ -206,11 +251,14 @@ def generate_launch_description():
         DeclareLaunchArgument('yolo_python',default_value=str(yolo_python) if yolo_python.exists() else sys.executable),
         DeclareLaunchArgument('use_main_regions',default_value='true'),
         DeclareLaunchArgument('robots', default_value='4', choices=['4'],
-                              description='Run the three-LIMO factory world'),
+                              description='LIMO 4대 달 월드를 실행합니다.'),
         DeclareLaunchArgument('mapping_robot', default_value='', choices=['', *ROBOTS],
                               description='Choose the mapping LIMO. Defaults to robot1 in SLAM mode.'),
         DeclareLaunchArgument('scan_matching', default_value='true', choices=['false','true']),
         DeclareLaunchArgument('slam', default_value='true', choices=['false', 'true'],
                               description='Build and share a live map from one LIMO'),
+        DeclareLaunchArgument('shadow_mode', default_value='false', choices=['false', 'true']),
+        DeclareLaunchArgument('exploration_mode', default_value='false', choices=['false', 'true']),
+        DeclareLaunchArgument('shadow_config', default_value=''),
         DeclareLaunchArgument('yolo',default_value='false'),DeclareLaunchArgument('rviz',default_value='true'),DeclareLaunchArgument('pygame',default_value='false'),
         OpaqueFunction(function=runtime)])

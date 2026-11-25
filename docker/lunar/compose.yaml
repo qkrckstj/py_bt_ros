@@ -1,0 +1,80 @@
+name: lunar-shadow-hungarian
+
+services:
+  lunar:
+    image: lunar-shadow-hungarian:jazzy-r2025a
+    build:
+      context: ../..
+      dockerfile: docker/lunar/Dockerfile
+    user: "${LUNAR_UID:-1000}:${LUNAR_GID:-1000}"
+    working_dir: /workspace/py_bt_ros
+    network_mode: host
+    ipc: host
+    init: true
+    stdin_open: true
+    tty: true
+    environment:
+      USER: lunar
+      ROS_DOMAIN_ID: "${LUNAR_ROS_DOMAIN_ID:-63}"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      QT_X11_NO_MITSHM: "1"
+    volumes:
+      - type: bind
+        source: ${LUNAR_REPO:?LUNAR_REPO에 현재 체크아웃의 절대 경로를 지정하세요}
+        target: /workspace/py_bt_ros
+        bind:
+          create_host_path: false
+    command: ["bash"]
+
+  lunar-gui:
+    extends:
+      service: lunar
+    profiles: ["gui"]
+    environment:
+      DISPLAY: "${DISPLAY:-:0}"
+      XAUTHORITY: /tmp/lunar.xauth
+    volumes:
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LUNAR_XAUTHORITY:-/tmp/lunar-unused-xauth}
+        target: /tmp/lunar.xauth
+        read_only: true
+        bind:
+          create_host_path: false
+
+  lunar-gpu:
+    extends:
+      service: lunar-gui
+    profiles: ["gpu"]
+    environment:
+      LIBGL_ALWAYS_SOFTWARE: "0"
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: graphics,display,utility
+      __NV_PRIME_RENDER_OFFLOAD: "1"
+      __GLX_VENDOR_LIBRARY_NAME: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  lunar-dri:
+    extends:
+      service: lunar-gui
+    profiles: ["dri"]
+    environment:
+      LIBGL_ALWAYS_SOFTWARE: "0"
+      DRI_PRIME: "${LUNAR_DRI_PRIME:-0}"
+      __GLX_VENDOR_LIBRARY_NAME: mesa
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "${LUNAR_RENDER_GID:-109}"
+      - "${LUNAR_VIDEO_GID:-44}"

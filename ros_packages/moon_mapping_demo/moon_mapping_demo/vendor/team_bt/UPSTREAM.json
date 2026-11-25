@@ -1,0 +1,33 @@
+{
+  "repository": "qkrckstj/py_bt_ros",
+  "ref": "02cda62197e30858f295de25567003f02242ad64",
+  "path": "simulation/webots_ros2_limo",
+  "files": [
+    {
+      "path": "webots_ros2_limo/exploration_bt.py",
+      "blob_sha": "fe1d414e11d70d5b312f9c599b789e7ef00fe72f",
+      "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_bt.py"
+    },
+    {
+      "path": "webots_ros2_limo/exploration_policy.py",
+      "blob_sha": "1d06076b0e34919889f628b0f0e5763176e43763",
+      "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_policy.py"
+    },
+    {
+      "path": "webots_ros2_limo/exploration_runtime.py",
+      "blob_sha": "00362d717880bc10d3bb1632ca86a686382480a9",
+      "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_runtime.py"
+    },
+    {
+      "path": "webots_ros2_limo/exploration_sweep.py",
+      "blob_sha": "70d67df0352d797b3d17d645007814ee235d8717",
+      "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_sweep.py"
+    },
+    {
+      "path": "LICENSE",
+      "blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/LICENSE"
+    }
+  ],
+  "modifications": "원본 Python 모듈을 수정하지 않고 별도 어댑터에서 확장합니다."
+}

@@ -15,3 +15,11 @@ LimoFourDiff.proto와 limo_base.dae, limo_wheel.dae는 로컬 py_bt_ros_multi/ro
 ## 참고한 개념
 https://mrsdprojects.ri.cmu.edu/2018teami/implementation/software-system/
 현재 태양 제어는 일정 고도의 가상 회전 조명이며, 해당 연구의 원본 코드나 SPICE 데이터를 포함하지 않습니다.
+
+## 팀원 탐사 BT 고정 사본
+
+`moon_mapping_demo/vendor/team_bt/`의 Python 네 파일은 `qkrckstj/py_bt_ros`의
+`simulation/webots_ros2_limo`, 커밋 `02cda62197e30858f295de25567003f02242ad64`에서
+수정 없이 가져왔습니다. 패키지의 Apache-2.0 `LICENSE`와 파일별 blob SHA·원본 링크를
+같은 디렉터리의 `UPSTREAM.json`에 보존했습니다. 이 고정 사본을 설치 패키지에 포함하며,
+Hungarian·시간 실행·센서 관측 확장은 별도의 `exploration.py` 어댑터에서 수행합니다.

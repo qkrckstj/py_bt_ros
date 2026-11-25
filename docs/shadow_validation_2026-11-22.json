@@ -1,0 +1,4018 @@
+{
+  "date": "2026-11-22",
+  "base_commit": "97b4759786232b77591530c9604326c325e93fbf",
+  "branch": "feature/shadow-hungarian",
+  "remote_push": false,
+  "remote_merge": false,
+  "environment": {
+    "host": "Ubuntu 22.04.5 / ROS 2 Humble / Python 3.10.12",
+    "docker_socket_access": false,
+    "x11_access": false,
+    "dds_udp_socket_creation": false
+  },
+  "host_build": {
+    "passed": true,
+    "packages": 1,
+    "overlay": "install/humble"
+  },
+  "host_regression": {
+    "passed": 95,
+    "wall_seconds": 2.31
+  },
+  "ros_smoke": {
+    "context": "single process, shared rclpy context; UDP unavailable",
+    "visualization": [
+      {
+        "case": "visualization",
+        "result": "passed",
+        "simulation": "합성 clock/odom; 물리 주행 아님",
+        "phase": "VISUALIZED",
+        "late_path_topics": [
+          "robot1",
+          "robot2",
+          "robot3"
+        ],
+        "time_markers": 24,
+        "nonzero_command_messages": 0,
+        "selected_command_counts": {
+          "robot1": 15,
+          "robot2": 15,
+          "robot3": 15
+        },
+        "final_emergency_stop": true,
+        "output": "/home/gayeon/lunar_hungarian_project/results/resume_2026-11-22/ros_visualization/visualization"
+      }
+    ],
+    "safety": [
+      {
+        "case": "standby_odom_stale",
+        "result": "passed",
+        "simulation": "합성 clock/odom; 물리 주행 아님",
+        "phase": "ERROR",
+        "late_path_topics": [
+          "robot1",
+          "robot2",
+          "robot3"
+        ],
+        "time_markers": 24,
+        "nonzero_command_messages": 12,
+        "selected_command_counts": {
+          "robot1": 25,
+          "robot2": 25,
+          "robot3": 25
+        },
+        "final_emergency_stop": true,
+        "output": "/home/gayeon/lunar_hungarian_project/results/resume_2026-11-22/ros_safety/standby_odom_stale"
+      },
+      {
+        "case": "clock_backward",
+        "result": "passed",
+        "simulation": "합성 clock/odom; 물리 주행 아님",
+        "phase": "STOPPED",
+        "late_path_topics": [
+          "robot1",
+          "robot2",
+          "robot3"
+        ],
+        "time_markers": 24,
+        "nonzero_command_messages": 7,
+        "selected_command_counts": {
+          "robot1": 26,
+          "robot2": 26,
+          "robot3": 26
+        },
+        "final_emergency_stop": true,
+        "output": "/home/gayeon/lunar_hungarian_project/results/resume_2026-11-22/ros_safety/clock_backward"
+      },
+      {
+        "case": "user_stop",
+        "result": "passed",
+        "simulation": "합성 clock/odom; 물리 주행 아님",
+        "phase": "STOPPED",
+        "late_path_topics": [
+          "robot1",
+          "robot2",
+          "robot3"
+        ],
+        "time_markers": 24,
+        "nonzero_command_messages": 5,
+        "selected_command_counts": {
+          "robot1": 26,
+          "robot2": 26,
+          "robot3": 26
+        },
+        "final_emergency_stop": true,
+        "output": "/home/gayeon/lunar_hungarian_project/results/resume_2026-11-22/ros_safety/user_stop"
+      },
+      {
+        "case": "command_conflict",
+        "result": "passed",
+        "simulation": "합성 clock/odom; 물리 주행 아님",
+        "phase": "ERROR",
+        "late_path_topics": [
+          "robot1",
+          "robot2",
+          "robot3"
+        ],
+        "time_markers": 24,
+        "nonzero_command_messages": 6,
+        "selected_command_counts": {
+          "robot1": 24,
+          "robot2": 24,
+          "robot3": 24
+        },
+        "final_emergency_stop": true,
+        "output": "/home/gayeon/lunar_hungarian_project/results/resume_2026-11-22/ros_safety/command_conflict"
+      }
+    ]
+  },
+  "kinematic": {
+    "single": {
+      "validation_kind": "ideal_differential_drive_kinematics",
+      "physical_webots_run": false,
+      "ros_transport_tested": false,
+      "passed": true,
+      "error": null,
+      "sim_seconds": 19.0,
+      "wall_seconds": 1.1302268430000595,
+      "step_seconds": 0.1,
+      "selected_robots": [
+        "robot1"
+      ],
+      "replans": 0,
+      "replan_events": [],
+      "goal_errors_m": {
+        "robot1": 0.03666666697974466
+      },
+      "minimum_sampled_interrobot_distance_m": 1.5,
+      "original_assignment_total_ticks": 6,
+      "initial_coordinated_total_ticks": 6
+    },
+    "multi": {
+      "validation_kind": "ideal_differential_drive_kinematics",
+      "physical_webots_run": false,
+      "ros_transport_tested": false,
+      "passed": true,
+      "error": null,
+      "sim_seconds": 66.60000000000001,
+      "wall_seconds": 4.955767694000087,
+      "step_seconds": 0.1,
+      "selected_robots": [
+        "robot1",
+        "robot2",
+        "robot3"
+      ],
+      "replans": 2,
+      "replan_events": [
+        {
+          "sim_time": 13.9,
+          "reason": "robot1: 시간표 대비 위치 이탈"
+        },
+        {
+          "sim_time": 32.6,
+          "reason": "robot1: 시간표 대비 위치 이탈"
+        }
+      ],
+      "goal_errors_m": {
+        "robot1": 0.03721621689257752,
+        "robot2": 0.03576978846106016,
+        "robot3": 0.04829866666667115
+      },
+      "minimum_sampled_interrobot_distance_m": 0.706812547377202,
+      "original_assignment_total_ticks": 60,
+      "initial_coordinated_total_ticks": 70
+    }
+  },
+  "upstream_bt": {
+    "repository": "qkrckstj/py_bt_ros",
+    "branch": "dev_chanseo",
+    "commit": "02cda62197e30858f295de25567003f02242ad64",
+    "published": true,
+    "selected_original_tests_passed": 54,
+    "tests_wall_seconds": 1.39,
+    "snapshot_manifest": "results/resume_2026-11-22/upstream_bt/snapshot.json",
+    "adapter_implemented": false,
+    "integrated_with_shadow_mission": false
+  },
+  "current_code_jazzy_revalidation": "GUI launch of patched source confirmed; test count not separately captured",
+  "current_code_physical_webots_drive": {
+    "single": "COMPLETE, checked against assigned goals and final odometry",
+    "multi": "COMPLETE, 3 robots, checked against assigned goals and final odometry"
+  },
+  "historical_validation": "docs/shadow_validation_2026-11-21.json",
+  "remaining": [
+    "Upstream BT allocation and timed execution adapter integration"
+  ],
+  "latest_host_regression": {
+    "passed": 104,
+    "wall_seconds": 3.65
+  },
+  "gui_followup": {
+    "original_run": "results/gui_single_20261122_010651_7781",
+    "original_result": "ERROR: 전체 odom or clock stopped",
+    "user_confirmed_clock_progress": true,
+    "four_webots_controllers_connected": true,
+    "rviz_opengl_initialized": true,
+    "independent_input_probe": "results/gui_timeouts_fix/input_probe_before_patch.json",
+    "observed_sim_seconds_per_wall_second": {
+      "min": 0.17298805498797676,
+      "max": 0.18042019356543074
+    },
+    "input_timeouts": {
+      "sim_odom_seconds": 0.6,
+      "wall_input_seconds": 3.0
+    },
+    "ros_smoke": {
+      "visualization": [
+        {
+          "case": "visualization",
+          "result": "passed",
+          "simulation": "합성 clock/odom; 물리 주행 아님",
+          "phase": "VISUALIZED",
+          "late_path_topics": [
+            "robot1",
+            "robot2",
+            "robot3"
+          ],
+          "time_markers": 24,
+          "nonzero_command_messages": 0,
+          "selected_command_counts": {
+            "robot1": 44,
+            "robot2": 44,
+            "robot3": 44
+          },
+          "final_emergency_stop": true,
+          "output": "/home/gayeon/lunar_hungarian_project/results/gui_timeouts_fix/ros_visualization/visualization"
+        }
+      ],
+      "safety": [
+        {
+          "case": "standby_odom_stale",
+          "result": "passed",
+          "simulation": "합성 clock/odom; 물리 주행 아님",
+          "phase": "ERROR",
+          "late_path_topics": [
+            "robot1",
+            "robot2",
+            "robot3"
+          ],
+          "time_markers": 24,
+          "nonzero_command_messages": 11,
+          "selected_command_counts": {
+            "robot1": 57,
+            "robot2": 57,
+            "robot3": 57
+          },
+          "final_emergency_stop": true,
+          "output": "/home/gayeon/lunar_hungarian_project/results/gui_timeouts_fix/ros_safety/standby_odom_stale"
+        },
+        {
+          "case": "clock_backward",
+          "result": "passed",
+          "simulation": "합성 clock/odom; 물리 주행 아님",
+          "phase": "STOPPED",
+          "late_path_topics": [
+            "robot1",
+            "robot2",
+            "robot3"
+          ],
+          "time_markers": 24,
+          "nonzero_command_messages": 8,
+          "selected_command_counts": {
+            "robot1": 59,
+            "robot2": 59,
+            "robot3": 59
+          },
+          "final_emergency_stop": true,
+          "output": "/home/gayeon/lunar_hungarian_project/results/gui_timeouts_fix/ros_safety/clock_backward"
+        },
+        {
+          "case": "user_stop",
+          "result": "passed",
+          "simulation": "합성 clock/odom; 물리 주행 아님",
+          "phase": "STOPPED",
+          "late_path_topics": [
+            "robot1",
+            "robot2",
+            "robot3"
+          ],
+          "time_markers": 24,
+          "nonzero_command_messages": 5,
+          "selected_command_counts": {
+            "robot1": 56,
+            "robot2": 56,
+            "robot3": 56
+          },
+          "final_emergency_stop": true,
+          "output": "/home/gayeon/lunar_hungarian_project/results/gui_timeouts_fix/ros_safety/user_stop"
+        },
+        {
+          "case": "command_conflict",
+          "result": "passed",
+          "simulation": "합성 clock/odom; 물리 주행 아님",
+          "phase": "ERROR",
+          "late_path_topics": [
+            "robot1",
+            "robot2",
+            "robot3"
+          ],
+          "time_markers": 24,
+          "nonzero_command_messages": 4,
+          "selected_command_counts": {
+            "robot1": 55,
+            "robot2": 55,
+            "robot3": 55
+          },
+          "final_emergency_stop": true,
+          "output": "/home/gayeon/lunar_hungarian_project/results/gui_timeouts_fix/ros_safety/command_conflict"
+        }
+      ]
+    },
+    "new_run": "results/gui_single_20261122_011837_9508",
+    "new_run_result": "COMPLETE",
+    "single_runtime_validation": {
+      "validation_kind": "webots_gui_runtime_and_odometry",
+      "passed": true,
+      "phase": "COMPLETE",
+      "assigned_goals": {
+        "robot1": [
+          -27.0,
+          -26.0
+        ]
+      },
+      "goal_errors_from_odom_m": {
+        "robot1": 0.032669358868622274
+      },
+      "replans": 0,
+      "departure_sim_seconds": 13.1,
+      "actual_arrival_sim_seconds": {
+        "robot1": 19.1
+      },
+      "completion_sim_seconds": 22.1,
+      "wall_seconds_after_initial_plan": 129.78738713264465,
+      "all_robot_inputs_fresh_at_completion": true,
+      "independent_ground_truth_positions_recorded": false,
+      "independent_shadow_stream_recorded": false,
+      "source_runtime": "results/gui_single_20261122_011837_9508/runtime.json"
+    },
+    "multi_runtime_validation": {
+      "validation_kind": "webots_gui_runtime_and_odometry",
+      "passed": true,
+      "phase": "COMPLETE",
+      "assigned_goals": {
+        "robot1": [
+          -22.0,
+          -23.0
+        ],
+        "robot2": [
+          -26.0,
+          -21.5
+        ],
+        "robot3": [
+          -22.5,
+          -26.0
+        ]
+      },
+      "goal_errors_from_odom_m": {
+        "robot1": 0.03725091635796511,
+        "robot2": 0.03750824689358793,
+        "robot3": 0.03253748928396338
+      },
+      "replans": 3,
+      "original_assignment_total_ticks": 63,
+      "initial_coordinated_total_ticks": 73,
+      "departure_sim_seconds": 13.08,
+      "actual_arrival_sim_seconds": {
+        "robot3": 47.88,
+        "robot2": 64.7,
+        "robot1": 79.7
+      },
+      "completion_sim_seconds": 82.7,
+      "wall_seconds_after_initial_plan": 711.317545413971,
+      "all_robot_inputs_fresh_at_completion": true,
+      "independent_ground_truth_positions_recorded": false,
+      "independent_shadow_stream_recorded": false,
+      "source_runtime": "results/gui_multi_20261122_012256_10407/runtime.json"
+    }
+  },
+  "graphics": {
+    "selection_default": "auto",
+    "host_devices": {
+      "Intel Iris Xe": "i915",
+      "NVIDIA MX450": "nouveau"
+    },
+    "current_selection": "mesa",
+    "compose_services": {
+      "mesa": "lunar-dri",
+      "nvidia": "lunar-gpu",
+      "software": "lunar-gui"
+    },
+    "force_software_in_gpu_modes": false,
+    "compose_config_validated": true,
+    "first_gpu_check": {
+      "requested": "mesa",
+      "passed": false,
+      "vendor": "Mesa",
+      "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+      "software_renderer": true,
+      "dri_prime": "pci-0000_58_00_0"
+    },
+    "first_check_folder": "results/gui_gpu-check_20261122_014439_11958",
+    "vulkan_image_fix": {
+      "packages": [
+        "mesa-vulkan-drivers",
+        "libvulkan1",
+        "vulkan-tools"
+      ],
+      "image_label": "io.py_bt_ros.lunar.graphics=mesa-vulkan-v1",
+      "build_verified": true
+    },
+    "runtime_verified": true,
+    "next_command": "bash docker/lunar/run_demo.sh gpu-check",
+    "hardware_probe": {
+      "requested": "mesa",
+      "passed": true,
+      "vendor": "Mesa",
+      "renderer": "zink Vulkan 1.4(NVIDIA GeForce MX450 (NVK TU117) (MESA_NVK))",
+      "software_renderer": false,
+      "dri_prime": "pci-0000_58_00_0"
+    },
+    "hardware_probe_folder": "results/gui_gpu-check_20261122_014746_12323",
+    "gpu_webots_run": "results/gui_multi_20261122_015002_13096",
+    "gpu_drive_verified": true,
+    "latest_gpu_drive_state": {
+      "phase": "COMPLETE",
+      "reason": "모든 목표 도착 및 설정된 대기 완료",
+      "replans": 3,
+      "actual_arrival_sim_seconds": {
+        "robot3": 47.99,
+        "robot2": 64.87,
+        "robot1": 79.88
+      },
+      "input_health": {
+        "sim_time": 82.89,
+        "clock_wall_age_seconds": 0.006166455999846221,
+        "odom_timeout_seconds": 0.6,
+        "input_wall_timeout_seconds": 3.0,
+        "robots": {
+          "robot1": {
+            "stamp_sim_seconds": 82.88,
+            "sim_age_seconds": 0.010000000000005116,
+            "wall_age_seconds": 0.087243232000219
+          },
+          "robot2": {
+            "stamp_sim_seconds": 82.88,
+            "sim_age_seconds": 0.010000000000005116,
+            "wall_age_seconds": 0.08700404899991554
+          },
+          "robot3": {
+            "stamp_sim_seconds": 82.88,
+            "sim_age_seconds": 0.010000000000005116,
+            "wall_age_seconds": 0.08836757500012027
+          },
+          "robot4": {
+            "stamp_sim_seconds": 82.88,
+            "sim_age_seconds": 0.010000000000005116,
+            "wall_age_seconds": 0.08676648500022566
+          }
+        }
+      }
+    },
+    "gpu_runtime_validation": {
+      "validation_kind": "webots_gui_runtime_and_odometry",
+      "passed": true,
+      "phase": "COMPLETE",
+      "assigned_goals": {
+        "robot1": [
+          -22.0,
+          -23.0
+        ],
+        "robot2": [
+          -26.0,
+          -21.5
+        ],
+        "robot3": [
+          -22.5,
+          -26.0
+        ]
+      },
+      "goal_errors_from_odom_m": {
+        "robot1": 0.03024026691374916,
+        "robot2": 0.033540504360662214,
+        "robot3": 0.03962006150703477
+      },
+      "replans": 3,
+      "original_assignment_total_ticks": 63,
+      "initial_coordinated_total_ticks": 73,
+      "departure_sim_seconds": 13.09,
+      "actual_arrival_sim_seconds": {
+        "robot3": 47.99,
+        "robot2": 64.87,
+        "robot1": 79.88
+      },
+      "completion_sim_seconds": 82.89,
+      "wall_seconds_after_initial_plan": 194.07368326187134,
+      "all_robot_inputs_fresh_at_completion": true,
+      "graphics": {
+        "requested": "mesa",
+        "passed": true,
+        "vendor": "Mesa",
+        "renderer": "zink Vulkan 1.4(NVIDIA GeForce MX450 (NVK TU117) (MESA_NVK))",
+        "software_renderer": false,
+        "dri_prime": "pci-0000_58_00_0"
+      },
+      "independent_ground_truth_positions_recorded": false,
+      "independent_shadow_stream_recorded": false,
+      "source_runtime": "results/gui_multi_20261122_015002_13096/runtime.json"
+    },
+    "cpu_to_gpu_wall_time_ratio": 3.6651932063048545
+  },
+  "handoff_requested_by_user": true,
+  "work_resumed_by_user": true,
+  "bt_exploration_integration": {
+    "branch": "feature/shadow-hungarian",
+    "head": "97b4759786232b77591530c9604326c325e93fbf",
+    "host_build": {
+      "passed": true,
+      "ros_distribution": "humble",
+      "packages": 1,
+      "log": "results/bt_validation_20261122/lunar_bt_build_verified_20261122.log"
+    },
+    "regression": {
+      "passed": 117,
+      "failed": 0,
+      "wall_seconds": 5.93,
+      "ros_distribution": "humble",
+      "scope": [
+        "moon_mapping_demo",
+        "multirobot_bt",
+        "multirobot_sim"
+      ],
+      "log": "results/bt_validation_20261122/lunar_bt_regression_clock_jitter_fixed_20261122.log"
+    },
+    "ros_contract": {
+      "passed": true,
+      "case_count": 7,
+      "ros_distribution": "humble",
+      "network_dds_verified": false,
+      "input_kind": "합성 clock/odom/TF/거리 센서; 같은 프로세스의 공유 rclpy context",
+      "report": "results/bt_ros_clock_jitter_fixed_20261122/bt_ros_validation.json",
+      "cases": [
+        {
+          "case": "connection",
+          "passed": true,
+          "phase": "EXECUTING",
+          "reason": "RobotBT 준비 장벽과 공동 시간 경로 실행",
+          "observed_area_m2": 85.8125,
+          "valid_frames_by_robot": {
+            "robot1": 29,
+            "robot2": 29,
+            "robot3": 29,
+            "robot4": 29
+          },
+          "path_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 0,
+            "frame": 0,
+            "pre_session": 28
+          },
+          "physical_webots_run": false
+        },
+        {
+          "case": "user_stop",
+          "passed": true,
+          "phase": "STOPPED",
+          "reason": "user_stop",
+          "observed_area_m2": 85.8125,
+          "valid_frames_by_robot": {
+            "robot1": 27,
+            "robot2": 27,
+            "robot3": 27,
+            "robot4": 27
+          },
+          "path_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 0,
+            "frame": 0,
+            "pre_session": 44
+          },
+          "physical_webots_run": false
+        },
+        {
+          "case": "robot4_odom_stale",
+          "passed": true,
+          "phase": "ERROR",
+          "reason": "전체 odom 또는 clock 갱신 중단",
+          "observed_area_m2": 85.8125,
+          "valid_frames_by_robot": {
+            "robot1": 38,
+            "robot2": 38,
+            "robot3": 38,
+            "robot4": 38
+          },
+          "path_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 0,
+            "frame": 0,
+            "pre_session": 36
+          },
+          "physical_webots_run": false
+        },
+        {
+          "case": "robot4_scan_stale",
+          "passed": true,
+          "phase": "ERROR",
+          "reason": "실제 센서 관측 갱신 중단",
+          "observed_area_m2": 85.8125,
+          "valid_frames_by_robot": {
+            "robot1": 70,
+            "robot2": 70,
+            "robot3": 70,
+            "robot4": 28
+          },
+          "path_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 0,
+            "frame": 0,
+            "pre_session": 34
+          },
+          "physical_webots_run": false
+        },
+        {
+          "case": "clock_backward",
+          "passed": true,
+          "phase": "ERROR",
+          "reason": "clock_reversed",
+          "observed_area_m2": 85.8125,
+          "valid_frames_by_robot": {
+            "robot1": 27,
+            "robot2": 27,
+            "robot3": 27,
+            "robot4": 27
+          },
+          "path_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 0,
+            "frame": 0,
+            "pre_session": 40
+          },
+          "physical_webots_run": false
+        },
+        {
+          "case": "command_conflict",
+          "passed": true,
+          "phase": "ERROR",
+          "reason": "cmd_vel 발행자 충돌: 기존 launch 동시 실행",
+          "observed_area_m2": 85.8125,
+          "valid_frames_by_robot": {
+            "robot1": 25,
+            "robot2": 25,
+            "robot3": 25,
+            "robot4": 25
+          },
+          "path_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 0,
+            "frame": 0,
+            "pre_session": 48
+          },
+          "physical_webots_run": false
+        },
+        {
+          "case": "missing_acquisition_tf",
+          "passed": true,
+          "phase": "ERROR",
+          "reason": "시작 위치 센서 관측 입력 부족",
+          "observed_area_m2": 79.125,
+          "valid_frames_by_robot": {
+            "robot1": 57,
+            "robot2": 57,
+            "robot3": 57,
+            "robot4": 0
+          },
+          "path_topics": [],
+          "map_received": true,
+          "robot_state_topics": [
+            "robot1",
+            "robot2",
+            "robot3",
+            "robot4"
+          ],
+          "bt_marker_count": 5,
+          "scan_drops": {
+            "queue": 0,
+            "expired": 34,
+            "frame": 0,
+            "pre_session": 63
+          },
+          "physical_webots_run": false
+        }
+      ],
+      "clock_scan_callback_jitter_fix": "수용 단계와 신선도 guard 모두 최대 50ms 선행 허용. 과거/미래 초과 입력의 정지 제한 유지."
+    },
+    "static_checks": {
+      "python_compile": true,
+      "bash_syntax": true,
+      "compose_config": true,
+      "git_diff_check": true
+    },
+    "upstream": {
+      "repository": "qkrckstj/py_bt_ros",
+      "ref": "02cda62197e30858f295de25567003f02242ad64",
+      "path": "simulation/webots_ros2_limo",
+      "files": [
+        {
+          "path": "webots_ros2_limo/exploration_bt.py",
+          "blob_sha": "fe1d414e11d70d5b312f9c599b789e7ef00fe72f",
+          "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_bt.py",
+          "local_blob_sha": "fe1d414e11d70d5b312f9c599b789e7ef00fe72f",
+          "matches_pinned_upstream": true
+        },
+        {
+          "path": "webots_ros2_limo/exploration_policy.py",
+          "blob_sha": "1d06076b0e34919889f628b0f0e5763176e43763",
+          "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_policy.py",
+          "local_blob_sha": "1d06076b0e34919889f628b0f0e5763176e43763",
+          "matches_pinned_upstream": true
+        },
+        {
+          "path": "webots_ros2_limo/exploration_runtime.py",
+          "blob_sha": "00362d717880bc10d3bb1632ca86a686382480a9",
+          "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_runtime.py",
+          "local_blob_sha": "00362d717880bc10d3bb1632ca86a686382480a9",
+          "matches_pinned_upstream": true
+        },
+        {
+          "path": "webots_ros2_limo/exploration_sweep.py",
+          "blob_sha": "70d67df0352d797b3d17d645007814ee235d8717",
+          "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/webots_ros2_limo/exploration_sweep.py",
+          "local_blob_sha": "70d67df0352d797b3d17d645007814ee235d8717",
+          "matches_pinned_upstream": true
+        },
+        {
+          "path": "LICENSE",
+          "blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+          "url": "https://github.com/qkrckstj/py_bt_ros/blob/02cda62197e30858f295de25567003f02242ad64/simulation/webots_ros2_limo/LICENSE",
+          "local_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+          "matches_pinned_upstream": true
+        }
+      ],
+      "modifications": "원본 Python 모듈을 수정하지 않고 별도 어댑터에서 확장합니다."
+    },
+    "wbt_model_experiments": {
+      "fixed": {
+        "passed": true,
+        "kind": "pinned_BT_WBT_ideal_kinematics_and_synthetic_raycast",
+        "physical_webots_run": false,
+        "real_sensor_run": false,
+        "ros_transport_tested": false,
+        "planning_sim_clock_paused": true,
+        "phase": "COMPLETE",
+        "reason": "fixed_goals_observed",
+        "sim_time": 56.1,
+        "elapsed_wall_seconds": 5.927809263999734,
+        "rounds_completed": 1,
+        "replans": 0,
+        "dispatch_count": {
+          "robot1": 1,
+          "robot2": 1,
+          "robot3": 1,
+          "robot4": 1
+        },
+        "minimum_sampled_distance_m": 1.5,
+        "report": "results/bt_fixed_verified_20261122/bt_kinematic_validation.json",
+        "session_directory": "results/bt_fixed_verified_20261122/89fc28c5d8af4c2b938593c0b5d272a4",
+        "observation": {
+          "denominator_m2": 400.0,
+          "observed_area_m2": 126.9375,
+          "coverage_fraction": 0.31734375,
+          "new_area_m2_by_robot": {
+            "robot1": 51.75,
+            "robot2": 46.4375,
+            "robot3": 5.75,
+            "robot4": 23.0
+          },
+          "valid_frames_by_robot": {
+            "robot1": 111,
+            "robot2": 111,
+            "robot3": 111,
+            "robot4": 111
+          },
+          "valid_rays": 31968,
+          "rejected_frames": 0,
+          "revision": 444,
+          "last_scan_stamp_sim_seconds": {
+            "robot1": 56.0,
+            "robot2": 56.0,
+            "robot3": 56.0,
+            "robot4": 56.0
+          },
+          "last_sensor_pose_xy_yaw": {
+            "robot1": [
+              -27.421359099283332,
+              -26.093657634963055,
+              5.1415926535897105
+            ],
+            "robot2": [
+              -26.093657634963044,
+              -21.57857740674501,
+              3.570796326794891
+            ],
+            "robot3": [
+              -22.578576704411276,
+              -25.90634236503696,
+              8.283185307179622
+            ],
+            "robot4": [
+              -22.122020873158164,
+              -22.985784375199948,
+              2.7510275485877247
+            ]
+          },
+          "area_definition": "ROI 내 광선으로 관측한 점유·자유 2D 셀 면적의 합집합",
+          "robot_credit_definition": "융합 처리 순서의 최초 신규 팀 셀 기여도"
+        },
+        "elapsed_sim_seconds": 55.1,
+        "distance_m_by_robot": {
+          "robot1": 1.4642222234476812,
+          "robot2": 2.9642857174193473,
+          "robot3": 1.9642864197530834,
+          "robot4": 3.0643116058700173
+        },
+        "plot": "results/bt_fixed_verified_20261122/89fc28c5d8af4c2b938593c0b5d272a4/coverage.png",
+        "csv": "results/bt_fixed_verified_20261122/89fc28c5d8af4c2b938593c0b5d272a4/metrics.csv",
+        "explore_participants": [
+          "robot1",
+          "robot2",
+          "robot3",
+          "robot4"
+        ],
+        "final_goal_errors_m": {
+          "robot1": 0.03577777655231884,
+          "robot2": 0.03571428258065268,
+          "robot3": 0.03571358024691662,
+          "robot4": 0.03663207418801121
+        },
+        "initial_cost_matrix": [
+          [
+            27,
+            21,
+            30,
+            9
+          ],
+          [
+            18,
+            24,
+            27,
+            12
+          ],
+          [
+            30,
+            12,
+            23,
+            18
+          ],
+          [
+            21,
+            15,
+            18,
+            21
+          ]
+        ],
+        "common_t0": 18.0
+      },
+      "short": {
+        "passed": true,
+        "kind": "pinned_BT_WBT_ideal_kinematics_and_synthetic_raycast",
+        "physical_webots_run": false,
+        "real_sensor_run": false,
+        "ros_transport_tested": false,
+        "planning_sim_clock_paused": true,
+        "phase": "PARTIAL_COMPLETE",
+        "reason": "sim_duration_limit",
+        "sim_time": 181.0,
+        "elapsed_wall_seconds": 29.471858276001512,
+        "rounds_completed": 2,
+        "replans": 2,
+        "dispatch_count": {
+          "robot1": 4,
+          "robot2": 5,
+          "robot3": 4,
+          "robot4": 4
+        },
+        "minimum_sampled_distance_m": 0.6175230725788037,
+        "report": "results/bt_explore_final_v3_20261122/bt_kinematic_validation.json",
+        "session_directory": "results/bt_explore_final_v3_20261122/697b9904e29347df97c5a5dd1f6b818c",
+        "observation": {
+          "denominator_m2": 400.0,
+          "observed_area_m2": 122.5625,
+          "coverage_fraction": 0.30640625,
+          "new_area_m2_by_robot": {
+            "robot1": 52.75,
+            "robot2": 37.0,
+            "robot3": 8.4375,
+            "robot4": 24.375
+          },
+          "valid_frames_by_robot": {
+            "robot1": 361,
+            "robot2": 361,
+            "robot3": 361,
+            "robot4": 361
+          },
+          "valid_rays": 103968,
+          "rejected_frames": 0,
+          "revision": 1444,
+          "last_scan_stamp_sim_seconds": {
+            "robot1": 181.0,
+            "robot2": 181.0,
+            "robot3": 181.0,
+            "robot4": 181.0
+          },
+          "last_sensor_pose_xy_yaw": {
+            "robot1": [
+              -23.56729526619258,
+              -27.289280713554728,
+              6.892674667380946
+            ],
+            "robot2": [
+              -23.611842097075204,
+              -22.75678659988525,
+              1.1740796029646554
+            ],
+            "robot3": [
+              -24.929143511172484,
+              -27.23805091940497,
+              7.403902251564085
+            ],
+            "robot4": [
+              -24.979284725906027,
+              -21.61958727793158,
+              2.6732948687961815
+            ]
+          },
+          "area_definition": "ROI 내 광선으로 관측한 점유·자유 2D 셀 면적의 합집합",
+          "robot_credit_definition": "융합 처리 순서의 최초 신규 팀 셀 기여도"
+        },
+        "elapsed_sim_seconds": 180.0,
+        "distance_m_by_robot": {
+          "robot1": 5.659453326533494,
+          "robot2": 4.516258749473349,
+          "robot3": 5.960779161015491,
+          "robot4": 3.5386532547366425
+        },
+        "plot": "results/bt_explore_final_v3_20261122/697b9904e29347df97c5a5dd1f6b818c/coverage.png",
+        "csv": "results/bt_explore_final_v3_20261122/697b9904e29347df97c5a5dd1f6b818c/metrics.csv",
+        "explore_participants": [
+          "robot1",
+          "robot2",
+          "robot3",
+          "robot4"
+        ]
+      },
+      "wide": {
+        "passed": false,
+        "kind": "pinned_BT_WBT_ideal_kinematics_and_synthetic_raycast",
+        "physical_webots_run": false,
+        "real_sensor_run": false,
+        "ros_transport_tested": false,
+        "planning_sim_clock_paused": true,
+        "phase": "ERROR",
+        "reason": "no_safe_evacuation: NO_SAFE_ASSIGNMENT: 선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+        "sim_time": 77.2,
+        "elapsed_wall_seconds": 12.474684549999438,
+        "rounds_completed": 1,
+        "replans": 2,
+        "dispatch_count": {
+          "robot1": 2,
+          "robot2": 2,
+          "robot3": 2,
+          "robot4": 2
+        },
+        "minimum_sampled_distance_m": 0.743221465830536,
+        "report": "results/bt_wide_final_v2_20261122/bt_kinematic_validation.json",
+        "session_directory": "results/bt_wide_final_v2_20261122/da1e945ed98b42ef923a7904c0d4ec67",
+        "observation": {
+          "denominator_m2": 3364.0,
+          "observed_area_m2": 119.5625,
+          "coverage_fraction": 0.03554176575505351,
+          "new_area_m2_by_robot": {
+            "robot1": 53.0625,
+            "robot2": 43.3125,
+            "robot3": 5.4375,
+            "robot4": 17.75
+          },
+          "valid_frames_by_robot": {
+            "robot1": 153,
+            "robot2": 153,
+            "robot3": 153,
+            "robot4": 153
+          },
+          "valid_rays": 44064,
+          "rejected_frames": 0,
+          "revision": 612,
+          "last_scan_stamp_sim_seconds": {
+            "robot1": 77.0,
+            "robot2": 77.0,
+            "robot3": 77.0,
+            "robot4": 77.0
+          },
+          "last_sensor_pose_xy_yaw": {
+            "robot1": [
+              -23.44715774496268,
+              -22.579400857449233,
+              2.1580134913304247
+            ],
+            "robot2": [
+              -24.967239559127744,
+              -22.567195063358955,
+              4.925222917266092
+            ],
+            "robot3": [
+              -22.069490831310006,
+              -24.491407752370762,
+              3.165004472067514
+            ],
+            "robot4": [
+              -23.069485820041603,
+              -23.491417686147255,
+              9.448161221194145
+            ]
+          },
+          "area_definition": "ROI 내 광선으로 관측한 점유·자유 2D 셀 면적의 합집합",
+          "robot_credit_definition": "융합 처리 순서의 최초 신규 팀 셀 기여도"
+        },
+        "elapsed_sim_seconds": 76.2,
+        "distance_m_by_robot": {
+          "robot1": 4.36538499359112,
+          "robot2": 3.060834288429202,
+          "robot3": 3.767473892230238,
+          "robot4": 2.5707867385458147
+        },
+        "plot": "results/bt_wide_final_v2_20261122/da1e945ed98b42ef923a7904c0d4ec67/coverage.png",
+        "csv": "results/bt_wide_final_v2_20261122/da1e945ed98b42ef923a7904c0d4ec67/metrics.csv",
+        "explore_participants": [
+          "robot1",
+          "robot2",
+          "robot3",
+          "robot4"
+        ]
+      }
+    },
+    "physical_validation": {
+      "new_docker_layer_built": false,
+      "jazzy_bt_run": false,
+      "webots_four_robot_bt_run": false,
+      "real_sensor_repeat_exploration": false,
+      "rviz_screen_review": false,
+      "reason": "Docker API /var/run/docker.sock 연결 permission denied. 우회/권한 변경 미수행."
+    },
+    "completed_implementation": [
+      "고정 원본 TeamBT/RobotBT 트리 재사용 및 navigation 시간 경로 어댑터",
+      "공동 준비/t0, 전체 취소/정지/재계획, session/task/plan 지연 결과 차단",
+      "네 로봇 기본 참여와 일부 목표/로봇 부분집합 배정 및 대기 몸체 안전 검사",
+      "실제 스캔 취득 시각 TF 기반 관측 격자, 가림/범위/중복 처리 및 반복 목표 생성",
+      "고정 ROI 분모, 시간별 팀/로봇 지표 JSON/CSV 및 관측 NPZ/스캔 자세 CSV/PNG/SVG",
+      "전용 launch 및 RViz 관측 격자/BT 상태 토픽",
+      "회전 대기 시간표와 재검사, 계산/관측/대기 중 그림자 예측 및 유한 대피 탐색"
+    ],
+    "unresolved": [
+      "넓은 영역 모델 평가: 1800 sim초 요청 중 77.2 절대 sim초에 대피 재계획 실패로 정지. 장시간 탐사 미완료.",
+      "대피 후보 다양화와 계산/회전 시간을 반영한 더 이른 대피, odom 편차에 대한 여유 처리가 필요함.",
+      "새 이미지 의존성의 실제 빌드와 새 4대 BT의 Jazzy/Webots/실센서/RViz 검증은 Docker 권한 제한으로 미수행.",
+      "모의 센서/이상 기구학 및 프로세스 내 합성 ROS 검사는 실제 물리·네트워크 DDS·오도메트리 정답 검증을 대신하지 않음.",
+      "종료 이후 무한 시간 정지 안전성은 보장하지 않음."
+    ],
+    "optimization_scope": "선정된 로봇/목표 부분집합의 독립 A* 정수 시간 비용 합에 대한 Hungarian 최적 배정만 해당. 후보/부분집합 선택, 회전/예약 공동 경로 및 전체 탐사 최적성은 보장하지 않음.",
+    "workspace_preservation": {
+      "existing_uncommitted_preserved": true,
+      "git_reset": false,
+      "remote_upload": false,
+      "push": false,
+      "pr_created": false
+    },
+    "handoff": "docs/bt_exploration_handoff_2026-11-22.md",
+    "departure_staggering": {
+      "result_directory": "results/staggered_departure_20261122_181339",
+      "policy_default": "simultaneous",
+      "new_policy": "staggered_pairs",
+      "implementation": "4대 배정 유지, 2대 선발 조합·시차·대기 위치 유한 탐색; 실제 통과 미확인 시 전체 정지·새 계획",
+      "historical_failure_analysis": {
+        "sim_time": 77.10000000000001,
+        "remaining_safe": false,
+        "forbidden": [
+          {
+            "robot": "robot3",
+            "kind": "remaining_segment",
+            "from": {
+              "x": -21.966519057852782,
+              "y": -24.488996555349814,
+              "t": 77.10000000000001
+            },
+            "to": {
+              "x": -22.5,
+              "y": -24.5,
+              "t": 80.10000000000001
+            },
+            "static": false
+          }
+        ],
+        "joint_conflicts": [],
+        "trace": "results/staggered_departure_20261122_181339/simultaneous_wide_trace/43b420e4e69c4e878e8fe000868fc35c/replan_state_0004.json"
+      },
+      "historical_analysis_file": "results/staggered_departure_20261122_181339/historical_failure_analysis.json",
+      "baseline_reproduced": {
+        "report": "results/staggered_departure_20261122_181339/baseline_wide/bt_kinematic_validation.json",
+        "absolute_sim_stop": 77.2,
+        "same_reason": true
+      },
+      "regression": {
+        "passed": 128,
+        "failed": 0,
+        "wall_seconds": 6.3,
+        "distribution": "Humble",
+        "log": "results/staggered_departure_20261122_181339/regression.log"
+      },
+      "targeted_final": {
+        "passed": 31,
+        "failed": 0,
+        "log": "results/staggered_departure_20261122_181339/targeted_final.log",
+        "scope": "출발 정책11 + BT 통합 + 관측; CSV plan/task/역할/비용 열과 실제 통과 guard 포함"
+      },
+      "ros": {
+        "context": "같은 프로세스 공유 rclpy; 합성 clock/odom/TF/scan; UDP 생성 불가",
+        "staggered_pairs": {
+          "passed": 7,
+          "report": "results/staggered_departure_20261122_181339/ros_pairs_verified/bt_ros_validation.json",
+          "cases": [
+            {
+              "case": "connection",
+              "passed": true,
+              "phase": "EXECUTING",
+              "reason": "RobotBT 준비 장벽과 공동 시간 경로 실행",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 39,
+                "robot2": 39,
+                "robot3": 39,
+                "robot4": 39
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 28
+              },
+              "physical_webots_run": false
+            },
+            {
+              "case": "user_stop",
+              "passed": true,
+              "phase": "STOPPED",
+              "reason": "user_stop",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 37,
+                "robot2": 37,
+                "robot3": 37,
+                "robot4": 37
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 44
+              },
+              "physical_webots_run": false
+            },
+            {
+              "case": "robot4_odom_stale",
+              "passed": true,
+              "phase": "ERROR",
+              "reason": "전체 odom 또는 clock 갱신 중단",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 51,
+                "robot2": 51,
+                "robot3": 51,
+                "robot4": 51
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 36
+              },
+              "physical_webots_run": false
+            },
+            {
+              "case": "robot4_scan_stale",
+              "passed": true,
+              "phase": "ERROR",
+              "reason": "실제 센서 관측 갱신 중단",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 79,
+                "robot2": 79,
+                "robot3": 79,
+                "robot4": 38
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 34
+              },
+              "physical_webots_run": false
+            },
+            {
+              "case": "clock_backward",
+              "passed": true,
+              "phase": "ERROR",
+              "reason": "clock_reversed",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 36,
+                "robot2": 36,
+                "robot3": 36,
+                "robot4": 36
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 36
+              },
+              "physical_webots_run": false
+            },
+            {
+              "case": "command_conflict",
+              "passed": true,
+              "phase": "ERROR",
+              "reason": "cmd_vel 발행자 충돌: 기존 launch 동시 실행",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 37,
+                "robot2": 37,
+                "robot3": 37,
+                "robot4": 37
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 44
+              },
+              "physical_webots_run": false
+            },
+            {
+              "case": "missing_acquisition_tf",
+              "passed": true,
+              "phase": "ERROR",
+              "reason": "시작 위치 센서 관측 입력 부족",
+              "departure_policy": "staggered_pairs",
+              "observed_area_m2": 79.125,
+              "valid_frames_by_robot": {
+                "robot1": 57,
+                "robot2": 57,
+                "robot3": 57,
+                "robot4": 0
+              },
+              "path_topics": [],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 34,
+                "frame": 0,
+                "pre_session": 59
+              },
+              "physical_webots_run": false
+            }
+          ]
+        },
+        "simultaneous_connection": {
+          "passed": 1,
+          "report": "results/staggered_departure_20261122_181339/ros_simultaneous_connection/bt_ros_validation.json",
+          "cases": [
+            {
+              "case": "connection",
+              "passed": true,
+              "phase": "EXECUTING",
+              "reason": "RobotBT 준비 장벽과 공동 시간 경로 실행",
+              "departure_policy": "simultaneous",
+              "observed_area_m2": 85.8125,
+              "valid_frames_by_robot": {
+                "robot1": 29,
+                "robot2": 29,
+                "robot3": 29,
+                "robot4": 29
+              },
+              "path_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "map_received": true,
+              "robot_state_topics": [
+                "robot1",
+                "robot2",
+                "robot3",
+                "robot4"
+              ],
+              "bt_marker_count": 5,
+              "scan_drops": {
+                "queue": 0,
+                "expired": 0,
+                "frame": 0,
+                "pre_session": 28
+              },
+              "physical_webots_run": false
+            }
+          ]
+        }
+      },
+      "host_build": {
+        "passed": true,
+        "distribution": "Humble",
+        "packages": 1
+      },
+      "static_checks": {
+        "python_compile": true,
+        "bash_syntax": true,
+        "launch_show_args": true,
+        "git_diff_check": true
+      },
+      "comparison": {
+        "completed": true,
+        "physical_webots_run": false,
+        "planning_sim_clock_paused": true,
+        "report": "results/staggered_departure_20261122_181339/final_comparison/comparison.json",
+        "csv": "results/staggered_departure_20261122_181339/final_comparison/comparison.csv",
+        "plots": [
+          "results/staggered_departure_20261122_181339/final_comparison/departure_timeline.png",
+          "results/staggered_departure_20261122_181339/final_comparison/coverage_comparison.png"
+        ],
+        "initial_hungarian_problem_equal": {
+          "fixed": true,
+          "short": true,
+          "wide": true
+        },
+        "rows": [
+          {
+            "profile": "fixed",
+            "policy": "simultaneous",
+            "passed": true,
+            "phase": "COMPLETE",
+            "reason": "fixed_goals_observed",
+            "elapsed_sim_seconds": 55.1,
+            "elapsed_wall_seconds": 4.983588830000372,
+            "rounds_completed": 1,
+            "coverage_percent": 31.734374999999996,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "minimum_sampled_distance_m": 1.5,
+            "explore_participants": [
+              "robot1",
+              "robot2",
+              "robot3",
+              "robot4"
+            ],
+            "failure_counts": {},
+            "report": "results/staggered_departure_20261122_181339/final_comparison/fixed_simultaneous/bt_kinematic_validation.json",
+            "session_directory": "results/staggered_departure_20261122_181339/final_comparison/fixed_simultaneous/73e2a3dcd049439a97a4e8e9226f318e"
+          },
+          {
+            "profile": "fixed",
+            "policy": "staggered_pairs",
+            "passed": true,
+            "phase": "COMPLETE",
+            "reason": "fixed_goals_observed",
+            "elapsed_sim_seconds": 69.10000000000001,
+            "elapsed_wall_seconds": 6.258858024000801,
+            "rounds_completed": 1,
+            "coverage_percent": 31.734374999999996,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "minimum_sampled_distance_m": 1.5,
+            "explore_participants": [
+              "robot1",
+              "robot2",
+              "robot3",
+              "robot4"
+            ],
+            "failure_counts": {},
+            "report": "results/staggered_departure_20261122_181339/final_comparison/fixed_staggered_pairs/bt_kinematic_validation.json",
+            "session_directory": "results/staggered_departure_20261122_181339/final_comparison/fixed_staggered_pairs/ed0389114bcb434caa6cfa7984cee01f"
+          },
+          {
+            "profile": "short",
+            "policy": "simultaneous",
+            "passed": true,
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "sim_duration_limit",
+            "elapsed_sim_seconds": 180.0,
+            "elapsed_wall_seconds": 28.032312374998583,
+            "rounds_completed": 2,
+            "coverage_percent": 30.640625,
+            "fixed_denominator_m2": 400.0,
+            "replans": 2,
+            "minimum_sampled_distance_m": 0.6175230725788037,
+            "explore_participants": [
+              "robot1",
+              "robot2",
+              "robot3",
+              "robot4"
+            ],
+            "failure_counts": {
+              "PLANNING_BUDGET": 1
+            },
+            "report": "results/staggered_departure_20261122_181339/final_comparison/short_simultaneous/bt_kinematic_validation.json",
+            "session_directory": "results/staggered_departure_20261122_181339/final_comparison/short_simultaneous/051e53118872449691d57a994936ec86"
+          },
+          {
+            "profile": "short",
+            "policy": "staggered_pairs",
+            "passed": false,
+            "phase": "ERROR",
+            "reason": "no_safe_evacuation: NO_SAFE_ASSIGNMENT: 선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "elapsed_sim_seconds": 84.30000000000001,
+            "elapsed_wall_seconds": 9.681297409999388,
+            "rounds_completed": 1,
+            "coverage_percent": 25.75,
+            "fixed_denominator_m2": 400.0,
+            "replans": 3,
+            "minimum_sampled_distance_m": 0.9192866980828397,
+            "explore_participants": [
+              "robot1",
+              "robot2",
+              "robot3",
+              "robot4"
+            ],
+            "failure_counts": {
+              "NO_SAFE_ASSIGNMENT": 1
+            },
+            "report": "results/staggered_departure_20261122_181339/final_comparison/short_staggered_pairs/bt_kinematic_validation.json",
+            "session_directory": "results/staggered_departure_20261122_181339/final_comparison/short_staggered_pairs/726db2761ecc4a4c8601fbc8486af079"
+          },
+          {
+            "profile": "wide",
+            "policy": "simultaneous",
+            "passed": false,
+            "phase": "ERROR",
+            "reason": "no_safe_evacuation: NO_SAFE_ASSIGNMENT: 선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "elapsed_sim_seconds": 76.2,
+            "elapsed_wall_seconds": 11.370723408999766,
+            "rounds_completed": 1,
+            "coverage_percent": 3.554176575505351,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 2,
+            "minimum_sampled_distance_m": 0.743221465830536,
+            "explore_participants": [
+              "robot1",
+              "robot2",
+              "robot3",
+              "robot4"
+            ],
+            "failure_counts": {
+              "NO_SAFE_ASSIGNMENT": 1
+            },
+            "report": "results/staggered_departure_20261122_181339/final_comparison/wide_simultaneous/bt_kinematic_validation.json",
+            "session_directory": "results/staggered_departure_20261122_181339/final_comparison/wide_simultaneous/123c4331f00c43aebb7ee5778942cc4b"
+          },
+          {
+            "profile": "wide",
+            "policy": "staggered_pairs",
+            "passed": false,
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "no_safe_plan_within_search_limits",
+            "elapsed_sim_seconds": 14.4,
+            "elapsed_wall_seconds": 16.112837453001703,
+            "rounds_completed": 0,
+            "coverage_percent": 2.745986920332937,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 0,
+            "minimum_sampled_distance_m": 1.5,
+            "explore_participants": [],
+            "failure_counts": {
+              "PLANNING_BUDGET": 1,
+              "shadow_or_time_forbidden": 14,
+              "arrival_observation_hold_forbidden": 43,
+              "robot_reservation": 8,
+              "cancelled_or_unfinished_trial": 1,
+              "NO_SAFE_ASSIGNMENT": 2
+            },
+            "report": "results/staggered_departure_20261122_181339/final_comparison/wide_staggered_pairs/bt_kinematic_validation.json",
+            "session_directory": "results/staggered_departure_20261122_181339/final_comparison/wide_staggered_pairs/a00755c7d4cc40e98bce4941048791a0"
+          }
+        ],
+        "frozen_failure": {
+          "simultaneous": {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "costs": [
+              [
+                6,
+                11,
+                15,
+                10
+              ],
+              [
+                11,
+                3,
+                12,
+                7
+              ],
+              [
+                null,
+                null,
+                null,
+                null
+              ],
+              [
+                11,
+                14,
+                16,
+                15
+              ]
+            ]
+          },
+          "staggered_pairs": {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "costs": [
+              [
+                6,
+                11,
+                15,
+                10
+              ],
+              [
+                11,
+                3,
+                12,
+                7
+              ],
+              [
+                null,
+                null,
+                null,
+                null
+              ],
+              [
+                11,
+                14,
+                16,
+                15
+              ]
+            ]
+          },
+          "available": true,
+          "original_report": "results/bt_wide_final_v2_20261122/bt_kinematic_validation.json",
+          "common_t0": 80.10000000000001,
+          "robot3_static_forbidden": false,
+          "robot3_at_t0_forbidden": true,
+          "interpretation": "이미 robot3의 공통 t0 출발점이 시간 금지인 상태는 배정 이후 출발 시차만으로 복구할 수 없음"
+        },
+        "conclusion": "좁은 통로 해제와 후발 출발 계약은 검증. 고정 목표는 완료하나 14초 느림. 단기·넓은 탐사 개선은 확인하지 못해 새 정책을 기본으로 변경하지 않음."
+      },
+      "physical_validation": {
+        "webots_bt_fixed": false,
+        "webots_explore": false,
+        "webots_explore_wide": false,
+        "rviz_screen_verified": false,
+        "reason": "docker info: permission denied connecting to /var/run/docker.sock. 우회/권한 변경 미수행. nouveau Mesa NVK/Zink 구성 유지."
+      },
+      "invariants": {
+        "unchanged_files": [
+          "ros_packages/moon_mapping_demo/moon_mapping_demo/observation.py",
+          "docker/lunar/compose.yaml",
+          "docker/lunar/Dockerfile",
+          "ros_packages/moon_mapping_demo/moon_mapping_demo/sensors.py",
+          "ros_packages/moon_mapping_demo/moon_mapping_demo/hungarian.py"
+        ],
+        "body_radius_m": 0.26,
+        "fixed_ROI_short_m2": 400.0,
+        "fixed_ROI_wide_m2": 3364.0,
+        "prior_map_or_arrival_counted_as_observed": false,
+        "Hungarian_unchanged": true,
+        "radio_constraints": false
+      },
+      "preservation": {
+        "initial_inventory": "results/staggered_departure_20261122_181339/initial_inventory.json",
+        "missing_initial_files": [],
+        "git_reset": false,
+        "git_clean": false,
+        "remote_upload": false,
+        "push": false,
+        "PR": false,
+        "branch": "feature/shadow-hungarian"
+      },
+      "limitations": [
+        "현재 선택형 정책은 넓은 영역 실패를 해결하지 못했으며 장시간 탐사 미완료.",
+        "기본 해제 구역은 거리 휴리스틱이며 통로 자동 인식/전체 탐사 최적성이 아님. 명시적 release_region 선택 가능.",
+        "선발 계획에서 아직 대기 중인 몸체를 보수적으로 취급하므로 가능한 해를 놓칠 수 있음.",
+        "그림자 접근·관측 hold·목표 선택과 추가 출발 대기의 상호작용을 함께 개선해야 함.",
+        "실제 Webots/Jazzy·센서·오도메트리 정답·네트워크 DDS·RViz 화면은 이번 검사로 검증하지 못함."
+      ],
+      "optimization_scope": "최초 공통 t0 정수 행렬의 Hungarian 배정 합만 최적. 이후 출발 순서·추가 대기·회전·공동 실행 및 전체 탐사는 최적성 보장 없음."
+    },
+    "escape_request24_2026_11_23": {
+      "상태": "요청 24번 재현·192개 첫 실패 진단 완료. 잔여 경로 보정 실험은 같은 입력에서 실패하여 제품 코드에 채택하지 않음. 요청 해결 미완료.",
+      "결과폴더": "results/escape24_20261123_163050",
+      "원본": "results/followup_budget_20261123/wide/666dfcd748c14a3cab4dbbf392b012e0",
+      "정책": "simultaneous + candidates",
+      "입력근거": {
+        "위치방향": "metrics.json events의 plan_id=24 planning_timing.snapshot_poses",
+        "요청시각": 582.1,
+        "t0": 590.6,
+        "로봇순서": [
+          "robot1",
+          "robot3",
+          "robot2",
+          "robot4"
+        ],
+        "관측후대기초": 22.0,
+        "관측시간초": 7.0,
+        "관측후최소scan": 3,
+        "실제예산초": 8.0,
+        "sim기한초": 5.0,
+        "계획범위초": 180.0,
+        "반경m": 0.26,
+        "안전시간간격초": 0.25,
+        "초기예약경로": [],
+        "대기로봇": [],
+        "취소": "새 threading.Event unset. sim 정지 상태. 명시적 취소 없음.",
+        "후보": "대피 후보 풀 재생성 후 원본 8개 조합의 후보 ID·좌표·방향·순위 전부 일치.",
+        "격자": "대피 후보 생성·worker에는 관측 격자 입력이 없음. 최종 runtime 위치를 대신 사용하지 않음."
+      },
+      "원본대조": {
+        "후보조합": 8,
+        "정수행렬": "8개 모두 일치",
+        "Hungarian비용": [
+          22,
+          21,
+          22,
+          22,
+          24,
+          22,
+          21,
+          22
+        ],
+        "예약순서별실패": "192개 로봇 ID·예약 순서·회전 후 실패 상태 원본과 일치",
+        "과거원본시간": "metrics의 wall/sim_elapsed=0은 ImmediatePool 동기 호출 동안 engine.wall/now가 갱신되지 않은 값. 재생에서 monotonic으로 직접 측정."
+      },
+      "첫실패": {
+        "총192개": 192,
+        "로봇": {
+          "robot1": 192
+        },
+        "종류": {
+          "delayed_movement": 192
+        },
+        "그림자": 192,
+        "정적지형": 0,
+        "대기동료포함정적검사": 0,
+        "동료예약": 0,
+        "horizon초과": 0,
+        "회전전경로통과": 192,
+        "도착후검사": "첫 이동 실패로 이후 관측·공동 hold 검사에 도달하지 않음."
+      },
+      "보정실험": {
+        "구현": "회전 후 금지되는 원래 전이 직전까지 안전한 prefix 보존. 그 시점·방향·예약에서 기존 방향 Space-Time A*로 잔여 경로를 1회 탐색. 남은 horizon과 원래 취소 callback 유지.",
+        "요청24": "모든 최초 실패가 첫 회전 직후 이동이므로 prefix 끝은 실제 제출 위치, t0, 제출 방향. 같은 입력에서 잔여 해 없음.",
+        "채택": false,
+        "소스": "prototype/moon_mapping_demo/coordination.py",
+        "패치": "bounded_repair_experiment.patch"
+      },
+      "비계측": {
+        "before": [
+          {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "wall_seconds": 4.318298313000014,
+            "sim_worker_elapsed": 0,
+            "sim_budget": 5.0,
+            "wall_budget": 8.0,
+            "in_budget": true,
+            "original_hungarian": null,
+            "coordinated": null,
+            "cost_breakdown": null,
+            "candidate_trials": 8,
+            "selected": null,
+            "search_end": null,
+            "returned": false,
+            "diagnostic": false
+          },
+          {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "wall_seconds": 4.399291314000038,
+            "sim_worker_elapsed": 0,
+            "sim_budget": 5.0,
+            "wall_budget": 8.0,
+            "in_budget": true,
+            "original_hungarian": null,
+            "coordinated": null,
+            "cost_breakdown": null,
+            "candidate_trials": 8,
+            "selected": null,
+            "search_end": null,
+            "returned": false,
+            "diagnostic": false
+          },
+          {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "wall_seconds": 4.385517562000132,
+            "sim_worker_elapsed": 0,
+            "sim_budget": 5.0,
+            "wall_budget": 8.0,
+            "in_budget": true,
+            "original_hungarian": null,
+            "coordinated": null,
+            "cost_breakdown": null,
+            "candidate_trials": 8,
+            "selected": null,
+            "search_end": null,
+            "returned": false,
+            "diagnostic": false
+          }
+        ],
+        "after": [
+          {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "wall_seconds": 5.006219816999874,
+            "sim_worker_elapsed": 0,
+            "sim_budget": 5.0,
+            "wall_budget": 8.0,
+            "in_budget": true,
+            "original_hungarian": null,
+            "coordinated": null,
+            "cost_breakdown": null,
+            "candidate_trials": 8,
+            "selected": null,
+            "search_end": null,
+            "returned": false,
+            "diagnostic": false
+          },
+          {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "wall_seconds": 5.286865739999939,
+            "sim_worker_elapsed": 0,
+            "sim_budget": 5.0,
+            "wall_budget": 8.0,
+            "in_budget": true,
+            "original_hungarian": null,
+            "coordinated": null,
+            "cost_breakdown": null,
+            "candidate_trials": 8,
+            "selected": null,
+            "search_end": null,
+            "returned": false,
+            "diagnostic": false
+          },
+          {
+            "status": "NO_SAFE_ASSIGNMENT",
+            "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "wall_seconds": 5.305506880999928,
+            "sim_worker_elapsed": 0,
+            "sim_budget": 5.0,
+            "wall_budget": 8.0,
+            "in_budget": true,
+            "original_hungarian": null,
+            "coordinated": null,
+            "cost_breakdown": null,
+            "candidate_trials": 8,
+            "selected": null,
+            "search_end": null,
+            "returned": false,
+            "diagnostic": false
+          }
+        ]
+      },
+      "진단시간": {
+        "status": "NO_SAFE_ASSIGNMENT",
+        "error": "선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+        "wall_seconds": 4.421192654999686,
+        "sim_worker_elapsed": 0,
+        "sim_budget": 5.0,
+        "wall_budget": 8.0,
+        "in_budget": true,
+        "original_hungarian": null,
+        "coordinated": null,
+        "cost_breakdown": null,
+        "candidate_trials": 8,
+        "selected": null,
+        "search_end": null,
+        "returned": false,
+        "diagnostic": true
+      },
+      "독립검사": {
+        "start": [
+          -20.426477530080394,
+          -12.744170920895467
+        ],
+        "yaw": 37.4975286785596,
+        "t0": 590.6,
+        "stop_safe_until_lower": 596.499658203125,
+        "first_blocked_wait_start": 595.6,
+        "first_blocked_wait_end": 596.6,
+        "conditions": "동료 몸체와 예약 전부 제외. 기존 .5m 격자의 첫 네 연결과 0~5 tick 대기를 전수 검사.",
+        "first_transitions": [
+          {
+            "wait_ticks": 0,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -13.0
+            ],
+            "rotation_ticks": 4,
+            "move_ticks": 2,
+            "rotation_start": 590.6,
+            "move_start": 594.6,
+            "move_end": 596.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 0,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -12.5
+            ],
+            "rotation_ticks": 5,
+            "move_ticks": 2,
+            "rotation_start": 590.6,
+            "move_start": 595.6,
+            "move_end": 597.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 0,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -13.0
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 590.6,
+            "move_start": 592.6,
+            "move_end": 595.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 0,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -12.5
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 590.6,
+            "move_start": 592.6,
+            "move_end": 595.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 1,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -13.0
+            ],
+            "rotation_ticks": 4,
+            "move_ticks": 2,
+            "rotation_start": 591.6,
+            "move_start": 595.6,
+            "move_end": 597.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 1,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -12.5
+            ],
+            "rotation_ticks": 5,
+            "move_ticks": 2,
+            "rotation_start": 591.6,
+            "move_start": 596.6,
+            "move_end": 598.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 1,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -13.0
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 591.6,
+            "move_start": 593.6,
+            "move_end": 596.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 1,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -12.5
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 591.6,
+            "move_start": 593.6,
+            "move_end": 596.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 2,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -13.0
+            ],
+            "rotation_ticks": 4,
+            "move_ticks": 2,
+            "rotation_start": 592.6,
+            "move_start": 596.6,
+            "move_end": 598.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 2,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -12.5
+            ],
+            "rotation_ticks": 5,
+            "move_ticks": 2,
+            "rotation_start": 592.6,
+            "move_start": 597.6,
+            "move_end": 599.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 2,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -13.0
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 592.6,
+            "move_start": 594.6,
+            "move_end": 597.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 2,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -12.5
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 592.6,
+            "move_start": 594.6,
+            "move_end": 597.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 3,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -13.0
+            ],
+            "rotation_ticks": 4,
+            "move_ticks": 2,
+            "rotation_start": 593.6,
+            "move_start": 597.6,
+            "move_end": 599.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 3,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -12.5
+            ],
+            "rotation_ticks": 5,
+            "move_ticks": 2,
+            "rotation_start": 593.6,
+            "move_start": 598.6,
+            "move_end": 600.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 3,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -13.0
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 593.6,
+            "move_start": 595.6,
+            "move_end": 598.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 3,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -12.5
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 593.6,
+            "move_start": 595.6,
+            "move_end": 598.6,
+            "static": false,
+            "rotation_forbidden": false,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 4,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -13.0
+            ],
+            "rotation_ticks": 4,
+            "move_ticks": 2,
+            "rotation_start": 594.6,
+            "move_start": 598.6,
+            "move_end": 600.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 4,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -12.5
+            ],
+            "rotation_ticks": 5,
+            "move_ticks": 2,
+            "rotation_start": 594.6,
+            "move_start": 599.6,
+            "move_end": 601.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 4,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -13.0
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 594.6,
+            "move_start": 596.6,
+            "move_end": 599.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 4,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -12.5
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 594.6,
+            "move_start": 596.6,
+            "move_end": 599.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 5,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -13.0
+            ],
+            "rotation_ticks": 4,
+            "move_ticks": 2,
+            "rotation_start": 595.6,
+            "move_start": 599.6,
+            "move_end": 601.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 5,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.5,
+              -12.5
+            ],
+            "rotation_ticks": 5,
+            "move_ticks": 2,
+            "rotation_start": 595.6,
+            "move_start": 600.6,
+            "move_end": 602.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 5,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -13.0
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 595.6,
+            "move_start": 597.6,
+            "move_end": 600.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          },
+          {
+            "wait_ticks": 5,
+            "start": [
+              -20.426477530080394,
+              -12.744170920895467
+            ],
+            "goal": [
+              -20.0,
+              -12.5
+            ],
+            "rotation_ticks": 2,
+            "move_ticks": 3,
+            "rotation_start": 595.6,
+            "move_start": 597.6,
+            "move_end": 600.6,
+            "static": false,
+            "rotation_forbidden": true,
+            "movement_forbidden": true,
+            "shadow": true,
+            "allowed": false
+          }
+        ],
+        "goals": [
+          {
+            "goal": {
+              "id": "escape_robot1_0",
+              "x": -20.576643045934,
+              "y": -13.478984038530434,
+              "yaw": 35.9267323517647,
+              "gain": 0.0,
+              "purpose": "safety"
+            },
+            "status": "no_path_within_horizon",
+            "expanded": 6,
+            "returned": false,
+            "direct_goal_connector": false
+          },
+          {
+            "goal": {
+              "id": "escape_robot1_1",
+              "x": -21.16129064771536,
+              "y": -12.59400540504186,
+              "yaw": 40.63912133214939,
+              "gain": 0.0,
+              "purpose": "safety"
+            },
+            "status": "no_path_within_horizon",
+            "expanded": 6,
+            "returned": false,
+            "direct_goal_connector": false
+          },
+          {
+            "goal": {
+              "id": "escape_robot1_3",
+              "x": -21.89610376535033,
+              "y": -12.443839889188254,
+              "yaw": 40.63912133214939,
+              "gain": 0.0,
+              "purpose": "safety"
+            },
+            "status": "no_path_within_horizon",
+            "expanded": 6,
+            "returned": false,
+            "direct_goal_connector": false
+          }
+        ],
+        "scope": "현행 전진/회전 격자 전이에서 도달 불가. 연속 공간의 모든 물리 경로에 대한 불가능 증명은 아님."
+      },
+      "보존": {
+        "checked_files": 64,
+        "changed_existing_source": [],
+        "terrain_sha256": "294a5117e4fceecde6649ce46fa600e45e6b75715c78bdf1ca4b4093e74114a8",
+        "experiment_source": "results/escape24_20261123_163050/prototype",
+        "production_restored_to_session_start": true
+      },
+      "확대검사": "고정 요청의 유효 계획 반환이 확인되지 않아 요청38·39·40 재실행, 회귀 전체, 단기·넓은 탐사 확대 조건 미충족. 64개 소스·설정 해시로 작업 시작 상태와 일치 확인.",
+      "확인사실": "원래 금지 oracle에서 초기 회전·대기를 포함하는 첫 이동 전이가 전부 금지. 3회 비계측 보정 실험도 NO_SAFE_ASSIGNMENT. 계산 기한 안에 탐색을 끝낸 결과.",
+      "추정": "회전 반영 후 재탐색 생략은 대안 경로를 놓칠 수 있지만 이 고정 요청의 현행 격자에서는 방향 A*로도 첫 이동을 만들지 못한다. 이전 실행 경로에서 더 이른 요청 또는 다른 안전 연결을 확보해야 할 가능성이 있다.",
+      "미검증": "연속 공간의 모든 경로, 다른 최초 이동 연결/격자, 다른 요청 시각에서의 안전해 존재, 실제 Webots 물리·센서·clock 진전. 이러한 조건을 바꾸는 실험은 이번 성공 비교에 포함되지 않음.",
+      "실제Webots": "Docker API 소켓 permission denied. 실행 미수행. nouveau Mesa NVK/Zink 구성 유지.",
+      "최적성": "Hungarian 값은 원본 각 고정 정수 행렬의 배정 합. 공동 실행 최적성 또는 전체 탐사 최적성으로 해석하지 않음.",
+      "source_sha256": {
+        "baseline": "7102868f4c40f7ac5ed4038413e50bb11cd80e643d1187a4822e32d86d0d7b5e",
+        "prototype": "1ff859f13b88d92d00040c5f49aedef2097dc80beb5ec5a6b8f77bef176b2849"
+      }
+    },
+    "followup_planning_budget_2026_11_23": {
+      "결과": "results/followup_budget_20261123",
+      "설정": "simultaneous + candidates, 실제 계산 8초, sim 기한 5초, 반경 0.26m, 안전 시간 0.25초",
+      "재생": "38·39·40번 공통 t0와 관측 목표·로봇 순서·시각/방향·계획 설정을 복원. 모두 일반 후속 탐사. 초기 외부 경로 예약과 대피 후보 없음.",
+      "입력": "inputs/의 요청 JSON, grid_*.npz, 월드·태양·설정, hashes.json, before_source/. 종료 격자에서 정지 중 반복 scan을 복원했고 후보 재생성 3/3 일치.",
+      "기존_종료": "38~40번 worker 실제 예산 초과. 계산 중 sim 정지, 다음 제어 tick에서 elapsed sim 0.1초. stop_check 모두 safe, 명시적 취소와 sim 기한 초과 없음.",
+      "수정": "terrain.py의 그림자 사각형 선별. 1m 공간 격자와 16초 시간 구간을 바깥쪽으로 묶어 반경 팽창 뒤 겹칠 수 있는 기둥만 원래 선분 검사. 캐시는 불변 지형/태양 인스턴스의 후보 인덱스이며 계산 결과를 저장하지 않음.",
+      "환경": {
+        "python": "3.10.12",
+        "numpy": "1.21.5",
+        "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+        "캐시": "각 비계측 재생은 독립 프로세스·새 지형·빈 계산 캐시·새 출력 디렉터리. OS 파일 캐시는 초기화하지 않음. 초기화·계측 파일 저장·독립 검증은 worker 타이머 밖, 기존 계획 JSON/CSV 작성은 안."
+      },
+      "재생결과": {
+        "before_a": {
+          "status": "PLANNING_BUDGET",
+          "error": "경로 계산이 취소되었거나 계산 예산을 초과했습니다.",
+          "elapsed_wall": 8.00308247800001,
+          "worker_sim_elapsed": 0,
+          "returned": false,
+          "hungarian": null,
+          "joint": null,
+          "in_budget": false,
+          "independent_safe": null
+        },
+        "before_b": {
+          "status": "PLANNING_BUDGET",
+          "error": "경로 계산이 취소되었거나 계산 예산을 초과했습니다.",
+          "elapsed_wall": 8.002987675999975,
+          "worker_sim_elapsed": 0,
+          "returned": false,
+          "hungarian": null,
+          "joint": null,
+          "in_budget": false,
+          "independent_safe": null
+        },
+        "before_c": {
+          "status": "PLANNING_BUDGET",
+          "error": "경로 계산이 취소되었거나 계산 예산을 초과했습니다.",
+          "elapsed_wall": 8.002892180999993,
+          "worker_sim_elapsed": 0,
+          "returned": false,
+          "hungarian": null,
+          "joint": null,
+          "in_budget": false,
+          "independent_safe": null
+        },
+        "after_a": {
+          "status": "OK",
+          "error": null,
+          "elapsed_wall": 5.247915131000013,
+          "worker_sim_elapsed": 0,
+          "returned": true,
+          "hungarian": 50,
+          "joint": 86,
+          "in_budget": true,
+          "independent_safe": true
+        },
+        "after_b": {
+          "status": "OK",
+          "error": null,
+          "elapsed_wall": 5.238110194000001,
+          "worker_sim_elapsed": 0,
+          "returned": true,
+          "hungarian": 50,
+          "joint": 86,
+          "in_budget": true,
+          "independent_safe": true
+        },
+        "after_c": {
+          "status": "OK",
+          "error": null,
+          "elapsed_wall": 5.244705801000009,
+          "worker_sim_elapsed": 0,
+          "returned": true,
+          "hungarian": 50,
+          "joint": 86,
+          "in_budget": true,
+          "independent_safe": true
+        },
+        "before_38": {
+          "status": "PLANNING_BUDGET",
+          "error": "경로 계산이 취소되었거나 계산 예산을 초과했습니다.",
+          "elapsed_wall": 8.00348389699991,
+          "worker_sim_elapsed": 0,
+          "returned": false,
+          "hungarian": null,
+          "joint": null,
+          "in_budget": false,
+          "independent_safe": null
+        },
+        "before_39": {
+          "status": "PLANNING_BUDGET",
+          "error": "경로 계산이 취소되었거나 계산 예산을 초과했습니다.",
+          "elapsed_wall": 8.002804971000046,
+          "worker_sim_elapsed": 0,
+          "returned": false,
+          "hungarian": null,
+          "joint": null,
+          "in_budget": false,
+          "independent_safe": null
+        },
+        "after_38": {
+          "status": "OK",
+          "error": null,
+          "elapsed_wall": 5.779584596000063,
+          "worker_sim_elapsed": 0,
+          "returned": true,
+          "hungarian": 50,
+          "joint": 86,
+          "in_budget": true,
+          "independent_safe": true
+        },
+        "after_39": {
+          "status": "OK",
+          "error": null,
+          "elapsed_wall": 7.6502729000000045,
+          "worker_sim_elapsed": 0,
+          "returned": true,
+          "hungarian": 61,
+          "joint": 115,
+          "in_budget": true,
+          "independent_safe": true
+        }
+      },
+      "계측": {
+        "before": {
+          "worker": {
+            "선분과 사각형 검사": {
+              "calls": 52153,
+              "inclusive_s": 6.175507439013927,
+              "self_s": 6.175507439013927
+            },
+            "정적 지형": {
+              "calls": 55479,
+              "inclusive_s": 0.5897253070089619,
+              "self_s": 0.15000101200507743
+            },
+            "그림자 상자 생성·조회": {
+              "calls": 47212,
+              "inclusive_s": 0.6808996680148311,
+              "self_s": 0.6808996680148311
+            },
+            "지형 및 그림자": {
+              "calls": 55463,
+              "inclusive_s": 7.375486866980509,
+              "self_s": 0.36967549994653837
+            },
+            "목표 서비스 시간대": {
+              "calls": 16,
+              "inclusive_s": 0.12190219100034483,
+              "self_s": 0.0024970280036313852
+            },
+            "Space-Time A*": {
+              "calls": 16,
+              "inclusive_s": 7.999860350000176,
+              "self_s": 0.621279703016171
+            },
+            "비용 행렬": {
+              "calls": 1,
+              "inclusive_s": 8.000027160999934,
+              "self_s": 0.00016681099975812685
+            },
+            "후보 조합": {
+              "calls": 1,
+              "inclusive_s": 8.00006200000007,
+              "self_s": 3.483900013634411e-05
+            },
+            "계획 전체": {
+              "calls": 1,
+              "inclusive_s": 8.002797910000027,
+              "self_s": 0.0027359099999557657
+            },
+            "공동 경로 조정": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "회전 후처리": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "Hungarian": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "행렬 저장": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "정지 재검사": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "공동 안전 재검사": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "최종 계획 저장": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "로봇 예약 검사": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "대피 조합": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "예약 순서": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "후보 생성": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            }
+          },
+          "upstream": {
+            "선분과 사각형 검사": {
+              "calls": 261,
+              "inclusive_s": 0.023083491999614125,
+              "self_s": 0.023083491999614125
+            },
+            "정적 지형": {
+              "calls": 469,
+              "inclusive_s": 0.004870305000508779,
+              "self_s": 0.0013643490004824343
+            },
+            "그림자 상자 생성·조회": {
+              "calls": 213,
+              "inclusive_s": 0.011293730000033975,
+              "self_s": 0.011293730000033975
+            },
+            "지형 및 그림자": {
+              "calls": 213,
+              "inclusive_s": 0.032928852000054576,
+              "self_s": 0.0015649930006702562
+            },
+            "후보 생성": {
+              "calls": 1,
+              "inclusive_s": 0.15453233799996724,
+              "self_s": 0.11722577399916645
+            }
+          }
+        },
+        "after": {
+          "worker": {
+            "선분과 사각형 검사": {
+              "calls": 75641,
+              "inclusive_s": 2.6928459759973293,
+              "self_s": 2.6928459759973293
+            },
+            "정적 지형": {
+              "calls": 108966,
+              "inclusive_s": 1.5480160560238119,
+              "self_s": 0.2931653150139937
+            },
+            "그림자 상자 생성·조회": {
+              "calls": 71564,
+              "inclusive_s": 0.9227213279910984,
+              "self_s": 0.9227213279910984
+            },
+            "지형 및 그림자": {
+              "calls": 108946,
+              "inclusive_s": 5.121180328974219,
+              "self_s": 1.2136938739718062
+            },
+            "목표 서비스 시간대": {
+              "calls": 20,
+              "inclusive_s": 0.10354306199985785,
+              "self_s": 0.005996981000066626
+            },
+            "Space-Time A*": {
+              "calls": 20,
+              "inclusive_s": 6.361452439000118,
+              "self_s": 1.2296102070275765
+            },
+            "비용 행렬": {
+              "calls": 1,
+              "inclusive_s": 6.263353812000105,
+              "self_s": 0.00013990100012506446
+            },
+            "Hungarian": {
+              "calls": 1,
+              "inclusive_s": 3.3380999980181514e-05,
+              "self_s": 3.3380999980181514e-05
+            },
+            "행렬 저장": {
+              "calls": 1,
+              "inclusive_s": 0.0005175879999796962,
+              "self_s": 0.0005175879999796962
+            },
+            "회전 후처리": {
+              "calls": 4,
+              "inclusive_s": 5.436800006464182e-05,
+              "self_s": 5.436800006464182e-05
+            },
+            "로봇 예약 검사": {
+              "calls": 1111,
+              "inclusive_s": 0.008206376000430282,
+              "self_s": 0.008206376000430282
+            },
+            "공동 안전 재검사": {
+              "calls": 1,
+              "inclusive_s": 0.0004903420000346159,
+              "self_s": 0.0001863809991391463
+            },
+            "예약 순서": {
+              "calls": 1,
+              "inclusive_s": 0.10278959499999019,
+              "self_s": 0.00043137099851264793
+            },
+            "공동 경로 조정": {
+              "calls": 1,
+              "inclusive_s": 0.10282424900003662,
+              "self_s": 3.4654000046430156e-05
+            },
+            "정지 재검사": {
+              "calls": 2,
+              "inclusive_s": 0.0009245889999647261,
+              "self_s": 1.5917999917292036e-05
+            },
+            "최종 계획 저장": {
+              "calls": 1,
+              "inclusive_s": 0.0006326750000198444,
+              "self_s": 0.0006326750000198444
+            },
+            "후보 조합": {
+              "calls": 1,
+              "inclusive_s": 6.3688248590000285,
+              "self_s": 0.0005385649999425368
+            },
+            "계획 전체": {
+              "calls": 1,
+              "inclusive_s": 6.37030309499994,
+              "self_s": 0.0014782359999117034
+            },
+            "후보 생성": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            },
+            "대피 조합": {
+              "calls": 0,
+              "inclusive_s": 0.0,
+              "self_s": 0.0
+            }
+          },
+          "upstream": {
+            "선분과 사각형 검사": {
+              "calls": 241,
+              "inclusive_s": 0.007488047000038023,
+              "self_s": 0.007488047000038023
+            },
+            "정적 지형": {
+              "calls": 469,
+              "inclusive_s": 0.004943652999372716,
+              "self_s": 0.0013888959996393169
+            },
+            "그림자 상자 생성·조회": {
+              "calls": 253,
+              "inclusive_s": 0.011894713999595297,
+              "self_s": 0.011894713999595297
+            },
+            "지형 및 그림자": {
+              "calls": 213,
+              "inclusive_s": 0.020726564000028702,
+              "self_s": 0.004418944999883934
+            },
+            "후보 생성": {
+              "calls": 1,
+              "inclusive_s": 0.14726294899992354,
+              "self_s": 0.12207234700076697
+            }
+          }
+        }
+      },
+      "중복": {
+        "before": {
+          "terrain_queries": 53050,
+          "distinct_queries": 50974
+        },
+        "after": {
+          "terrain_queries": 108946,
+          "distinct_queries": 106349
+        }
+      },
+      "독립검증": {
+        "40": {
+          "candidate_seconds": 0.16931945499993617,
+          "candidate_match": true,
+          "paths": {
+            "after_a": {
+              "safe": true,
+              "segments": 30,
+              "validated_until_sim": 1017.7
+            },
+            "after_b": {
+              "safe": true,
+              "segments": 30,
+              "validated_until_sim": 1017.7
+            },
+            "after_c": {
+              "safe": true,
+              "segments": 30,
+              "validated_until_sim": 1017.7
+            }
+          }
+        },
+        "38": {
+          "candidate_seconds": 0.1619030990000283,
+          "candidate_match": true,
+          "paths": {
+            "after_38": {
+              "safe": true,
+              "segments": 30,
+              "validated_until_sim": 1011.5
+            }
+          }
+        },
+        "39": {
+          "candidate_seconds": 0.1631101560000161,
+          "candidate_match": true,
+          "paths": {
+            "after_39": {
+              "safe": true,
+              "segments": 40,
+              "validated_until_sim": 1020.6
+            }
+          }
+        }
+      },
+      "회귀": "지형·Space-Time A*·공동 경로·위험 대응 40개 통과",
+      "실제_Webots": "Docker API 소켓 permission denied. 미수행.",
+      "남은문제": "16번째 행렬 A*와 지형 판정이 여전히 가장 비싸며 요청 39는 8초 기한에 근접. 넓은 실행은 8개 대피 조합·192개 예약 순서의 회전 후 재검사 실패. 1800초/85% 미달성.",
+      "변경파일": [
+        "moon_mapping_demo/terrain.py",
+        "tests/test_terrain.py",
+        "인계 문서",
+        "검증 JSON"
+      ],
+      "최적성": "Hungarian 비용은 고정 행렬의 배정 합에 한정.",
+      "탐사": {
+        "short": {
+          "before": {
+            "elapsed_sim": 180.0,
+            "percent": 30.984374999999996,
+            "rounds": 1,
+            "replans": 4,
+            "statuses": {
+              "OK": 7,
+              "PLANNING_BUDGET": 1
+            },
+            "validated_escape_candidate_on_budget": 0,
+            "reason": "sim_duration_limit",
+            "elapsed_wall": 42.595737904001
+          },
+          "after": {
+            "elapsed_sim": 180.0,
+            "percent": 33.8125,
+            "rounds": 1,
+            "replans": 4,
+            "statuses": {
+              "OK": 7
+            },
+            "validated_escape_candidate_on_budget": 0,
+            "reason": "sim_duration_limit",
+            "elapsed_wall": 17.775389206
+          },
+          "first_changed_dispatch": 6
+        },
+        "wide": {
+          "before": {
+            "elapsed_sim": 957.9000000000001,
+            "percent": 10.578923900118905,
+            "rounds": 7,
+            "replans": 8,
+            "statuses": {
+              "OK": 20,
+              "PLANNING_BUDGET": 4
+            },
+            "validated_escape_candidate_on_budget": 6,
+            "reason": "no_safe_plan_within_search_limits",
+            "elapsed_wall": 229.49802434799858
+          },
+          "after": {
+            "elapsed_sim": 581.1,
+            "percent": 8.94024970273484,
+            "rounds": 4,
+            "replans": 6,
+            "statuses": {
+              "OK": 13,
+              "NO_SAFE_ASSIGNMENT": 1
+            },
+            "validated_escape_candidate_on_budget": 0,
+            "reason": "no_safe_evacuation: NO_SAFE_ASSIGNMENT: 선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "elapsed_wall": 58.52627873999995
+          },
+          "first_changed_dispatch": 3
+        }
+      },
+      "수정후_소스_sha256": "294a5117e4fceecde6649ce46fa600e45e6b75715c78bdf1ca4b4093e74114a8"
+    },
+    "early_escape_and_goal_windows": {
+      "result_root": "results/early_escape_20261122_191957",
+      "branch": "feature/shadow-hungarian",
+      "head": "97b4759786232b77591530c9604326c325e93fbf",
+      "status": "구현·회귀·모의·합성 ROS 검사 완료. 넓은1800초/85% 미달성, 실제 Webots 미검증.",
+      "default_departure_policy": "simultaneous",
+      "default_risk_stage": "candidates",
+      "optional_rotation_model": "risk_stage=heading",
+      "diagnosis": {
+        "source": "results/early_escape_20261122_191957/failure_diagnosis.json",
+        "exact_trace": "results/staggered_departure_20261122_181339/simultaneous_wide_trace/43b420e4e69c4e878e8fe000868fc35c/replan_state_0004.json",
+        "detection_absolute_sim_seconds": 77.10000000000001,
+        "current_all_robot_bodies_forbidden": false,
+        "static_cause": false,
+        "remaining_joint_conflicts": [],
+        "first_failed_section": "robot3 실제 위치에서 시작한 남은 이동77.1→80.1초의 구간 그림자 검사",
+        "stopped_robot3_safe_lower_sim_seconds": 79.74404296875001,
+        "stopped_robot3_first_forbidden_upper_sim_seconds": 79.75136718750001,
+        "next_t0_sim_seconds": 80.10000000000001,
+        "baseline_start_forbidden_null_rows": 1,
+        "fixed_failure_budget_exceeded": false,
+        "fixed_failure_initial_observation_hold_cause": false,
+        "later_rotation_evidence": "② 대피 공동 경로에서24개 예약 순서의 rotation_postprocess_forbidden 확인",
+        "geometry_plot": "results/early_escape_20261122_191957/geometry_final/failure_geometry.png",
+        "geometry_json": "results/early_escape_20261122_191957/geometry_final/geometry_diagnosis.json",
+        "interpretation": "원본 삼각형 투영 그림자와 기둥/시간 AABB 대조. 동시 시각301표본 금지0이지만 구간 감쌈은 금지. 보수성 관여 가능성이지 연속 안전 증명이 아님. oracle 유지."
+      },
+      "implementation": [
+        "90초 유한 예측,0.5초 주기,경고 위치 여유0.05m. 정지 기한과 남은 이동/회전/관측/유한 대기 위험 구분.",
+        "계획5+교체0.5+준비3+회전6.783+3.5m 탈출19.444+여유5≈39.728 sim초 경고 추정. 실제 경로 가능성 증명 아님.",
+        "현재→t0 전체 정지 안전성 선검사. 일반 lead10초 유지, 대피 최소8.5초. 계산 중 sim/wall/입력/정지 안전 감시.",
+        "설치 전 session/plan/시각/위치/방향 재검증. sim 기한5초와 monotonic 실제 예산8초 분리.",
+        "원래 관측 시간과 이후 유효scan3개 유지. 목표 관측+12초 후속 예약 검사, 늦은 도착 시간 재탐색, 동료 대기 hold 검사.",
+        "각3개·최대8개 대피 후보 조합/공유 예산. 긴급도 우선 예약 순서. 모든4대 재비용/Hungarian/공동 검사.",
+        "검증된 대피 후보의 유한 목표 대기 여유 우선 비교. 예산 중단과 명시적 취소 구분/기록.",
+        "방향 A*는 회전0.5rad/s+정착0.5초를 처음부터 계산하는 선택 옵션. 행렬 모델/독립·추가 회전 비용 분리.",
+        "Docker/launch/모의 도구에 baseline→early→goals→candidates→heading 비교 설정 제공."
+      ],
+      "comparison": {
+        "json": "results/early_escape_20261122_191957/comparison_final/comparison.json",
+        "csv": "results/early_escape_20261122_191957/comparison_final/comparison.csv",
+        "plot": "results/early_escape_20261122_191957/comparison_final/coverage_comparison.png",
+        "same_conditions": "동일 프로필 내 WBT/초기 위치/시작 sim=1/72광선·0.5초 합성센서/고정 ROI/요청 기간.",
+        "disclosed_changes": "②부터 후보 순위·목표·비용 변경.④는 방향/회전 시간 모델 변경. 기존/① 첫HU78·공동132,②/③72·122,④106·120tick.",
+        "exit0_scope": "집계 성공만 의미. smoke passed도 전체1800초/85% 탐사 달성이 아님.",
+        "cases": [
+          {
+            "case": "baseline_fixed",
+            "profile": "fixed",
+            "phase": "COMPLETE",
+            "reason": "fixed_goals_observed",
+            "outcome": "목표 달성",
+            "elapsed_sim_seconds": 55.1,
+            "elapsed_monotonic_wall_seconds": 5.342746450998675,
+            "rounds_completed": 1,
+            "coverage_percent": 31.734374999999996,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "dispatch_count": {
+              "robot1": 1,
+              "robot2": 1,
+              "robot3": 1,
+              "robot4": 1
+            },
+            "matched_elapsed_sim": {
+              "60": null,
+              "75": null,
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 1
+            }
+          },
+          {
+            "case": "final_fixed",
+            "profile": "fixed",
+            "phase": "COMPLETE",
+            "reason": "fixed_goals_observed",
+            "outcome": "목표 달성",
+            "elapsed_sim_seconds": 52.1,
+            "elapsed_monotonic_wall_seconds": 5.465241458001401,
+            "rounds_completed": 1,
+            "coverage_percent": 31.874999999999996,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "dispatch_count": {
+              "robot1": 1,
+              "robot2": 1,
+              "robot3": 1,
+              "robot4": 1
+            },
+            "matched_elapsed_sim": {
+              "60": null,
+              "75": null,
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 1
+            }
+          },
+          {
+            "case": "baseline_short",
+            "profile": "short",
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "sim_duration_limit",
+            "outcome": "시간 제한 부분 완료",
+            "elapsed_sim_seconds": 180.0,
+            "elapsed_monotonic_wall_seconds": 29.114812453000923,
+            "rounds_completed": 2,
+            "coverage_percent": 30.640625,
+            "fixed_denominator_m2": 400.0,
+            "replans": 2,
+            "dispatch_count": {
+              "robot1": 4,
+              "robot2": 5,
+              "robot3": 4,
+              "robot4": 4
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 25.4375,
+                "sample_elapsed_sim_seconds": 59.1
+              },
+              "75": {
+                "coverage_percent": 25.734375,
+                "sample_elapsed_sim_seconds": 74.2
+              },
+              "120": {
+                "coverage_percent": 26.937499999999996,
+                "sample_elapsed_sim_seconds": 119.2
+              },
+              "180": {
+                "coverage_percent": 30.640625,
+                "sample_elapsed_sim_seconds": 180.0
+              },
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 5,
+              "PLANNING_BUDGET": 1
+            }
+          },
+          {
+            "case": "final_short",
+            "profile": "short",
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "sim_duration_limit",
+            "outcome": "시간 제한 부분 완료",
+            "elapsed_sim_seconds": 180.0,
+            "elapsed_monotonic_wall_seconds": 42.595737904001,
+            "rounds_completed": 1,
+            "coverage_percent": 30.984374999999996,
+            "fixed_denominator_m2": 400.0,
+            "replans": 4,
+            "dispatch_count": {
+              "robot1": 6,
+              "robot2": 7,
+              "robot3": 7,
+              "robot4": 6
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 25.34375,
+                "sample_elapsed_sim_seconds": 59.1
+              },
+              "75": {
+                "coverage_percent": 26.34375,
+                "sample_elapsed_sim_seconds": 74.3
+              },
+              "120": {
+                "coverage_percent": 27.828124999999996,
+                "sample_elapsed_sim_seconds": 119.30000000000001
+              },
+              "180": {
+                "coverage_percent": 30.984374999999996,
+                "sample_elapsed_sim_seconds": 180.0
+              },
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 7,
+              "PLANNING_BUDGET": 1
+            }
+          },
+          {
+            "case": "baseline_wide",
+            "profile": "wide",
+            "phase": "ERROR",
+            "reason": "no_safe_evacuation: NO_SAFE_ASSIGNMENT: 선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "outcome": "안전·계획 실패 정지",
+            "elapsed_sim_seconds": 76.2,
+            "elapsed_monotonic_wall_seconds": 11.189878130997386,
+            "rounds_completed": 1,
+            "coverage_percent": 3.554176575505351,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 2,
+            "dispatch_count": {
+              "robot1": 2,
+              "robot2": 2,
+              "robot3": 2,
+              "robot4": 2
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 3.554176575505351,
+                "sample_elapsed_sim_seconds": 60.0
+              },
+              "75": {
+                "coverage_percent": 3.554176575505351,
+                "sample_elapsed_sim_seconds": 75.0
+              },
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 1,
+            "planning_statuses": {}
+          },
+          {
+            "case": "stage1_early_wide",
+            "profile": "wide",
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "no_safe_plan_within_search_limits",
+            "outcome": "후속 계획 탐색 실패 부분 종료",
+            "elapsed_sim_seconds": 122.5,
+            "elapsed_monotonic_wall_seconds": 47.58498090899957,
+            "rounds_completed": 0,
+            "coverage_percent": 3.483576099881094,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 2,
+            "dispatch_count": {
+              "robot1": 3,
+              "robot2": 3,
+              "robot3": 3,
+              "robot4": 3
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 3.4519916765755054,
+                "sample_elapsed_sim_seconds": 60.0
+              },
+              "75": {
+                "coverage_percent": 3.4519916765755054,
+                "sample_elapsed_sim_seconds": 75.0
+              },
+              "120": {
+                "coverage_percent": 3.483576099881094,
+                "sample_elapsed_sim_seconds": 120.0
+              },
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 3,
+              "PLANNING_BUDGET": 4
+            }
+          },
+          {
+            "case": "stage2_ranked_goals_wide",
+            "profile": "wide",
+            "phase": "ERROR",
+            "reason": "no_safe_evacuation: NO_SAFE_ASSIGNMENT: 선정 목표의 유한 부분집합 탐색에서 안전한 공동 배정을 찾지 못했습니다.",
+            "outcome": "안전·계획 실패 정지",
+            "elapsed_sim_seconds": 117.60000000000001,
+            "elapsed_monotonic_wall_seconds": 22.83635260400115,
+            "rounds_completed": 1,
+            "coverage_percent": 3.806851961950059,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 4,
+            "dispatch_count": {
+              "robot1": 5,
+              "robot2": 5,
+              "robot3": 5,
+              "robot4": 5
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 3.550460760998811,
+                "sample_elapsed_sim_seconds": 60.0
+              },
+              "75": {
+                "coverage_percent": 3.58018727705113,
+                "sample_elapsed_sim_seconds": 75.0
+              },
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "NO_SAFE_ASSIGNMENT": 1,
+              "OK": 5
+            }
+          },
+          {
+            "case": "stage3_margin_choice_wide",
+            "profile": "wide",
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "no_safe_plan_within_search_limits",
+            "outcome": "후속 계획 탐색 실패 부분 종료",
+            "elapsed_sim_seconds": 957.9000000000001,
+            "elapsed_monotonic_wall_seconds": 229.49802434799858,
+            "rounds_completed": 7,
+            "coverage_percent": 10.578923900118905,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 8,
+            "dispatch_count": {
+              "robot1": 20,
+              "robot2": 20,
+              "robot3": 19,
+              "robot4": 19
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 3.550460760998811,
+                "sample_elapsed_sim_seconds": 60.0
+              },
+              "75": {
+                "coverage_percent": 3.58018727705113,
+                "sample_elapsed_sim_seconds": 75.0
+              },
+              "120": {
+                "coverage_percent": 3.6916617122473245,
+                "sample_elapsed_sim_seconds": 119.10000000000001
+              },
+              "180": {
+                "coverage_percent": 4.351218787158145,
+                "sample_elapsed_sim_seconds": 179.20000000000002
+              },
+              "300": {
+                "coverage_percent": 5.386073127229489,
+                "sample_elapsed_sim_seconds": 299.3
+              },
+              "600": {
+                "coverage_percent": 8.778611771700357,
+                "sample_elapsed_sim_seconds": 599.5
+              }
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 20,
+              "PLANNING_BUDGET": 4
+            }
+          },
+          {
+            "case": "stage4_margin_choice_wide",
+            "profile": "wide",
+            "phase": "ERROR",
+            "reason": "no_safe_planning_stop: 현재 위치에서 계산·준비를 기다릴 안전 구간 부족",
+            "outcome": "안전·계획 실패 정지",
+            "elapsed_sim_seconds": 641.5,
+            "elapsed_monotonic_wall_seconds": 182.02983311299977,
+            "rounds_completed": 5,
+            "coverage_percent": 7.769768133174793,
+            "fixed_denominator_m2": 3364.0,
+            "replans": 9,
+            "dispatch_count": {
+              "robot1": 18,
+              "robot2": 18,
+              "robot3": 18,
+              "robot4": 18
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 3.591334720570749,
+                "sample_elapsed_sim_seconds": 60.0
+              },
+              "75": {
+                "coverage_percent": 3.5950505350772892,
+                "sample_elapsed_sim_seconds": 75.0
+              },
+              "120": {
+                "coverage_percent": 4.366082045184305,
+                "sample_elapsed_sim_seconds": 120.0
+              },
+              "180": {
+                "coverage_percent": 4.843564209274673,
+                "sample_elapsed_sim_seconds": 180.0
+              },
+              "300": {
+                "coverage_percent": 7.000594530321047,
+                "sample_elapsed_sim_seconds": 299.1
+              },
+              "600": {
+                "coverage_percent": 7.749331153388823,
+                "sample_elapsed_sim_seconds": 599.2
+              }
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 18
+            }
+          },
+          {
+            "case": "candidates_fixed_delay2",
+            "profile": "fixed_delay",
+            "phase": "COMPLETE",
+            "reason": "fixed_goals_observed",
+            "outcome": "목표 달성",
+            "elapsed_sim_seconds": 52.1,
+            "elapsed_monotonic_wall_seconds": 5.422058047999599,
+            "rounds_completed": 1,
+            "coverage_percent": 31.859375,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "dispatch_count": {
+              "robot1": 1,
+              "robot2": 1,
+              "robot3": 1,
+              "robot4": 1
+            },
+            "matched_elapsed_sim": {
+              "60": null,
+              "75": null,
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 1
+            }
+          },
+          {
+            "case": "heading_fixed_delay2_corrected",
+            "profile": "fixed_delay",
+            "phase": "COMPLETE",
+            "reason": "fixed_goals_observed",
+            "outcome": "목표 달성",
+            "elapsed_sim_seconds": 52.1,
+            "elapsed_monotonic_wall_seconds": 6.7830899030013825,
+            "rounds_completed": 1,
+            "coverage_percent": 31.859375,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "dispatch_count": {
+              "robot1": 1,
+              "robot2": 1,
+              "robot3": 1,
+              "robot4": 1
+            },
+            "matched_elapsed_sim": {
+              "60": null,
+              "75": null,
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 1
+            }
+          },
+          {
+            "case": "candidates_fixed_delay6",
+            "profile": "fixed_delay",
+            "phase": "ERROR",
+            "reason": "planning_sim_budget_exceeded",
+            "outcome": "계산 기한 초과·안전 정지",
+            "elapsed_sim_seconds": 12.100000000000001,
+            "elapsed_monotonic_wall_seconds": 1.9192627200027346,
+            "rounds_completed": 0,
+            "coverage_percent": 23.09375,
+            "fixed_denominator_m2": 400.0,
+            "replans": 0,
+            "dispatch_count": {
+              "robot1": 0,
+              "robot2": 0,
+              "robot3": 0,
+              "robot4": 0
+            },
+            "matched_elapsed_sim": {
+              "60": null,
+              "75": null,
+              "120": null,
+              "180": null,
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "SIM_BUDGET_EXCEEDED": 1
+            }
+          },
+          {
+            "case": "candidates_short_delay2",
+            "profile": "short_delay",
+            "phase": "PARTIAL_COMPLETE",
+            "reason": "sim_duration_limit",
+            "outcome": "시간 제한 부분 완료",
+            "elapsed_sim_seconds": 180.0,
+            "elapsed_monotonic_wall_seconds": 35.337237710999034,
+            "rounds_completed": 0,
+            "coverage_percent": 29.031249999999996,
+            "fixed_denominator_m2": 400.0,
+            "replans": 4,
+            "dispatch_count": {
+              "robot1": 7,
+              "robot2": 8,
+              "robot3": 7,
+              "robot4": 7
+            },
+            "matched_elapsed_sim": {
+              "60": {
+                "coverage_percent": 25.328125,
+                "sample_elapsed_sim_seconds": 59.1
+              },
+              "75": {
+                "coverage_percent": 27.078124999999996,
+                "sample_elapsed_sim_seconds": 74.2
+              },
+              "120": {
+                "coverage_percent": 28.109374999999996,
+                "sample_elapsed_sim_seconds": 119.2
+              },
+              "180": {
+                "coverage_percent": 29.031249999999996,
+                "sample_elapsed_sim_seconds": 180.0
+              },
+              "300": null,
+              "600": null
+            },
+            "start_forbidden_null_row_occurrences": 0,
+            "planning_statuses": {
+              "OK": 8
+            }
+          }
+        ]
+      },
+      "validation": {
+        "regression": {
+          "passed": 140,
+          "new_risk_tests": 12,
+          "log": "results/early_escape_20261122_191957/regression_verified.log"
+        },
+        "build": {
+          "ros": "호스트 Humble",
+          "packages": [
+            "multirobot_sim",
+            "moon_mapping_demo"
+          ],
+          "passed": true,
+          "log": "results/early_escape_20261122_191957/build.log"
+        },
+        "synthetic_ros": {
+          "passed": 9,
+          "main_cases": "results/early_escape_20261122_191957/ros_candidates/bt_ros_validation.json",
+          "baseline_connection": "results/early_escape_20261122_191957/ros_baseline_connection/bt_ros_validation.json",
+          "pairs_connection": "results/early_escape_20261122_191957/ros_pairs_connection/bt_ros_validation.json",
+          "scope": "동일 rclpy context 합성 clock/odom/TF/scan/서비스. UDP 권한 거부. 네트워크 DDS/물리 주행 미검증."
+        },
+        "sim_delay": {
+          "seconds_2_fixed_candidates_complete": true,
+          "seconds_2_fixed_heading_complete": true,
+          "seconds_2_short": "180초29.03125%, 완료0회차, 부분 종료. 취약성 남음.",
+          "seconds_6_fixed": "5초 기한 초과로 경과12.1초 정지, 배정 실행0·늦은 결과 설치 차단."
+        },
+        "pairs_fixed": "기본 위험 대응+staggered_pairs4대 경과66.1초 완료. simultaneous52.1초보다 느림.",
+        "real_webots": {
+          "attempted_execution": false,
+          "passed": false,
+          "reason": "Docker 소켓 permission denied. 권한 우회 없음. bt-fixed→explore→explore-wide 실제 실행 미수행.",
+          "log": "results/early_escape_20261122_191957/docker_permission.log"
+        },
+        "shell_syntax_and_python_compile": "통과"
+      },
+      "contracts": {
+        "body_radius_m": 0.26,
+        "safety_time_step_seconds": 0.25,
+        "four_robots_participate": true,
+        "four_goals_common_t0_integer_4x4": true,
+        "Hungarian_and_SpaceTime_Astar": true,
+        "sensor_raycast_and_dedup_unchanged": true,
+        "short_fixed_denominator_m2": 400.0,
+        "wide_fixed_denominator_m2": 3364.0,
+        "scan_clock_future_tolerance_seconds": 0.05,
+        "single_cmd_vel_and_BTs_preserved": true,
+        "radio_constraints": false,
+        "nouveau_Mesa_NVK_Zink_preserved": true
+      },
+      "limitations": [
+        "넓은 기본③도957.9초10.5789%7회차 후 후속 계산 예산3회 초과로 부분 종료.1800초/85% 미달성.",
+        "단기180초 기본③은30.984375%1회차, 기존30.640625%2회차. 회차 개선 없음.2초 지연은29.03125%0회차.",
+        "안전 정지 구간 선확보 방식. 기존 검증된 이동 구간을 실행하며 새 계획 계산/사전 비상 경로 교체는 검토만, 미구현. 부족하면 계산 대기 대신 오류 종료.",
+        "관측 뒤 별도 안전 대기점으로 이동하는 복합 경로는 미구현. 유한 후속 대기 가능한 목표만 채택. 무한 정지/종료 후 안전 보장 없음.",
+        "방향 A*④는641.5초7.7698%5회차 후 실제 추종/충돌 재계획 중 정지 구간 부족으로 정지. 기본으로 채택하지 않음.",
+        "기둥/구간 AABB 보수성, 후순위 시작점 영구 예약, 유한 후보/순서와 호스트 계산 부하로 가능한 해를 놓칠 수 있음.",
+        "기본 계산 시 sim 정지인 이상 기구학 모델. 지연 주입은 별도 검사이며 실제 계산 중 /clock·회전·오도메트리 오차 검증을 대체하지 않음.",
+        "실제 Webots/Jazzy·네트워크 DDS·실센서·RViz 화면은 미검증."
+      ],
+      "optimization_scope": "Hungarian은 선택된 고정 정수 비용 행렬 합만 최적. 후보·순서·출발·공동 경로·전체 탐사의 최적성을 의미하지 않음.",
+      "preservation": {
+        "initial_inventory": "results/early_escape_20261122_191957/initial_inventory.json",
+        "audit": "results/early_escape_20261122_191957/preservation_audit.json",
+        "git_reset": false,
+        "git_clean": false,
+        "remote_upload": false,
+        "push": false,
+        "PR": false
+      },
+      "shutdown_checkpoint": {
+        "saved_at_kst": "2026-11-23T09:33:35+09:00",
+        "resume_note": "NEXT_SESSION.md",
+        "resume_prompt": "docs/resume_prompt_2026-11-23.txt",
+        "local_backup_directory": "/home/gayeon/lunar_hungarian_checkpoints/20261123_093335",
+        "new_implementation_changes": false,
+        "tests_rerun": false,
+        "git_commit": false,
+        "remote_upload": false,
+        "live_simulator_memory_saved": false
+      }
+    },
+    "spatial_regions_and_progress_2026_11_24": {
+      "결과폴더": "results/spatial_regions_20261124_001/final",
+      "실제단기실패": "gui_explore_20261123_234613_7101/b59304f1ef774b89bee452f0e0df5c66: 두 번째 계획 실제 8.000651초, sim 3.2초 후 오류 정지",
+      "요약": {
+        "정책": {
+          "일반경로초": 45.0,
+          "단기전진m": 3.0,
+          "넓은전진m": 4.0,
+          "공간구역최대": 4,
+          "넓은후보최대": 12,
+          "실제예산초": 8.0,
+          "결과수신여유초": 0.4,
+          "sim예산초": 5.0,
+          "몸체반경m": 0.26,
+          "목표위치여유m": 0.05,
+          "시간안전검사초": 0.25
+        },
+        "회귀": {
+          "통과": 127,
+          "로그": "regression.log"
+        },
+        "실제실패요청재생": [
+          {
+            "status": "OK",
+            "seconds": 0.23848001999976987,
+            "budget_seconds": 8.0,
+            "same_poses_goals_t0_hold": true,
+            "audit": {
+              "passed": true,
+              "failures": [],
+              "paths": 1,
+              "oracle": "original_full_shadow_boxes",
+              "robot_radius_m": 0.26
+            }
+          },
+          {
+            "status": "OK",
+            "seconds": 0.24317630699988513,
+            "budget_seconds": 8.0,
+            "same_poses_goals_t0_hold": true,
+            "audit": {
+              "passed": true,
+              "failures": [],
+              "paths": 1,
+              "oracle": "original_full_shadow_boxes",
+              "robot_radius_m": 0.26
+            }
+          },
+          {
+            "status": "OK",
+            "seconds": 0.24045085700026902,
+            "budget_seconds": 8.0,
+            "same_poses_goals_t0_hold": true,
+            "audit": {
+              "passed": true,
+              "failures": [],
+              "paths": 1,
+              "oracle": "original_full_shadow_boxes",
+              "robot_radius_m": 0.26
+            }
+          }
+        ],
+        "단기모의": {
+          "완료회차": 3,
+          "관측률": 0.4984375,
+          "경과sim초": 180.0,
+          "이유": "sim_duration_limit",
+          "재계획": 0
+        },
+        "고정모의": {
+          "완료": true,
+          "이유": "fixed_goals_observed"
+        },
+        "구역전후같은120초": {
+          "분할전": {
+            "elapsed_sim_seconds": 120.0,
+            "mean_pair_distance_m": 3.187919623913345,
+            "minimum_pair_distance_m": 1.0000000002521539,
+            "maximum_pair_distance_m": 5.345628750376279,
+            "work_regions": {}
+          },
+          "분할후": {
+            "elapsed_sim_seconds": 120.0,
+            "mean_pair_distance_m": 5.033683007205345,
+            "minimum_pair_distance_m": 2.604037623552539,
+            "maximum_pair_distance_m": 8.145341843696123,
+            "work_regions": {
+              "robot1": {
+                "id": "work_robot1",
+                "robot": "robot1",
+                "frontier_xy": [
+                  -16.875,
+                  -19.875
+                ],
+                "frontier_cells": 13,
+                "target_xy": [
+                  -23.125,
+                  -21.125
+                ],
+                "previous_frontier_xy": [
+                  -18.125,
+                  -19.875
+                ],
+                "activity": "explore"
+              },
+              "robot2": {
+                "id": "work_robot2",
+                "robot": "robot2",
+                "frontier_xy": [
+                  -25.875,
+                  -12.125
+                ],
+                "frontier_cells": 12,
+                "target_xy": [
+                  -24.625,
+                  -14.375
+                ],
+                "previous_frontier_xy": [
+                  -26.875,
+                  -15.375
+                ],
+                "activity": "explore"
+              },
+              "robot3": {
+                "id": "work_robot3",
+                "robot": "robot3",
+                "frontier_xy": [
+                  -20.625,
+                  -28.125
+                ],
+                "frontier_cells": 6,
+                "target_xy": [
+                  -22.375,
+                  -26.625
+                ],
+                "previous_frontier_xy": [
+                  -20.625,
+                  -28.125
+                ],
+                "activity": "explore"
+              },
+              "robot4": {
+                "id": "work_robot4",
+                "robot": "robot4",
+                "frontier_xy": [
+                  -20.875,
+                  -14.625
+                ],
+                "frontier_cells": 13,
+                "target_xy": [
+                  -20.625,
+                  -18.375
+                ],
+                "previous_frontier_xy": [
+                  -23.125,
+                  -16.125
+                ],
+                "activity": "explore"
+              }
+            }
+          }
+        },
+        "분할후300초": {
+          "elapsed_sim_seconds": 300.0,
+          "mean_pair_distance_m": 10.273687156688217,
+          "minimum_pair_distance_m": 5.219872364496836,
+          "maximum_pair_distance_m": 15.627662861830375,
+          "work_regions": {
+            "robot1": {
+              "id": "work_robot1",
+              "robot": "robot1",
+              "frontier_xy": [
+                -12.125,
+                -17.125
+              ],
+              "frontier_cells": 26,
+              "target_xy": [
+                -18.125,
+                -20.625
+              ],
+              "previous_frontier_xy": [
+                -14.875,
+                -19.375
+              ],
+              "activity": "explore"
+            },
+            "robot2": {
+              "id": "work_robot2",
+              "robot": "robot2",
+              "frontier_xy": [
+                -26.875,
+                -6.875
+              ],
+              "frontier_cells": 9,
+              "target_xy": [
+                -25.42953783770927,
+                -11.848333989058355
+              ],
+              "previous_frontier_xy": [
+                -24.375,
+                -9.375
+              ],
+              "activity": "support"
+            },
+            "robot3": {
+              "id": "work_robot3",
+              "robot": "robot3",
+              "frontier_xy": [
+                -20.875,
+                -27.875
+              ],
+              "frontier_cells": 6,
+              "target_xy": [
+                -24.866001683043198,
+                -27.417486852725368
+              ],
+              "previous_frontier_xy": [
+                -20.625,
+                -28.125
+              ],
+              "activity": "support"
+            },
+            "robot4": {
+              "id": "work_robot4",
+              "robot": "robot4",
+              "frontier_xy": [
+                -19.875,
+                -8.875
+              ],
+              "frontier_cells": 19,
+              "target_xy": [
+                -19.64450909085055,
+                -15.559955863756734
+              ],
+              "previous_frontier_xy": [
+                -17.375,
+                -12.375
+              ],
+              "activity": "support"
+            }
+          }
+        },
+        "넓은모의": {
+          "요청sim초": 600.0,
+          "실제경과sim초": 507.70000000000005,
+          "절대sim초": 508.70000000000005,
+          "요청기간도달": false,
+          "완료회차": 7,
+          "관측률": 0.10894768133174793,
+          "상태": "PARTIAL_COMPLETE",
+          "이유": "no_safe_plan_within_search_limits",
+          "재계획": 3
+        },
+        "독립안전검사": {
+          "원본전체사각형oracle": true,
+          "계획수": 38,
+          "전부통과": true,
+          "종류별계획수": {
+            "넓은": 33,
+            "단기": 4,
+            "고정": 1
+          }
+        },
+        "미해결": [
+          "넓은 600초/1800초 지속 및 85% 관측 목표 미달성",
+          "최종 코드의 실제 Webots 물리/ROS 전달 미검증",
+          "이전 고정 대피 요청24의 성공 재검증 미수행"
+        ]
+      },
+      "원격작업": false,
+      "실제Webots최종코드": "미검증",
+      "범위": "구역 분할/후보 선택은 휴리스틱. Hungarian 최적성은 선택한 구역의 고정 정수 시간 비용 행렬에 한정."
+    }
+  },
+  "session_checkpoint_2026_11_23_escape24": {
+    "saved_at_kst": "2026-11-23T16:40:00+09:00",
+    "branch": "feature/shadow-hungarian",
+    "head": "97b4759786232b77591530c9604326c325e93fbf",
+    "backup_directory": "/home/gayeon/lunar_hungarian_checkpoints/20261123_164000_escape24",
+    "resume_note": "NEXT_SESSION.md",
+    "resume_prompt": "docs/resume_prompt_2026-11-23.txt",
+    "escape24_fixed": false,
+    "prototype_adopted": false,
+    "new_tests_rerun": false,
+    "remote_upload": false,
+    "git_commit": false
+  },
+  "session_checkpoint_2026_11_24_spatial_regions": {
+    "요청": "지금까지 한 작업을 로컬 저장하고 다음에 재개",
+    "저장시각": "2026-11-24T00:50:10.141861+09:00",
+    "경로": "/home/gayeon/lunar_hungarian_checkpoints/20261124_005010_spatial_regions",
+    "archive": "project.tar.gz",
+    "검증근거": "verification.json 및 SHA256SUMS",
+    "구현변경": false,
+    "테스트재실행": false,
+    "원격업로드": false,
+    "재개": "NEXT_SESSION.md, docs/resume_prompt_2026-11-24.txt",
+    "미해결": "넓은507.7초 부분 종료 및 최종 실제 Webots 재검증"
+  }
+}

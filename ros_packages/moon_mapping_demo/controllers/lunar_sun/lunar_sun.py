@@ -1,4 +1,4 @@
-"""Controlled rotating sunlight. No ROS, navigation, SPICE or trial evaluator."""
+"""지형 그림자 정답 표시. 태양 위상은 /clock과 같은 Webots 절대 시각을 사용한다."""
 import json
 import math
 from pathlib import Path
@@ -115,10 +115,9 @@ def main():
     robots = [robot.getFromDef(f'LIMO_{i}') for i in range(1, 5)]
     next_check = 0.
     last_states = None
-    origin = robot.getTime()
     print('Lunar map ready: four stationary LIMOs, rotating sunlight, no time limit.', flush=True)
     while robot.step(int(robot.getBasicTimeStep())) != -1:
-        vector, azimuth = sun_direction(robot.getTime()-origin, elevation, initial_azimuth, period)
+        vector, azimuth = sun_direction(robot.getTime(), elevation, initial_azimuth, period)
         direction.setSFVec3f([-value for value in vector])
         marker.setSFVec3f([70*value for value in vector])
         if robot.getTime() >= next_check:

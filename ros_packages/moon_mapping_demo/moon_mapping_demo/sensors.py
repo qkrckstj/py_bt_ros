@@ -142,6 +142,8 @@ class LimoSensors:
         if not self._standby:
             self.__lidar.enable(int(SCAN_PERIOD * 1000))
         self.__scan_pub = self.__lidar_node.create_publisher(LaserScan, '/' + self.__ns + '/scan', qos_profile_sensor_data)
+        self.__observation_scan_pub = self.__lidar_node.create_publisher(
+            LaserScan, '/' + self.__ns + '/scan_observation', qos_profile_sensor_data)
         self.__scan = LaserScan()
         self.__scan.angle_min = SCAN_ANGLE_MIN
         self.__scan.angle_max = SCAN_ANGLE_MAX
@@ -250,6 +252,19 @@ class LimoSensors:
     def __publish_scan(self, t):
         # Webots orders the rays from left (+fov/2) to right; ROS wants increasing angle.
         ranges = np.array(self.__lidar.getRangeImage(), dtype=np.float32)[::-1]
+        # 관측 전용 스트림은 실제 장치 범위와 no-return(+inf)을 보존한다.
+        # 기존 /scan의 0=invalid 하드웨어 호환 계약은 그대로 유지한다.
+        observation = self.__stamp(LaserScan(), t, 'laser_link')
+        observation.angle_min = -self.__lidar.getFov() / 2.
+        observation.angle_max = self.__lidar.getFov() / 2.
+        observation.angle_increment = self.__lidar.getFov() / max(1, len(ranges) - 1)
+        observation.scan_time, observation.time_increment = SCAN_PERIOD, 0.
+        observation.range_min, observation.range_max = float(self.__lidar_min), float(self.__lidar_max)
+        hits = np.isfinite(ranges) & (ranges >= self.__lidar_min) & (ranges < self.__lidar_max)
+        no_return = np.isposinf(ranges) | (np.isfinite(ranges) & (ranges >= self.__lidar_max))
+        raw = np.where(hits, ranges, np.where(no_return, np.inf, np.nan)).astype(np.float32)
+        observation.ranges = array.array('f', raw.tobytes())
+        self.__observation_scan_pub.publish(observation)
         valid = np.isfinite(ranges) & (ranges >= self.__lidar_min) & (ranges < self.__lidar_max)
         ranges = np.where(valid, ranges, 0.0).astype(np.float32)
         self.__stamp(self.__scan, t, 'laser_link')

@@ -1,0 +1,150 @@
+{
+  "schema_version": "limo-shadow-assignment/v1",
+  "robot_ids": [
+    "robot1",
+    "robot2",
+    "robot3"
+  ],
+  "goal_ids": [
+    "goal_a",
+    "goal_b",
+    "goal_c"
+  ],
+  "costs": [
+    [
+      27,
+      21,
+      30
+    ],
+    [
+      18,
+      24,
+      27
+    ],
+    [
+      30,
+      12,
+      23
+    ]
+  ],
+  "cost_unit": "tick",
+  "time_step_seconds": 1.0,
+  "t0_sim_seconds": 0.0,
+  "time_origin": "ros_clock_sim_seconds",
+  "objective": "minimize_sum_cost_ticks",
+  "constraints": {
+    "one_goal_per_robot": true,
+    "one_robot_per_goal": true,
+    "complete_assignment": true
+  },
+  "forbidden_pairs": [],
+  "metadata": {
+    "map_id": "b018fec6a2c30125c1ff6f290b89654fe7c368327c6e8d791802c8b724d3179f",
+    "config_id": "aa43b0df6b1a9aa42c3c917b6879ac50b3052bb281164fd5d837972fe7ace570",
+    "experiment": "사전 지형 기반 평지 통로 실험",
+    "all_robot_positions": {
+      "robot1": [
+        -26,
+        -26
+      ],
+      "robot2": [
+        -26,
+        -24.5
+      ],
+      "robot3": [
+        -24.5,
+        -26
+      ],
+      "robot4": [
+        -24.5,
+        -24.5
+      ]
+    },
+    "standby_robot_ids": [
+      "robot4"
+    ],
+    "planner": {
+      "resolution": 0.5,
+      "time_step": 1.0,
+      "speed": 0.18,
+      "robot_radius": 0.26,
+      "horizon": 180.0,
+      "safety_time_step": 0.25
+    },
+    "goals": [
+      {
+        "id": "goal_a",
+        "x": -26.0,
+        "y": -21.5
+      },
+      {
+        "id": "goal_b",
+        "x": -22.5,
+        "y": -26.0
+      },
+      {
+        "id": "goal_c",
+        "x": -22.0,
+        "y": -23.0
+      }
+    ],
+    "pair_statuses": {
+      "robot1": {
+        "goal_a": {
+          "status": "found",
+          "reason": ""
+        },
+        "goal_b": {
+          "status": "found",
+          "reason": ""
+        },
+        "goal_c": {
+          "status": "found",
+          "reason": ""
+        }
+      },
+      "robot2": {
+        "goal_a": {
+          "status": "found",
+          "reason": ""
+        },
+        "goal_b": {
+          "status": "found",
+          "reason": ""
+        },
+        "goal_c": {
+          "status": "found",
+          "reason": ""
+        }
+      },
+      "robot3": {
+        "goal_a": {
+          "status": "found",
+          "reason": ""
+        },
+        "goal_b": {
+          "status": "found",
+          "reason": ""
+        },
+        "goal_c": {
+          "status": "found",
+          "reason": ""
+        }
+      }
+    },
+    "time_origin": "Webots getTime() = ROS /clock; 태양 위상 기준 0초",
+    "infeasibility_scope": "설정된 격자·시간 해상도·horizon과 보수적 지형 모델 안에서의 불가"
+  },
+  "timings": {
+    "matrix_generation_seconds": 0.3015089799996531,
+    "assignment_seconds": 4.919299999528448e-05
+  },
+  "assignment": {
+    "columns": [
+      2,
+      0,
+      1
+    ],
+    "total_cost_ticks": 60
+  }
+}

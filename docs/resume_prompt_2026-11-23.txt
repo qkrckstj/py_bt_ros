@@ -1,0 +1,9 @@
+/home/gayeon/lunar_hungarian_project에서 저장한 작업을 이어갈 준비를 해줘.
+
+먼저 NEXT_SESSION.md와 적용되는 AGENTS.md, 실제 git status·브랜치를 확인해라. 브랜치는 feature/shadow-hungarian이다. 기존 미커밋 변경·미추적 파일·실험 결과를 보존하고 git reset·git clean·원격 업로드·push·PR 생성은 하지 마라. 설명과 문서는 한국어로 작성해라.
+
+NEXT_SESSION.md에 연결된 최신 인계 문서와 검증 JSON, results/escape24_20261123_163050/report.json 및 최초 전이 검사 근거를 읽어라.
+
+현재 simultaneous + candidates와 그림자 충돌 검사 최적화는 실행 코드에 남아 있다. 요청 24번은 회전 후 robot1의 첫 이동이 그림자 금지가 되는 문제다. 잔여 경로 재탐색 보정도 같은 입력에서 실패했으며 실험 폴더에만 보존했다. 실행 소스에 보정이 반영됐다고 가정하지 마라. 현행 격자에서 최초 이동 전이가 모두 막힌 근거를 확인하고, 같은 무효 실험을 반복하지 마라.
+
+일단 현재 상태를 파악한 내용을 간단히 알려줘. 다음 수정 범위는 내가 이어서 정리해줄게.

@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-21",
+  "base_commit": "97b4759786232b77591530c9604326c325e93fbf",
+  "branch": "feature/shadow-hungarian",
+  "remote_push": false,
+  "tests": {
+    "jazzy_package_passed": 53,
+    "host_regression_passed": 89
+  },
+  "webots_visualization": {
+    "mode": "visualization",
+    "passed": true,
+    "error": null,
+    "wall_seconds": 18.438447444000303,
+    "selected_robots": [
+      "robot1",
+      "robot2",
+      "robot3"
+    ],
+    "odom_robot_ids": [
+      "robot2",
+      "robot1",
+      "robot3",
+      "robot4"
+    ],
+    "path_robot_ids": [
+      "robot1",
+      "robot2",
+      "robot3"
+    ],
+    "marker_counts": [
+      28
+    ],
+    "last_positions_from_odom": {
+      "robot2": [
+        -26.000000006358377,
+        -24.5
+      ],
+      "robot1": [
+        -26.000000006358377,
+        -26.0
+      ],
+      "robot3": [
+        -24.500000006358377,
+        -26.0
+      ],
+      "robot4": [
+        -24.500000006358377,
+        -24.5
+      ]
+    },
+    "minimum_interrobot_distance_from_odom": 1.4999999998953832,
+    "any_reported_terrain_shadow": false,
+    "screen_visually_inspected": false,
+    "command": [
+      "ros2",
+      "launch",
+      "moon_mapping_demo",
+      "moon_shadow.launch.py",
+      "rviz:=true",
+      "execute:=false",
+      "config:=/workspace/py_bt_ros/ros_packages/moon_mapping_demo/config/shadow_experiment.yaml",
+      "output:=/workspace/py_bt_ros/results/webots_visualization_pil"
+    ]
+  },
+  "webots_single": {
+    "mode": "single",
+    "passed": false,
+    "error": "timeout",
+    "wall_seconds": 40.49156552000022,
+    "selected_robots": [
+      "robot1"
+    ],
+    "odom_robot_ids": [
+      "robot1",
+      "robot2",
+      "robot3",
+      "robot4"
+    ],
+    "path_robot_ids": [
+      "robot1"
+    ],
+    "marker_counts": [
+      4
+    ],
+    "last_positions_from_odom": {
+      "robot1": [
+        -26.45784702213491,
+        -25.999995088727694
+      ],
+      "robot2": [
+        -26.000000006358636,
+        -24.5
+      ],
+      "robot3": [
+        -24.500000006358636,
+        -26.0
+      ],
+      "robot4": [
+        -24.500000006358636,
+        -24.5
+      ]
+    },
+    "minimum_interrobot_distance_from_odom": 1.4999999907038308,
+    "any_reported_terrain_shadow": false,
+    "screen_visually_inspected": false,
+    "command": [
+      "ros2",
+      "launch",
+      "moon_mapping_demo",
+      "moon_shadow.launch.py",
+      "rviz:=false",
+      "execute:=true",
+      "config:=/workspace/py_bt_ros/ros_packages/moon_mapping_demo/config/shadow_single.yaml",
+      "output:=/workspace/py_bt_ros/results/webots_single"
+    ]
+  },
+  "webots_multi": "미실행",
+  "unpublished_teammate_bt_integration": "미검증"
+}

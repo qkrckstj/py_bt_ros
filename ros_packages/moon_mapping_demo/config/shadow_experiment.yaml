@@ -1,0 +1,41 @@
+# 기본 4대 참여. 기존 목표 3개와 시작 구역 서쪽의 네 번째 검증 목표.
+robots:
+- robot1
+- robot2
+- robot3
+- robot4
+goals:
+- id: goal_a
+  x: -26.0
+  y: -21.5
+- id: goal_b
+  x: -22.5
+  y: -26.0
+- id: goal_c
+  x: -22.0
+  y: -23.0
+- id: goal_d
+  x: -27.5
+  y: -26.0
+planner:
+  resolution: 0.5
+  time_step: 0.5
+  speed: 0.18
+  robot_radius: 0.22
+  horizon: 180.0
+  safety_time_step: 0.1
+  direct_goal_links: true
+terrain_height_threshold: 0.001
+terrain_geometry: mesh
+shadow_plane_height: 0.02
+execution:
+  lead_seconds: 10.0
+  goal_hold_seconds: 3.0
+  position_tolerance: 0.18
+  goal_tolerance: 0.05
+  delay_tolerance: 2.0
+  odom_timeout: 0.6
+  input_wall_timeout: 3.0
+  lookahead_seconds: 0.3
+  control_period: 0.1
+  max_replans: 10

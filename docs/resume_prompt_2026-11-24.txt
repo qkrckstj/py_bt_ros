@@ -1,0 +1,40 @@
+/home/gayeon/lunar_hungarian_project/NEXT_SESSION.md를 읽고 저장된 작업 상태를 파악해줘.
+
+적용되는 AGENTS.md와 실제 git status·브랜치·HEAD부터 확인해라.
+브랜치는 feature/shadow-hungarian이다. 기존 미커밋 변경·미추적 파일·실험 결과를 보존하고
+git reset/clean, 원격 업로드, push, PR 생성은 하지 마라. 설명은 한국어로 작성해라.
+
+사용자는 과도하게 넓은 그림자를 지적하고 경로 생성부터 더 적극적으로 수정하도록 요청했다.
+기둥/AABB 그림자 모델을 원본 삼각형의 실제 XY/투영 검사로 교체했다.
+terrain_geometry=mesh, shadow_plane_height=.02m, 몸체 반경.22m, 목표 추가 여유.02m다.
+같은 시각의 몸체와 그림자를 검사하고, 꼭짓점 이동 상한과 최대.1초 구간 분할을 사용한다.
+direct_goal_links=true로 실제 목표 좌표까지 안전한 직선을 탐색한다. 회전·이동 시간을 지불한다.
+안내 격자.5m/tick.5초이며 .25m 안내 격자는 계산량 때문에 기본에서 제외했다.
+이전 정지 여유 축소·부분 대피·즉시 회차 전환·통신 거리 제약 없음은 보존했다.
+실제8초/sim5초 예산은 유지한다. 계산 중 팀 정지·공동 회차는 남아 있다.
+최신 근거는 results/mesh_shadow_20261124_001/report.json, checks.json, source_sha256.json이다.
+회귀146개가 통과했다. 독립 광선 검사는 원본3D 삼각형/0.2초/원판33점 표본이며 연속 안전 증명으로 표현하지 마라.
+기존 전체 그림자 사각형 oracle은 과대 차단 비교용이며 새 안전 정답이 아니다.
+새 대화에서 검사를 다시 실행한 것으로 표현하지 마라.
+
+단기 모의는4회차·재계획0·절대sim148.9초에 회차 제한 종료, 고정 목표는절대sim46.1초 완료했다.
+넓은600초 시도는 절대sim299.4/경과298.4초·완료6회차·456.5625m²에서 대피 계산 예산 초과로 종료했다.
+시작20×20m 구역의 동일30/90초 평지 그림자 표본 면적은32.53→6.19 /104.59→41.60m²다.
+비교 그림 shadow_geometry_comparison.png/.svg를 참고하되 전 월드·모든 시각의 감소율로 일반화하지 마라.
+600초 지속이나 모든 실패를 고쳤다고 주장하지 마라.
+실제 Webots 물리·ROS 전달은 Docker API permission denied로 재검증하지 못했다.
+600/1800초·85% 목표는 미달성이다. 계산 중 팀 전체 정지·공동 회차 구조도 남아 있다.
+이전 대피 요청24가 해결됐다고 가정하지 마라.
+
+일단 파악한 완료 사항과 미해결 사항을 간단히 알려줘. 다음 작업 범위는 내가 정리해줄게.
+
+사용자 호스트의 실제 실행 명령(기존 실행을 Ctrl+C로 종료한 뒤):
+cd /home/gayeon/lunar_hungarian_project
+LUNAR_GPU=mesa LUNAR_DEPARTURE_POLICY=simultaneous LUNAR_RISK_STAGE=candidates bash docker/lunar/run_demo.sh explore-wide
+
+별도 터미널의 상태 확인:
+bash docker/lunar/run_demo.sh status
+bash docker/lunar/run_demo.sh diagnose
+
+최신 전체 로컬 체크포인트: /home/gayeon/lunar_hungarian_checkpoints/20261124_160720_mesh_shadow
+사용자 요청으로 여기서 작업을 중단했다. 다음은 실제 Webots 재실행 및 모의299.4초 대피 계산 예산 초과 문제다.

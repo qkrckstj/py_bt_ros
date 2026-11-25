@@ -1,0 +1,26 @@
+# 먼저 검증할 짧은 단일 로봇 실험. robot2~4도 정적 충돌 검사에 남는다.
+robots: [robot1]
+goals:
+  - {id: single_west, x: -27.0, y: -26.0}
+planner:
+  resolution: 0.5
+  time_step: 0.5
+  speed: 0.18
+  robot_radius: 0.22
+  horizon: 180.0
+  safety_time_step: 0.1
+  direct_goal_links: true
+terrain_height_threshold: 0.001
+terrain_geometry: mesh
+shadow_plane_height: 0.02
+execution:
+  lead_seconds: 10.0
+  goal_hold_seconds: 3.0
+  position_tolerance: 0.18
+  goal_tolerance: 0.05
+  delay_tolerance: 2.0
+  odom_timeout: 0.6
+  input_wall_timeout: 3.0
+  lookahead_seconds: 0.3
+  control_period: 0.1
+  max_replans: 10
