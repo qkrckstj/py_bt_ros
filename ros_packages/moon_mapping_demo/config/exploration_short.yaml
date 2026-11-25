@@ -1,4 +1,4 @@
-# 4대 단기 검증: 400 m² 고정 ROI, 3 m 전진 후보, 도착 후 실제 관측 4초.
+# 4대 단기 검증: 400 m² ROI, 최대 10 m 직선 후보와 3 m 대안, 실제 관측 4초.
 robots:
 - robot1
 - robot2
@@ -36,10 +36,13 @@ execution:
   delay_tolerance: 2.0
   odom_timeout: 0.6
   input_wall_timeout: 3.0
+  startup_stable_seconds: 3.0
+  startup_stable_sim_seconds: 0.1
   lookahead_seconds: 0.3
   control_period: 0.1
   max_replans: 10
 exploration:
+  show_shadow_mesh: false
   evaluation:
     xmin: -29.0
     ymin: -29.0
@@ -60,13 +63,19 @@ exploration:
   observation_angular_speed: 0.5
   sensor_timeout_seconds: 2.0
   planning_wall_budget_seconds: 8.0
+  adaptive_planning_budget: true
   planning_result_margin_seconds: 0.4
   max_assignment_attempts: 24
   target_step_m: 3.0
+  long_routes: true
+  long_route_distance_m: 10.0
+  fallback_target_step_m: 3.0
+  fallback_max_path_seconds: 45.0
+  max_escape_path_seconds: 45.0
   progressive_goals: true
   turn_aware_coordination: true
-  candidate_limit: 6
-  max_path_seconds: 45.0
+  candidate_limit: 12
+  max_path_seconds: 75.0
   minimum_goal_distance_m: 0.8
   goal_separation_m: 1.0
   minimum_potential_gain_m2: 0.5

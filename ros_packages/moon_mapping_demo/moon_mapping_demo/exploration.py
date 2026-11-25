@@ -128,7 +128,8 @@ class Exploration:
         for key in ('minimum_observation_frames', 'max_rounds', 'max_assignment_attempts', 'max_planning_failures'):
             if int(self.options[key]) != self.options[key]:
                 raise ValueError('exploration.' + key + '는 정수여야 합니다.')
-        for key in ('target_step_m', 'max_path_seconds'):
+        for key in ('target_step_m', 'max_path_seconds', 'long_route_distance_m',
+                    'fallback_target_step_m', 'fallback_max_path_seconds', 'max_escape_path_seconds'):
             if key in self.options and (type(self.options[key]) not in (int, float)
                     or not math.isfinite(self.options[key]) or self.options[key] <= 0):
                 raise ValueError('exploration.' + key + '는 양의 유한 수여야 합니다.')
@@ -137,6 +138,10 @@ class Exploration:
             raise ValueError('exploration.candidate_limit은 1~12 정수여야 합니다.')
         if type(self.options.get('progressive_goals', False)) is not bool:
             raise ValueError('exploration.progressive_goals는 bool이어야 합니다.')
+        if type(self.options.get('long_routes', False)) is not bool:
+            raise ValueError('exploration.long_routes는 bool이어야 합니다.')
+        if type(self.options.get('adaptive_planning_budget', False)) is not bool:
+            raise ValueError('exploration.adaptive_planning_budget는 bool이어야 합니다.')
         if type(self.options.get('turn_aware_coordination', False)) is not bool:
             raise ValueError('exploration.turn_aware_coordination는 bool이어야 합니다.')
         if type(self.options.get('finish_round_after_observation', False)) is not bool:
@@ -306,13 +311,46 @@ class Exploration:
             return 'no_safe_plan_within_search_limits'
         return None
 
+    def planning_window(self, safety=False):
+        """새 출발까지 실제로 정지할 수 있는 구간을 구한다."""
+        lead=self.options['safety_lead_seconds'] if safety else self.settings['lead_seconds']
+        if not self.risk.enabled:return lead,{},True
+        lead=max(lead,self.risk.planning_sim_budget_seconds+self.risk.swap_seconds+self.risk.preparation_seconds)
+        limits={r:safe_until(self.field,p[:2],self.now,lead,self.pcfg.robot_radius,self.pcfg.safety_time_step)
+                for r,p in self.poses.items()}
+        minimum=self.risk.swap_seconds+self.risk.preparation_seconds+self.pcfg.time_step
+        if self.options.get('adaptive_planning_budget',False) and min(limits.values())<self.now+lead-1e-8:
+            lead=min(lead,min(limits.values())-self.now-self.pcfg.safety_time_step)
+            if lead<minimum:return lead,limits,False
+        safe=stationary_safe(self.field,self.poses,self.robots,self.now,self.now+lead,self.pcfg.robot_radius)
+        return lead,limits,safe
+
+    def planning_budget(self, lead):
+        """출발 준비 기한과 관측한 시계 속도로 실제 시간 계산 예산을 정한다."""
+        base=self.options['planning_wall_budget_seconds']
+        result={'wall_budget_seconds':base,'clock_rate_sim_per_wall_second':None,
+                'sim_budget_seconds':self.risk.planning_sim_budget_seconds,'budget_source':'configured'}
+        if not self.options.get('adaptive_planning_budget',False) or not self.risk.enabled:
+            return result
+        elapsed_sim=self.now-self.metrics.started_sim
+        elapsed_wall=self.wall-self.metrics.started_wall
+        if elapsed_sim<=0 or elapsed_wall<=0:
+            return result
+        rate=elapsed_sim/elapsed_wall
+        sim_limit=min(self.risk.planning_sim_budget_seconds,
+                      max(0.,lead-self.risk.swap_seconds-self.risk.preparation_seconds))
+        # 결과를 받을 시간을 시뮬레이션 시계에서도 남긴다. 시계가 빨라지면
+        # 실행 중의 실제 시계·출발 기한 검사가 추정치보다 먼저 취소한다.
+        work_sim=max(0.,sim_limit-self.risk.swap_seconds)
+        wall_budget=max(base,work_sim/rate+self.options.get('planning_result_margin_seconds',0.))
+        if math.isfinite(wall_budget):
+            result.update(wall_budget_seconds=wall_budget,clock_rate_sim_per_wall_second=rate,
+                          sim_budget_seconds=sim_limit,budget_source='observed_clock_and_departure')
+        return result
+
     def queue(self, candidates, require_all=False, safety=False, eligible=None):
-        lead = self.options['safety_lead_seconds'] if safety else self.settings['lead_seconds']
+        lead,limits,hold_safe=self.planning_window(safety)
         if self.risk.enabled:
-            lead=max(lead,self.risk.planning_sim_budget_seconds+self.risk.swap_seconds+self.risk.preparation_seconds)
-            limits={r:safe_until(self.field,p[:2],self.now,lead,self.pcfg.robot_radius,self.pcfg.safety_time_step)
-                    for r,p in self.poses.items()}
-            hold_safe=stationary_safe(self.field,self.poses,self.poses,self.now,self.now+lead,self.pcfg.robot_radius)
             self.metrics.events.append({'event':'planning_stop_check','sim_time':self.now,
                 'planned_t0':self.now+lead,'stop_safe_until_by_robot':limits,'safe':hold_safe})
             if not hold_safe:
@@ -324,6 +362,7 @@ class Exploration:
         self.cancel_event = threading.Event()
         self.future_id = self.team.session, self.plan_id
         t0 = self.now + lead
+        budget=self.planning_budget(lead)
         followup=(self.risk.followup_seconds(self.pcfg.speed)
                   if self.risk.enabled and self.options.get('progressive_goals',False)
                   else self.risk.followup_wait_seconds)
@@ -339,11 +378,13 @@ class Exploration:
             'submitted_sim':self.now,'submitted_monotonic':self.wall,'t0':t0,
             'submitted_goals':[asdict(g) for g in candidates],
             'snapshot_poses':dict(self.poses),'sim_elapsed_seconds':None,'wall_elapsed_seconds':None,'status':'RUNNING'}
+        self.planning_job.update(budget)
         self.metrics.events.append(self.planning_job)
         worker=plan_escape_batch if safety and self.risk.multiple_escape_candidates else plan_batch
         self.future = self.pool.submit(worker, self.field, self.plan_pcfg, dict(self.poses),
                 list(candidates), t0, self.now, hold, order, directory, self.cancel_event,
                 {**self.options,'departure':asdict(self.departure),'risk':asdict(self.risk),
+                 'planning_wall_budget_seconds':budget['wall_budget_seconds'],
                  'round_hold_seconds':self.base_hold_seconds}, require_all)
 
     def finish_plan(self):
@@ -375,6 +416,26 @@ class Exploration:
             self.reason = value['status'] + ': ' + value['error']
             self.phase, self.retry_at = 'WAITING_FOR_TARGETS', self.now + self.options['retry_seconds']
             atomic_json(self.output / f'plan_failure_{self.plan_id:04d}.json', value)
+            budget_only=(self.options.get('adaptive_planning_budget',False) and
+                         value['status']=='PLANNING_BUDGET' and not self.cancel_event.is_set())
+            if budget_only:
+                # 계산 종료는 경로 부재의 증명이 아니다. 새로운 출발까지
+                # 정지 안전을 확보할 수 있을 때만 새 시각으로 다시 계획한다.
+                self.failures-=1
+                lead,limits,retry_safe=self.planning_window(safety_failed)
+                if retry_safe:
+                    self.metrics.events.append({'event':'planning_budget_retry','sim_time':self.now,
+                        'previous_plan_id':self.plan_id,'safety':safety_failed,
+                        'reason':'계산 한도 도달 후 정지 안전을 확인해 새 출발 시각으로 재계획'})
+                    if safety_failed:self.queue([],True,True)
+                    else:self.retry_at=self.now
+                    return
+                if safety_failed:
+                    self.metrics.events.append({'event':'planning_retry_wait_unsafe','sim_time':self.now,
+                        'required_stop_until':self.now+max(lead,self.risk.swap_seconds+self.risk.preparation_seconds+self.pcfg.time_step),
+                        'stop_safe_until_by_robot':limits})
+                    self.terminate('no_safe_evacuation: 새 계획의 계산·준비를 기다릴 정지 안전 구간 부족; '+self.reason,'ERROR')
+                    return
             if safety_failed:
                 self.terminate('no_safe_evacuation: ' + self.reason, 'ERROR')
             elif (self.mode=='explore' and self.options.get('progressive_goals',False)
@@ -422,6 +483,10 @@ class Exploration:
             'ownership_reassigned':value.get('ownership_reassigned',False),
             'work_regions':self.work_regions,
             'cost_breakdown':value.get('cost_breakdown')})
+        self.metrics.events[-1].update(route_phase=value.get('route_phase','frontier'),
+            path_length_m_by_robot={r:sum(math.dist((a.x,a.y),(b.x,b.y))
+                for a,b in zip(p.points,p.points[1:])) for r,p in self.paths.items()},
+            path_duration_seconds_by_robot={r:p.points[-1].t-p.points[0].t for r,p in self.paths.items()})
 
     def waiting_departure(self, robot):
         if not self.batch or robot not in self.paths:
@@ -496,13 +561,31 @@ class Exploration:
             return zeros
         if self.risk.enabled and self.future and self.planning_job:
             job=self.planning_job
-            sim_over=now-job['submitted_sim']>self.risk.planning_sim_budget_seconds
-            wall_over=wall-job['submitted_monotonic']>self.options.get('planning_wall_budget_seconds',8.) and not self.future.done()
+            sim_over=now-job['submitted_sim']>job.get('sim_budget_seconds',self.risk.planning_sim_budget_seconds)
+            wall_over=(not self.options.get('adaptive_planning_budget',False) and
+                wall-job['submitted_monotonic']>job.get('wall_budget_seconds',self.options['planning_wall_budget_seconds'])
+                and not self.future.done())
             stop_bad=not stationary_safe(self.field,poses,self.robots,now,max(now,job['t0']),self.pcfg.robot_radius)
             if sim_over or wall_over or stop_bad:
                 status='STOP_WINDOW_CHANGED' if stop_bad else 'SIM_BUDGET_EXCEEDED' if sim_over else 'WALL_BUDGET_EXCEEDED'
                 job.update(status=status,sim_elapsed_seconds=now-job['submitted_sim'],
                            wall_elapsed_seconds=wall-job['submitted_monotonic'])
+                if self.options.get('adaptive_planning_budget',False) and not stop_bad:
+                    safety=getattr(self,'safety_pending',False)
+                    lead,limits,retry_safe=self.planning_window(safety)
+                    if retry_safe:
+                        self.metrics.events.append({'event':'planning_deadline_retry','sim_time':now,
+                            'previous_plan_id':self.plan_id,'safety':safety,'deadline_status':status})
+                        self.invalidate('계획 시각 경과 후 정지 안전을 확인해 새 시각으로 재계획')
+                        self.phase,self.reason='WAITING_FOR_TARGETS','기존 계획 시각 경과; 안전한 새 출발 시각으로 재계획'
+                        self.retry_at=now
+                        if safety:self.queue([],True,True)
+                        return zeros
+                    self.metrics.events.append({'event':'planning_retry_wait_unsafe','sim_time':now,
+                        'required_stop_until':now+max(lead,self.risk.swap_seconds+self.risk.preparation_seconds+self.pcfg.time_step),
+                        'stop_safe_until_by_robot':limits,'deadline_status':status})
+                    self.terminate('계획 출발 기한 경과; 새 계산·준비를 기다릴 정지 안전 구간 부족 ('+status+')','ERROR')
+                    return zeros
                 self.terminate('planning_'+status.lower(),'ERROR')
                 return zeros
         if self.risk.enabled and not self.future and now-self.last_risk_check>=self.risk.check_period_seconds:
@@ -656,9 +739,19 @@ class Exploration:
                                'departure':self.metrics.active_departures.get(r) if self.metrics else None,
                                'ready': self.inputs_ready} for r, bt in self.robot_bt.items()},
                 'observation': self.observation.snapshot(),
+                'initial_observation':({'sim_elapsed_seconds':max(0.,self.now-self.bootstrap_since),
+                    'sim_required_seconds':self.options['bootstrap_seconds'],
+                    'minimum_frames':self.options['minimum_observation_frames'],
+                    'frames_by_robot':dict(self.observation.valid_frames)}
+                    if self.phase=='BOOTSTRAP_OBSERVING' else None),
                 'replans': self.metrics.replans if self.metrics else 0,
                 'runtime_inputs': self.runtime_inputs,
                 'work_regions': self.work_regions,
+                'planning':({**{k:self.planning_job.get(k) for k in (
+                    'wall_budget_seconds','sim_budget_seconds','clock_rate_sim_per_wall_second','budget_source','t0')},
+                    'wall_elapsed_seconds':max(0.,self.wall-self.planning_job['submitted_monotonic']),
+                    'sim_elapsed_seconds':max(0.,self.now-self.planning_job['submitted_sim'])}
+                    if self.future and self.planning_job else None),
                 'risk_prediction':self.risk_report,
                 'departure_policy': self.departure.mode,
                 'departure': self.metrics.active_departures if self.metrics else {},
@@ -671,10 +764,14 @@ class Exploration:
             self.observation.save(self.output)
             atomic_json(self.root / 'latest.json', {'session': self.team.session, 'directory': str(self.output),
                                                    'phase': self.phase, 'reason': self.reason})
+        else:
+            atomic_json(self.root / 'startup_status.json',self.snapshot())
 
     def close(self):
         if self.active:
             self.terminate('shutdown')
+        elif self.metrics is None and self.phase not in ('ERROR','STOPPED'):
+            self.phase,self.reason='STOPPED','임무 시작 전 실행 종료'
         self.persist(plot=True)
         if self.owns_pool:
             self.pool.shutdown(wait=False, cancel_futures=True)

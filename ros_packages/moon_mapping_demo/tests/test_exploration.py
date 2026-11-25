@@ -99,6 +99,35 @@ class ExplorationTests(unittest.TestCase):
     def engine(self,mode='fixed',pool=None):
         return Exploration(config(),Field(),PCFG,self.tmp.name,mode,pool or ImmediatePool())
 
+    def test_startup_state_is_saved_before_session_and_coverage_can_read_it(self):
+        import subprocess,sys
+        e=self.engine()
+        e.runtime_inputs={'startup':{'wall_elapsed_seconds':1.5,'wall_required_seconds':3.,
+            'sim_elapsed_seconds':.05,'sim_required_seconds':.1}}
+        e.persist()
+        saved=json.loads((Path(self.tmp.name)/'startup_status.json').read_text())
+        self.assertEqual(saved['phase'],'WAITING')
+        self.assertFalse((Path(self.tmp.name)/'latest.json').exists())
+        script=Path(__file__).resolve().parents[3]/'docker/lunar/show_coverage.py'
+        result=subprocess.run([sys.executable,str(script),'--output',self.tmp.name],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertIn('입력 안정화',result.stdout)
+        self.assertIn('WAITING',result.stdout)
+        self.assertIn('1.5 / 3.0',result.stdout)
+
+    def test_shutdown_before_session_does_not_leave_startup_status_running(self):
+        e=self.engine()
+        e.close()
+        saved=json.loads((Path(self.tmp.name)/'startup_status.json').read_text())
+        self.assertEqual(saved['phase'],'STOPPED')
+
+    def test_startup_error_reason_is_preserved_when_closing(self):
+        e=self.engine()
+        e.terminate('clock_reversed','ERROR')
+        e.close()
+        saved=json.loads((Path(self.tmp.name)/'startup_status.json').read_text())
+        self.assertEqual((saved['phase'],saved['reason']),('ERROR','clock_reversed'))
+
     def test_four_fixed_goals_use_upstream_trees_common_time_and_observe(self):
         e=self.engine()
         poses=simulate(e)

@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-사용법: bash docker/lunar/run_demo.sh [bt-fixed|explore|explore-wide|single|preview|multi|gpu-check|status|start|stop|diagnose]
+사용법: bash docker/lunar/run_demo.sh [bt-fixed|explore|explore-wide|single|preview|multi|gpu-check|coverage|status|start|stop|diagnose]
   bt-fixed 네 로봇의 기존 목표를 TeamBT·RobotBT와 시간 경로로 실행 (기본)
   explore  400 m² 고정 영역에서 센서 기반 반복 탐사 (180 시뮬레이션 초)
   explore-wide 3364 m² 영역의 장시간 평가 (단기 검증 후 사용)
@@ -12,12 +12,14 @@ usage() {
   preview  기본 4대 경로 시각화, 정지 유지
   multi    robot1~4의 기존 실행기 다중 목표 주행
   gpu-check GPU와 OpenGL 렌더러만 확인, 시뮬레이터는 시작하지 않음
+  coverage 최신 실행의 탐사율(%)·관측 면적·저장 시각 확인 (Docker 연결 불필요)
   status   현재 실행 중인 임무 상태 확인
   start    열린 시뮬레이터에서 현재 위치·시각으로 임무 다시 시작
   stop     현재 임무 정지, 시뮬레이터 창 유지
   diagnose 12초 동안 clock·4대 odom 수신 간격 측정
 화면을 사용할 수 있는 호스트 터미널에서 실행합니다. 종료는 Ctrl+C입니다.
 기본은 드라이버에 맞는 GPU 자동 선택입니다. LUNAR_GPU=mesa|nvidia|software로 지정할 수 있습니다.
+LUNAR_RVIZ=false로 RViz 없이 Webots와 탐사만 실행할 수 있습니다.
 BT 출발 정책: LUNAR_DEPARTURE_POLICY=simultaneous|staggered_pairs (기본 simultaneous)
 위험 대응 비교: LUNAR_RISK_STAGE=baseline|early|goals|candidates|heading (미지정 시 YAML 설정)
 EOF
@@ -34,6 +36,11 @@ fi
 LUNAR_DEMO_MODE=${1:-bt-fixed}
 LUNAR_DEPARTURE_POLICY=${LUNAR_DEPARTURE_POLICY:-simultaneous}
 LUNAR_RISK_STAGE=${LUNAR_RISK_STAGE:-}
+LUNAR_RVIZ=${LUNAR_RVIZ:-true}
+case "$LUNAR_RVIZ" in
+  true|false) ;;
+  *) printf '%s\n' 'LUNAR_RVIZ는 true 또는 false여야 합니다.' >&2; exit 2 ;;
+esac
 case "$LUNAR_RISK_STAGE" in
   ''|baseline|early|goals|candidates|heading) ;;
   *) printf '%s\n' 'LUNAR_RISK_STAGE의 단계 이름을 확인하세요.' >&2; exit 2 ;;
@@ -43,7 +50,7 @@ case "$LUNAR_DEPARTURE_POLICY" in
   *) printf '%s\n' 'LUNAR_DEPARTURE_POLICY는 simultaneous 또는 staggered_pairs여야 합니다.' >&2; exit 2 ;;
 esac
 case "$LUNAR_DEMO_MODE" in
-  bt-fixed|explore|explore-wide|single|preview|multi|gpu-check|status|start|stop|diagnose) ;;
+  bt-fixed|explore|explore-wide|single|preview|multi|gpu-check|coverage|status|start|stop|diagnose) ;;
   *) usage >&2; exit 2 ;;
 esac
 
@@ -54,6 +61,10 @@ export LUNAR_UID=${LUNAR_UID:-$(id -u)}
 export LUNAR_GID=${LUNAR_GID:-$(id -g)}
 export LUNAR_ROS_DOMAIN_ID=${LUNAR_ROS_DOMAIN_ID:-63}
 cd -- "$LUNAR_REPO"
+
+if [[ $LUNAR_DEMO_MODE == coverage ]]; then
+  exec python3 "$LUNAR_SCRIPT_DIR/show_coverage.py"
+fi
 
 if ! command -v docker >/dev/null; then
   printf '%s\n' 'Docker 실행 파일을 찾지 못했습니다.' >&2
@@ -89,7 +100,7 @@ case "$LUNAR_DEMO_MODE" in
       fi
       if [[ $1 == status ]]; then
         exec timeout 12s ros2 topic echo /shadow_mission/status \
-          --qos-durability transient_local --once
+          --qos-durability transient_local --once --full-length
       fi
       exec timeout 12s ros2 service call "/shadow_mission/$1" std_srvs/srv/Trigger "{}"
     ' lunar-demo-control "$LUNAR_DEMO_MODE"
@@ -193,6 +204,7 @@ exec docker compose -f docker/lunar/compose.yaml run --rm --no-deps \
   --env "LUNAR_GPU_MODE=$LUNAR_GPU" \
   --env "LUNAR_DEPARTURE_POLICY=$LUNAR_DEPARTURE_POLICY" \
   --env "LUNAR_RISK_STAGE=$LUNAR_RISK_STAGE" \
+  --env "LUNAR_RVIZ=$LUNAR_RVIZ" \
   --env "LUNAR_DEMO_OUTPUT=$LUNAR_DEMO_OUTPUT" \
   "$LUNAR_GUI_SERVICE" bash -lc '
     set -eo pipefail
@@ -219,10 +231,10 @@ exec docker compose -f docker/lunar/compose.yaml run --rm --no-deps \
         [[ $LUNAR_DEMO_MODE != bt-fixed ]] || mode=fixed
         [[ $LUNAR_DEMO_MODE != explore-wide ]] || config="$PWD/ros_packages/moon_mapping_demo/config/exploration_wide.yaml"
         exec ros2 launch moon_mapping_demo moon_exploration.launch.py \
-          rviz:=true "mode:=$mode" "config:=$config" "output:=$LUNAR_DEMO_OUTPUT" \
+          "rviz:=$LUNAR_RVIZ" "mode:=$mode" "config:=$config" "output:=$LUNAR_DEMO_OUTPUT" \
           "departure_policy:=$LUNAR_DEPARTURE_POLICY" "risk_stage:=$LUNAR_RISK_STAGE"
         ;;
     esac
     exec ros2 launch moon_mapping_demo moon_shadow.launch.py \
-      rviz:=true "execute:=$execute" "config:=$config" "output:=$LUNAR_DEMO_OUTPUT"
+      "rviz:=$LUNAR_RVIZ" "execute:=$execute" "config:=$config" "output:=$LUNAR_DEMO_OUTPUT"
   '

@@ -84,19 +84,22 @@ def safe_until(field,xy,now,horizon,radius,precision=.25):
     return lo
 
 
-def path_risk(field,path,pose,now,horizon,radius):
+def path_risk(field,path,pose,now,horizon,radius,goal_radius=None):
     """남은 이동·회전/대기·도착 후 유한 hold 중 최초 불가 구간."""
     end=now+horizon
     points=[(now,tuple(pose[:2]))]
     points.extend((p.t,(p.x,p.y)) for p in path.points if now<p.t<end)
     points.append((end,position_at(path,end)))
     for (ta,a),(tb,b) in zip(points,points[1:]):
-        if field.blocked_segment(a,b,ta,tb,radius):
+        # 이동은 경로 생성과 같은 몸체 반경을 사용한다. 목표의 추가 위치
+        # 여유를 전체 이동에 덧씌워 검증된 긴 경로를 즉시 취소하지 않는다.
+        check_radius=goal_radius if goal_radius is not None and ta>=path.points[-1].t else radius
+        if field.blocked_segment(a,b,ta,tb,check_radius):
             lo,hi=ta,tb
             while hi-lo>.25:
                 mid=(lo+hi)/2;fraction=(mid-ta)/max(tb-ta,1e-9)
                 p=(a[0]+fraction*(b[0]-a[0]),a[1]+fraction*(b[1]-a[1]))
-                if field.blocked_segment(a,p,ta,mid,radius): hi=mid
+                if field.blocked_segment(a,p,ta,mid,check_radius): hi=mid
                 else: lo=mid
             kind='movement' if math.dist(a,b)>1e-9 else (
                 'observation_or_followup_hold' if ta>=path.points[-1].t else 'rotation_or_wait')
@@ -110,7 +113,7 @@ def prognosis(field,paths,poses,now,config,policy):
     for r,p in poses.items():
         stop=safe_until(field,p[:2],now,policy.forecast_seconds,config.robot_radius,config.safety_time_step)
         danger=path_risk(field,paths[r],p,now,policy.forecast_seconds,
-                         config.robot_radius+policy.warning_position_margin_m) if r in paths else None
+                         config.robot_radius,config.robot_radius+policy.warning_position_margin_m) if r in paths else None
         # 예측 끝까지 안전했다는 유한 하한은 위험 발견 시각이 아니다.
         # 특히 고정 임무 종료까지 예측을 줄인 경우 조기 대피를 오발하지 않는다.
         # 검증된 이동 경로가 있으면 현재 좌표에 계속 정지한다는 가정으로

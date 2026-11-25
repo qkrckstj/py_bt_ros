@@ -63,7 +63,7 @@ class SimulationDelayedPool:
         return Delayed()
 
 
-def run(config, output, mode='fixed', duration=None, departure_policy=None,risk_stage=None,planning_delay_sim=0.):
+def run(config, output, mode='fixed', duration=None, departure_policy=None,risk_stage=None,planning_delay_sim=0.,sensor_geometry='legacy_columns'):
     before=time.monotonic()
     cfg,env,pcfg,share=load_experiment(config)
     if (Path(output)/'bt_kinematic_validation.json').exists():
@@ -75,12 +75,17 @@ def run(config, output, mode='fixed', duration=None, departure_policy=None,risk_
     if duration:
         cfg['exploration']['max_sim_seconds']=duration
     field=make_field(cfg,env,pcfg,share)
+    sensor=simulated_scan
+    if sensor_geometry=='mesh':
+        from synthetic_mesh_scan import simulated_mesh_scan
+        sensor=simulated_mesh_scan
     poses={r:tuple(s[k] for k in ('x','y','yaw')) for r,s in env['starts'].items()}
     pool=SimulationDelayedPool(planning_delay_sim) if planning_delay_sim else ImmediatePool()
     engine=Exploration(cfg,field,pcfg,output,mode,pool)
     engine.start(1.,time.monotonic(),poses)
     engine.metrics.metadata.update(synthetic_sensor=True, physical_webots_run=False, planning_sim_clock_paused=True)
     engine.metrics.metadata['injected_planning_delay_sim_seconds']=planning_delay_sim
+    engine.metrics.metadata['synthetic_sensor_geometry']=sensor_geometry
     dt=cfg['execution']['control_period']
     minimum=math.inf
     dispersion_samples=[]
@@ -90,7 +95,7 @@ def run(config, output, mode='fixed', duration=None, departure_policy=None,risk_
         if planning_delay_sim:pool.now=now
         if step%5==0:
             for robot in poses:
-                pose,ranges,amin,inc=simulated_scan(field,robot,poses)
+                pose,ranges,amin,inc=sensor(field,robot,poses)
                 engine.observation.integrate(robot,now,pose,ranges,amin,inc,.1,8.)
         for robot,p in poses.items():
             engine.metrics.pose(robot,now,p[:2])
@@ -145,6 +150,7 @@ def run(config, output, mode='fixed', duration=None, departure_policy=None,risk_
     report['risk_stage']=risk_stage
     report['risk_policy']=asdict(engine.risk)
     report['injected_planning_delay_sim_seconds']=planning_delay_sim
+    report['synthetic_sensor_geometry']=sensor_geometry
     report['departures']=engine.metrics.departures
     report['plan_costs']=engine.metrics.plan_costs
     engine.close()
@@ -162,5 +168,6 @@ if __name__=='__main__':
     parser.add_argument('--departure-policy',choices=['simultaneous','staggered_pairs'])
     parser.add_argument('--risk-stage',choices=['baseline','early','goals','candidates','heading'])
     parser.add_argument('--planning-delay-sim',type=float,default=0.)
+    parser.add_argument('--sensor-geometry',choices=['legacy_columns','mesh'],default='legacy_columns')
     args=parser.parse_args()
-    raise SystemExit(0 if run(args.config,args.output,args.mode,args.duration,args.departure_policy,args.risk_stage,args.planning_delay_sim) else 2)
+    raise SystemExit(0 if run(args.config,args.output,args.mode,args.duration,args.departure_policy,args.risk_stage,args.planning_delay_sim,args.sensor_geometry) else 2)

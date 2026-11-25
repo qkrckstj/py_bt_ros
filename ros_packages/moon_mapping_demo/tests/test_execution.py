@@ -27,6 +27,26 @@ class ExecutionTests(unittest.TestCase):
     settings = {'position_tolerance': .3, 'goal_tolerance': .05,
                 'delay_tolerance': 1., 'control_period': .1}
 
+    def test_slow_clock_startup_uses_wall_settling_and_short_positive_sim_progress(self):
+        gate=InputStability(3.,sim_seconds=.1)
+        self.assertFalse(gate.ready(1.,10.,True))
+        self.assertFalse(gate.ready(1.07,12.,True))
+        self.assertTrue(gate.ready(1.105,13.,True))
+        self.assertAlmostEqual(gate.progress(1.105,13.)['sim_elapsed_seconds'],.105)
+
+    def test_short_startup_sim_window_still_rejects_paused_clock(self):
+        gate=InputStability(3.,sim_seconds=.1)
+        self.assertFalse(gate.ready(1.,10.,True))
+        self.assertFalse(gate.ready(1.,30.,True))
+
+    def test_short_startup_window_resets_when_inputs_disappear(self):
+        gate=InputStability(3.,sim_seconds=.1)
+        self.assertFalse(gate.ready(1.,10.,True))
+        self.assertFalse(gate.ready(1.05,12.,False))
+        self.assertFalse(gate.ready(1.06,13.,True))
+        self.assertFalse(gate.ready(1.17,15.,True))
+        self.assertTrue(gate.ready(1.2,16.,True))
+
     def test_startup_requires_stable_simulation_and_wall_time(self):
         gate = InputStability(3.)
         self.assertFalse(gate.ready(1., 10., True))

@@ -1,4 +1,4 @@
-# 적극 탐사: 짧은 관측·국소 탈출 예상으로 정지 여유를 줄인 3364 m² 평가 프로필.
+# 긴 탐사: 사전 지형의 12 m급 직선 후보와 출발 기한에 맞춘 계산 예산.
 robots:
 - robot1
 - robot2
@@ -36,10 +36,13 @@ execution:
   delay_tolerance: 2.0
   odom_timeout: 0.6
   input_wall_timeout: 3.0
+  startup_stable_seconds: 3.0
+  startup_stable_sim_seconds: 0.1
   lookahead_seconds: 0.3
   control_period: 0.1
   max_replans: 10
 exploration:
+  show_shadow_mesh: false
   evaluation:
     xmin: -29.0
     ymin: -29.0
@@ -60,9 +63,15 @@ exploration:
   observation_angular_speed: 0.5
   sensor_timeout_seconds: 2.0
   planning_wall_budget_seconds: 8.0
+  adaptive_planning_budget: true
   planning_result_margin_seconds: 0.4
   max_assignment_attempts: 24
   target_step_m: 4.0
+  long_routes: true
+  long_route_distance_m: 12.0
+  fallback_target_step_m: 4.0
+  fallback_max_path_seconds: 45.0
+  max_escape_path_seconds: 45.0
   progressive_goals: true
   spatial_regions: true
   allow_region_support: true
@@ -70,7 +79,7 @@ exploration:
   region_continuity_weight: 1.5
   turn_aware_coordination: true
   candidate_limit: 12
-  max_path_seconds: 45.0
+  max_path_seconds: 90.0
   minimum_goal_distance_m: 0.8
   goal_separation_m: 1.0
   minimum_potential_gain_m2: 0.5

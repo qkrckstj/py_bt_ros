@@ -67,7 +67,8 @@ class ShadowMission(Node):
         self.last_clock, self.clock_wall = 0., time.monotonic()
         self.last_report = 0.
         self.last_reported_state = None
-        self.input_stability = InputStability(self.settings.get('startup_stable_seconds', 3.))
+        self.input_stability = InputStability(self.settings.get('startup_stable_seconds', 3.),
+                                             self.settings.get('startup_stable_sim_seconds', .1))
         self.halt()
 
     def now(self):

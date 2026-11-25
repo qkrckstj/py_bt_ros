@@ -4,6 +4,7 @@ import csv
 import json
 import math
 import time
+import numpy as np
 
 import rclpy
 from rclpy.duration import Duration
@@ -42,6 +43,7 @@ class ExplorationMission(ShadowMission):
                                      lambda msg, r=robot: self.scan(r, msg), qos_profile_sensor_data)
         q = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.observed_map = self.create_publisher(OccupancyGrid, '/exploration/observations', q)
+        self.observation_markers = self.create_publisher(MarkerArray, '/exploration/observation_markers', q)
         self.bt_markers = self.create_publisher(MarkerArray, '/exploration/bt_markers', q)
         self.team_status = self.create_publisher(String, '/exploration/team_status', q)
         self.robot_status = {r: self.create_publisher(String, f'/{r}/exploration/state', q) for r in self.robots}
@@ -51,6 +53,9 @@ class ExplorationMission(ShadowMission):
         self.create_subscription(Empty, '/exploration/stop', lambda msg: self.stop(None, Trigger.Response()), 10)
         self.last_path_token = None
         self.plot_session = None
+        self.last_observation_marker_token = None
+        self.last_shadow_sim_time = -math.inf
+        self.last_shadow_session = None
 
     def odom(self, robot, msg):
         super().odom(robot, msg)
@@ -149,9 +154,16 @@ class ExplorationMission(ShadowMission):
             if self.input_stability.ready(now, wall, valid and exclusive):
                 e.start(now, wall, self.poses)
                 self.pending_scans.clear()
+            elif not exclusive:
+                e.reason='로봇별 명령 발행자 확인 대기'
+            elif not valid:
+                e.reason='전체 로봇 위치와 시계의 최신 입력 대기'
+            else:
+                e.reason='최신 입력을 확인했으며 실제 시간 기준으로 안정화 중'
         self.fuse_scans(now)
         e.runtime_inputs = {'input_health': self.input_health(now), 'scan_drops': dict(self.scan_drops),
-                            'exclusive_cmd_vel_publishers': exclusive}
+                            'exclusive_cmd_vel_publishers': exclusive,
+                            'startup':self.input_stability.progress(now,wall) if e.phase=='WAITING' else None}
         controls = e.step(now, wall, self.poses, valid and exclusive)
         for command in e.commands:
             if command['sim_time'] == now:
@@ -195,14 +207,20 @@ class ExplorationMission(ShadowMission):
             self.plot_session = e.team.session
 
     def publish_observations(self, now):
-        e, msg = self.engine, OccupancyGrid()
-        msg.header.frame_id, msg.header.stamp = 'map', stamp(now)
-        msg.info.resolution = e.area.resolution
-        msg.info.height, msg.info.width = e.area.shape
-        msg.info.origin.position.x, msg.info.origin.position.y = e.area.xmin, e.area.ymin
-        msg.info.origin.orientation.w = 1.
-        msg.data = e.observation.cells.ravel().tolist()
-        self.observed_map.publish(msg)
+        e = self.engine
+        if self.observed_map.get_subscription_count():
+            msg=OccupancyGrid()
+            msg.header.frame_id, msg.header.stamp = 'map', stamp(now)
+            msg.info.resolution = e.area.resolution
+            msg.info.height, msg.info.width = e.area.shape
+            msg.info.origin.position.x, msg.info.origin.position.y = e.area.xmin, e.area.ymin
+            msg.info.origin.orientation.w = 1.
+            msg.data = e.observation.cells.ravel().tolist()
+            self.observed_map.publish(msg)
+        if self.observation_markers.get_subscription_count():
+            self.publish_observation_markers(now)
+        if not self.bt_markers.get_subscription_count():
+            return
         array = MarkerArray()
         texts = [f'관측 {100*e.observation.coverage_fraction:.1f}% ({e.observation.observed_area_m2:.1f}/{e.area.denominator_m2:.1f} m²)\nTeamBT: {e.team.phase} / {e.phase}']
         for r,bt in e.robot_bt.items():
@@ -222,7 +240,8 @@ class ExplorationMission(ShadowMission):
             marker.text = text
             array.markers.append(marker)
         colors=[(.9,.3,.2),(.2,.8,.3),(.3,.5,1.),(.9,.7,.2)]
-        if getattr(e.field,'geometry_mode',None)=='mesh':
+        if (e.options.get('show_shadow_mesh',False) and getattr(e.field,'geometry_mode',None)=='mesh'
+                and (self.last_shadow_session!=e.team.session or now-self.last_shadow_sim_time>=.5)):
             shadow=Marker()
             shadow.header.frame_id,shadow.header.stamp='map',stamp(now)
             shadow.ns,shadow.id='terrain_shadow_mesh',0
@@ -233,6 +252,7 @@ class ExplorationMission(ShadowMission):
             shadow.points=[Point(x=float(p[0]),y=float(p[1]),z=.025)
                            for triangle in e.field.shadow_triangles(now) for p in triangle]
             array.markers.append(shadow)
+            self.last_shadow_sim_time,self.last_shadow_session=now,e.team.session
         for index,(robot,region) in enumerate(sorted(e.work_regions.items())):
             supporting=region.get('activity')=='support'
             xy=region['target_xy'] if supporting else region['frontier_xy']
@@ -262,6 +282,39 @@ class ExplorationMission(ShadowMission):
                 arrow.lifetime=marker.lifetime
                 array.markers.append(arrow)
         self.bt_markers.publish(array)
+
+    def publish_observation_markers(self, now):
+        """지도 텍스처 셰이더 대신 배경과 관측 셀 점으로 같은 격자를 표시한다."""
+        e=self.engine
+        token=e.team.session,e.observation.revision
+        if token==self.last_observation_marker_token:return
+        markers=MarkerArray()
+        background=Marker()
+        background.header.frame_id,background.header.stamp='map',stamp(now)
+        background.ns,background.id='observations',0
+        background.type,background.action=Marker.CUBE,Marker.ADD
+        background.pose.orientation.w=1.
+        background.pose.position=Point(x=(e.area.xmin+e.area.xmax)/2.,y=(e.area.ymin+e.area.ymax)/2.,z=.005)
+        background.scale.x,background.scale.y,background.scale.z=float(e.area.xmax-e.area.xmin),float(e.area.ymax-e.area.ymin),.005
+        background.color.r=background.color.g=background.color.b=.35
+        background.color.a=.45
+        markers.markers.append(background)
+        for number,value,shade in [(1,0,1.),(2,100,.05)]:
+            marker=Marker()
+            marker.header=background.header
+            marker.ns,marker.id='observations',number
+            marker.type,marker.action=Marker.POINTS,Marker.ADD
+            marker.pose.orientation.w=1.
+            marker.scale.x=marker.scale.y=float(e.area.resolution)
+            marker.color.r=marker.color.g=marker.color.b=shade
+            marker.color.a=.95
+            rows,cols=np.nonzero(e.observation.cells==value)
+            marker.points=[Point(x=float(e.area.xmin+(col+.5)*e.area.resolution),
+                y=float(e.area.ymin+(row+.5)*e.area.resolution),z=.03) for row,col in zip(rows,cols)]
+            if not marker.points:marker.action=Marker.DELETE
+            markers.markers.append(marker)
+        self.observation_markers.publish(markers)
+        self.last_observation_marker_token=token
 
 
 def main(args=None):

@@ -1,11 +1,60 @@
 """공유 관측 지도의 frontier를 분리해 지속적인 로봇별 작업 구역을 만든다."""
 from itertools import combinations
+from dataclasses import replace
 import math
 
 import numpy as np
 
 from .hungarian import solve, InfeasibleAssignment
 from .risk import RiskPolicy
+
+
+def corridor_candidates(observation, poses, field, radius, settings, candidates, regions, excluded):
+    """관측 경계 방향을 사전 WBT의 긴 직선 통로로 연장한다.
+
+    미관측 목표도 사전 지형으로 검사한다. 관측 지도와 탐사율은 수정하지 않으며,
+    시간 그림자·회전·동료 예약·도착 후 대기는 계획 worker가 다시 검증한다.
+    """
+    maximum=settings.get('long_route_distance_m',12.)
+    minimum=1.5*settings.get('fallback_target_step_m',4.)
+    groups={}
+    short=[]
+    supports=[g for g in candidates if g.purpose=='support']
+    for goal in candidates:
+        if goal.purpose!='explore':continue
+        robot=goal.preferred_robot or min(poses,key=lambda r:math.dist(goal.xy,poses[r][:2]))
+        key=goal.work_region or robot
+        if key not in groups:
+            groups[key]=[]
+            short.append(goal)
+        start=poses[robot][:2]
+        target=regions.get(robot,{}).get('frontier_xy',goal.xy)
+        # 대표 경계와 기존 실제 전진 방향을 모두 시도한다.
+        for direction in (target,goal.xy):
+            distance=math.dist(start,direction)
+            if distance<1e-6:continue
+            dx,dy=(direction[0]-start[0])/distance,(direction[1]-start[1])/distance
+            for length in (maximum,maximum*.8,maximum*.6):
+                if length<minimum:continue
+                xy=(start[0]+dx*length,start[1]+dy*length)
+                area=observation.area
+                if not (area.xmin+radius<=xy[0]<=area.xmax-radius and
+                        area.ymin+radius<=xy[1]<=area.ymax-radius):continue
+                if field.static_blocked_segment(start,xy,radius):continue
+                if any(math.dist(xy,p)<clearance for p,clearance in excluded):continue
+                if any(other!=robot and math.dist(xy,p[:2])<2*radius+.1 for other,p in poses.items()):continue
+                gain=observation.potential_gain(xy)
+                if gain<settings.get('minimum_potential_gain_m2',.5):continue
+                y,x=area.index(xy)
+                groups[key].append(replace(goal,id=f'corridor_{y}_{x}_{robot}',x=xy[0],y=xy[1],
+                    yaw=math.atan2(dy,dx),gain=gain,preferred_robot=robot,route_kind='corridor'))
+    long=[]
+    for key,options in groups.items():
+        if not options:continue
+        chosen=max(options,key=lambda g:(math.dist(g.xy,poses[g.preferred_robot][:2]),g.gain,g.id))
+        long.append(chosen)
+    # 각 구역의 긴 목표와 짧은 대안을 남겨 한 요청의 남은 예산으로 복귀한다.
+    return (long+short+supports)[:settings.get('candidate_limit',12)]
 
 
 def directed_path(grid, start, goal, distances):

@@ -25,12 +25,13 @@ class PlannerConfig:
     horizon: float = 360.
     safety_time_step: float = .25
     direct_goal_links: bool = False
+    straight_only: bool = False
 
     def __post_init__(self):
         for name in self.__dataclass_fields__:
             value = getattr(self, name)
-            if name=='direct_goal_links':
-                if type(value) is not bool:raise ValueError('direct_goal_links는 bool이어야 합니다')
+            if name in ('direct_goal_links','straight_only'):
+                if type(value) is not bool:raise ValueError(name+'는 bool이어야 합니다')
                 continue
             if not isinstance(value, Real) or isinstance(value, bool) or not math.isfinite(value) or value <= 0:
                 raise ValueError(f'{name}: 유한한 양수가 필요합니다')
@@ -144,7 +145,7 @@ class SpaceTimePlanner:
         goal_node = next((n for n in goal_neighbors if position(n) == goal), special_goal)
         max_ticks = math.floor(cfg.horizon/cfg.time_step + 1e-10)
         valid_ticks=None
-        if goal_hold or goal_hold_until is not None or arrive_not_before is not None:
+        if not cfg.straight_only and (goal_hold or goal_hold_until is not None or arrive_not_before is not None):
             key=(goal,t0,goal_hold,goal_hold_until,arrive_not_before,service_radius)
             windows=self._goal_windows.get(key)
             if windows is None:
@@ -206,7 +207,11 @@ class SpaceTimePlanner:
                     state = previous
                 return TimedPath(tuple(reversed(states)), tick)
             point = position(node)
-            if node == special_goal:
+            if cfg.straight_only:
+                # 긴 탐사 후보는 출발점·목표·대기만 있는 작은 시간 그래프를
+                # 먼저 탐색한다. 회전과 그림자·동료 예약 검사는 그대로 적용한다.
+                candidates=[goal_node] if node!=goal_node else []
+            elif node == special_goal:
                 candidates=list(goal_neighbors)
             elif node == special_start:
                 candidates = list(start_neighbors)

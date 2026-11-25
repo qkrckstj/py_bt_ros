@@ -29,6 +29,7 @@ class Candidate:
     purpose: str = 'explore'
     work_region: str = ''
     preferred_robot: str = ''
+    route_kind: str = 'frontier'
 
     @property
     def xy(self):
@@ -63,11 +64,17 @@ def observed_candidates(observation, poses, field, radius, settings, excluded=()
                         min_frontier_length=area.resolution, cache_distances=True)
     candidates = {}
     max_step = settings.get('target_step_m', 3.)
+    if settings.get('long_routes', False):
+        settings = {**settings, 'target_step_m': settings.get('fallback_target_step_m', 4.)}
+        max_step = settings['target_step_m']
     min_step = settings.get('minimum_goal_distance_m', .8)
     frontiers = sorted(grid.candidates, key=lambda g: (-g.gain, g.x, g.y))[:settings.get('max_frontiers', 64)]
     if settings.get('spatial_regions',False):
-        from .work_regions import region_candidates
-        return region_candidates(observation,poses,field,radius,settings,grid,frontiers,excluded,Candidate),grid
+        from .work_regions import region_candidates, corridor_candidates
+        selected=region_candidates(observation,poses,field,radius,settings,grid,frontiers,excluded,Candidate)
+        if settings.get('long_routes',False):
+            selected=corridor_candidates(observation,poses,field,radius,settings,selected,grid.work_regions,excluded)
+        return selected,grid
     for robot, pose in sorted(poses.items()):
         distances = grid.distances(pose[:2])
         for goal in frontiers:
@@ -129,6 +136,9 @@ def observed_candidates(observation, poses, field, radius, settings, excluded=()
                 continue
             selected.append(candidate)
             covered |= masks[candidate]
+        if settings.get('long_routes',False):
+            from .work_regions import corridor_candidates
+            selected=corridor_candidates(observation,poses,field,radius,settings,selected,{},excluded)
         return selected, grid
     if risk.safe_goal_windows:
         t0=settings['candidate_t0']
@@ -216,7 +226,7 @@ def plan_escape_batch(field,pcfg,poses,candidates,t0,created_sim,hold,robot_orde
     risk=RiskPolicy.parse(settings.get('risk'));started=time.monotonic()
     deadline=started+max(0.,settings.get('planning_wall_budget_seconds',8.)-
                         settings.get('planning_result_margin_seconds',0.))
-    fast_horizon=settings.get('max_path_seconds',0.)
+    fast_horizon=settings.get('max_escape_path_seconds',settings.get('max_path_seconds',0.))
     if settings.get('allow_partial_escape',False) and not settings.get('_partial_escape_attempted',False):
         # 팀이 분산된 뒤에도 모든 로봇의 대피점을 교차 배정하면, 안전한
         # 동료의 긴 이동 비용 때문에 위험 로봇의 짧은 탈출을 놓칠 수 있다.
@@ -314,6 +324,35 @@ def plan_escape_batch(field,pcfg,poses,candidates,t0,created_sim,hold,robot_orde
 
 def plan_batch(field, pcfg, poses, candidates, t0, created_sim, hold, robot_order,
                output, cancel_event, settings, require_all=False):
+    if settings.get('long_routes',False) and not settings.get('_route_phase') and any(
+            g.route_kind=='corridor' for g in candidates):
+        started=time.monotonic()
+        budget=max(0.,settings.get('planning_wall_budget_seconds',8.)-
+                   settings.get('planning_result_margin_seconds',0.))
+        # 긴 목표가 어려운 로봇은 짧은 목표와 같은 회차에 섞는다.
+        # 긴 목표만 가능한 소수만 움직이고 나머지를 오래 세워 두지 않는다.
+        long_goals=list(candidates)
+        short_goals=[g for g in candidates if g.route_kind!='corridor']
+        value=plan_batch(field,replace(pcfg,straight_only=True),poses,long_goals,t0,created_sim,hold,robot_order,
+            Path(output)/'long_route',cancel_event,
+            {**settings,'_route_phase':'long','planning_wall_budget_seconds':budget*.6,
+             'planning_result_margin_seconds':0.},require_all)
+        value['route_phase']='long'
+        if cancel_event.is_set():
+            return {'status':'CANCELLED','error':'긴 경로 계산 중 임무 취소','attempts':value.get('attempts',[])}
+        if value['status'] in ('OK','CANCELLED'):
+            return value
+        long_status=value['status']
+        remaining=max(0.,budget-(time.monotonic()-started))
+        if short_goals and remaining>0:
+            value=plan_batch(field,pcfg,poses,short_goals,t0,created_sim,hold,robot_order,
+                Path(output)/'short_route_fallback',cancel_event,
+                {**settings,'_route_phase':'short','max_path_seconds':settings.get('fallback_max_path_seconds',45.),
+                 'planning_wall_budget_seconds':remaining,'planning_result_margin_seconds':0.},require_all)
+            value.update(route_phase='short_fallback',long_route_status=long_status)
+        if cancel_event.is_set():
+            return {'status':'CANCELLED','error':'짧은 대안 계산 중 임무 취소','attempts':value.get('attempts',[])}
+        return value
     if not any(g.work_region for g in candidates):
         return _plan_batch(field,pcfg,poses,candidates,t0,created_sim,hold,robot_order,
                            output,cancel_event,settings,require_all)
@@ -374,7 +413,7 @@ def _plan_batch(field, pcfg, poses, candidates, t0, created_sim, hold, robot_ord
     service_radius = pcfg.robot_radius + (risk.warning_position_margin_m
         if exploratory and settings.get('progressive_goals', False) and risk.safe_goal_windows else 0.)
     # worker가 제한 직전에 취소돼도 결과 직렬화·콜백 수신을 끝낼 여유를 둔다.
-    # 제어기의 실제 8초 제한과 sim 5초 제한을 늘리지 않는다.
+    # 제어기가 이 요청에 배분한 실제 시간과 시뮬레이션 기한을 지킨다.
     deadline = started + max(0., settings.get('planning_wall_budget_seconds', 8.) -
                             settings.get('planning_result_margin_seconds', 0.))
     cancelled = lambda: cancel_event.is_set() or time.monotonic() > deadline
@@ -452,8 +491,10 @@ def _plan_batch(field, pcfg, poses, candidates, t0, created_sim, hold, robot_ord
                     attempt_dir = output / f'attempt_{number:03d}'
                     metadata = {'map_id': getattr(field, 'identifier', 'synthetic'),
                                 'planner': asdict(pcfg), 'goals': [asdict(g) for g in goals],
-                                'time_model':'space_time_heading_turns' if joint_heading else 'space_time_move_wait_post_rotation',
-                                'coordination_time_model': 'space_time_heading_turns' if joint_heading else 'space_time_move_wait_post_rotation',
+                                'time_model':('space_time_straight_heading_turns' if pcfg.straight_only else
+                                    'space_time_heading_turns' if joint_heading else 'space_time_move_wait_post_rotation'),
+                                'coordination_time_model':('space_time_straight_heading_turns' if pcfg.straight_only else
+                                    'space_time_heading_turns' if joint_heading else 'space_time_move_wait_post_rotation'),
                                 'coordinated_goal_radius_m': service_radius,
                                 'work_region_ownership': settings.get('region_ownership',False),
                                 'work_regions':{g.id:g.work_region for g in goals},
@@ -464,7 +505,9 @@ def _plan_batch(field, pcfg, poses, candidates, t0, created_sim, hold, robot_ord
                                 'all_robot_positions': {r: list(p[:2]) for r, p in poses.items()},
                                 'all_robot_yaw':{r:p[2] for r,p in poses.items()},
                                 'standby_robot_ids': idle, 'pair_statuses': statuses,
-                                'candidate_selection': ('observed frontier progress / information gain heuristic'
+                                'candidate_selection': ('prior terrain straight corridor from observed frontier direction'
+                                    if any(g.route_kind=='corridor' for g in goals) else
+                                    'observed frontier progress / information gain heuristic'
                                     if all(g.purpose == 'explore' for g in goals) else
                                     'fixed validation goals' if all(g.purpose == 'fixed' for g in goals) else
                                     'prior terrain safety evacuation heuristic'),

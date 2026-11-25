@@ -16,8 +16,11 @@ class Control:
 
 class InputStability:
     """초기 시뮬레이터 입력이 두 시계에서 연속으로 안정된 뒤 시작한다."""
-    def __init__(self, seconds=3.):
+    def __init__(self, seconds=3., sim_seconds=None):
         self.seconds = seconds
+        self.sim_seconds = seconds if sim_seconds is None else sim_seconds
+        if any(not math.isfinite(v) or v<=0 for v in (self.seconds,self.sim_seconds)):
+            raise ValueError('입력 안정화 시간은 양의 유한 수여야 합니다.')
         self.since = None
         self.last_sim = None
 
@@ -29,8 +32,14 @@ class InputStability:
             return False
         if self.since is None:
             self.since = sim_time, wall_time
-        return (sim_time - self.since[0] >= self.seconds
+        return (sim_time - self.since[0] >= self.sim_seconds
                 and wall_time - self.since[1] >= self.seconds)
+
+    def progress(self, sim_time, wall_time):
+        return {'wall_elapsed_seconds':max(0.,wall_time-self.since[1]) if self.since else 0.,
+                'wall_required_seconds':self.seconds,
+                'sim_elapsed_seconds':max(0.,sim_time-self.since[0]) if self.since else 0.,
+                'sim_required_seconds':self.sim_seconds}
 
 
 def inputs_fresh(observations, robots, sim_time, wall_time, sim_timeout, wall_timeout):
