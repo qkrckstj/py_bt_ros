@@ -19,6 +19,11 @@
 - 이번 업로드 전 검증: Git에 추가한 파일만 별도 빈 폴더에 꺼내 호스트 Python 3.10.12에서
   회귀 **146개 통과**(14.25초). 실행 스크립트 Bash 문법과 Docker Compose 구성 검사도 통과했습니다.
   실제 Docker 이미지 재빌드·Webots/RViz 주행을 다시 실행한 것은 아닙니다.
+- `dev_gayeon`의 기존 매핑을 병합한 뒤 같은 방식으로 달 탐사·기존 매핑 검사를 함께 실행해
+  **160개 통과**(40.62초). 호스트의 ROS 2 Humble Python 경로를 사용했으며 Jazzy 실제 주행 검증과 구분합니다.
+- 이 세션의 자동 업로드 시도는 GitHub 앱의 `403 Resource not accessible by integration`과
+  직접 Git 연결의 `Could not resolve host: github.com`으로 막혔습니다. 원격 파일·브랜치를 변경하지 않았습니다.
+  로컬 커밋을 호스트 터미널에서 올릴 때는 `git push -u origin HEAD:refs/heads/dev_gayeon`을 사용합니다.
 - 다음 구현 과제는 여전히 모의 299.4초 대피 계산 예산 초과 해결과 최신 mesh 코드의 실제 Webots 재검증입니다.
 
 

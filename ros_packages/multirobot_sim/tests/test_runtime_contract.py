@@ -29,11 +29,21 @@ def test_each_robot_has_its_own_driver_frames_and_navigation_inputs():
     m=yaml.safe_load((ROOT/'config'/env['map']).read_text())
     assert (ROOT/'config'/m['image']).is_file()
 
-@pytest.mark.parametrize('heartbeat,command_time,stopped,moves',[(8.,9.9,False,False),(9.9,8.,False,False),(9.9,9.9,True,False),(9.9,9.9,False,True)])
-def test_motor_requires_bt_heartbeat_and_fresh_command(monkeypatch,heartbeat,command_time,stopped,moves):
+@pytest.mark.parametrize('requires_heartbeat,heartbeat,command_time,stopped,moves', [
+    (True, 8., 9.9, False, False),
+    (True, 9.9, 8., False, False),
+    (True, 9.9, 9.9, True, False),
+    (True, 9.9, 9.9, False, True),
+    (False, 8., 9.9, False, True),
+    (False, 8., 8., False, False),
+    (False, 8., 9.9, True, False),
+])
+def test_motor_applies_heartbeat_and_command_watchdogs(monkeypatch, requires_heartbeat,
+                                                      heartbeat, command_time, stopped, moves):
     monkeypatch.setattr(LimoSensors,'step',lambda self:None)
     monkeypatch.setattr('multirobot_sim.driver.rclpy.spin_once',lambda *a,**k:None)
     d=MultiLimoDriver();d.node=Mock();d.robot=S(getTime=lambda:10.)
+    d.require_bt_heartbeat = requires_heartbeat
     d.command=(.1,0.);d.stopped=stopped;d.last_heartbeat=heartbeat;d.last_command=command_time;d.motors=[Mock() for _ in range(4)]
     d.step()
     for motor in d.motors:
@@ -44,3 +54,25 @@ def test_stop_discards_previous_velocity_command():
     d=MultiLimoDriver();d.robot=S(getTime=lambda:10.);d.command=(.2,.3)
     d.stop(S(data=True));assert d.stopped and d.command==(0.,0.) and d.last_heartbeat==10.
     d.stop(S(data=False));assert not d.stopped and d.command==(0.,0.)
+
+
+def test_standby_driver_keeps_motors_at_zero_without_a_command_subscriber(monkeypatch):
+    def init_sensors(driver, webots_node, properties):
+        driver._standby = properties['standby'] == 'true'
+
+    monkeypatch.setattr(LimoSensors, 'init', init_sensors)
+    sensor_step = Mock()
+    monkeypatch.setattr(LimoSensors, 'step', sensor_step)
+    create_node = Mock()
+    monkeypatch.setattr('multirobot_sim.driver.rclpy.create_node', create_node)
+    motors = [Mock() for _ in range(4)]
+    robot = S(getDevice=Mock(side_effect=motors))
+
+    driver = MultiLimoDriver()
+    driver.init(S(robot=robot), {'namespace': 'robot2', 'standby': 'true'})
+    driver.step()
+
+    create_node.assert_not_called()
+    sensor_step.assert_called_once()
+    for motor in motors:
+        motor.setVelocity.assert_called_once_with(0.)
