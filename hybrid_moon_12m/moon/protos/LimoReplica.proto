@@ -1,0 +1,33 @@
+#VRML_SIM R2025a utf8
+# license: Apache License 2.0
+# Visual replica only: no sensor, motor, physics or collision devices.
+PROTO LimoReplica [
+  field SFVec3f translation 0 0 0.1482
+  field SFRotation rotation 0 0 1 0
+  field SFString name "robot1"
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    controller "<extern>"
+    supervisor TRUE
+    children [
+      Pose { translation 0 0 0.35 children [
+        Shape { appearance PBRAppearance { baseColor 1 0.1 0.1 emissiveColor 1 0 0 roughness 1 } geometry Sphere { radius 0.09 } }
+      ] }
+      Pose {
+        translation 0 0 -0.15
+        rotation 0 0 1 1.57
+        children [ CadShape { url "meshes/limo_base.dae" } ]
+      }
+      Pose { translation 0.1 0.065 -0.1 children [
+        DEF WHEEL CadShape { url "meshes/limo_wheel.dae" }
+      ] }
+      Pose { translation -0.1 0.065 -0.1 children [ USE WHEEL ] }
+      Pose { translation 0.1 -0.065 -0.1 rotation 1 0 0 3.14159 children [ USE WHEEL ] }
+      Pose { translation -0.1 -0.065 -0.1 rotation 1 0 0 3.14159 children [ USE WHEEL ] }
+    ]
+  }
+}

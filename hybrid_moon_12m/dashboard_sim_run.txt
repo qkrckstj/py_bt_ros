@@ -1,0 +1,68 @@
+대시보드 센서로 실제 LIMO 1대 + Webots LIMO 3대 실행
+
+0. 네트워크와 설치 준비
+
+두 장비를 같은 Wi-Fi 또는 핫스팟에 연결한다.
+각 장비에서 hostname -I로 현재 Wi-Fi IPv4 주소를 확인한다.
+아래 명령의 노트북_IP와 리모_IP를 확인한 주소로 바꾼다.
+핫스팟을 바꾸거나 재접속하면 IP가 달라질 수 있다.
+
+노트북에서 저장소의 hybrid_moon_12m 폴더로 이동해 실행한다.
+
+export HYBRID_LAPTOP_IP=노트북_IP
+bash robot_setup/build_bundles.sh
+python3 -m http.server 17443 --bind "$HYBRID_LAPTOP_IP" --directory robot_setup/download
+
+리모의 새 터미널에서 실행한다.
+
+export HYBRID_LAPTOP_IP=노트북_IP
+mkdir -p ~/hybrid_execution_20261125/execution_prepared
+cd ~/hybrid_execution_20261125/execution_prepared
+wget -O dashboard_navigation.tar.gz "http://$HYBRID_LAPTOP_IP:17443/dashboard_navigation.tar.gz" &&
+tar -xzf dashboard_navigation.tar.gz &&
+wget -O dashboard_mapping.tar.gz "http://$HYBRID_LAPTOP_IP:17443/dashboard_mapping.tar.gz" &&
+tar -xzf dashboard_mapping.tar.gz
+
+노트북의 hybrid_moon_12m과 리모의 execution_prepared에 동일한 비공개 pairing.key를 둔다. 키 전송 방법은 README 참고.
+
+1. 실제 리모 매핑
+
+대시보드에서 '센서 활성화'를 누른 후 위 리모 터미널에서 실행한다.
+
+bash run_dashboard_mapping.sh
+
+매핑 창을 유지한다.
+
+2. 노트북 Webots·RViz
+
+노트북 새 터미널에서 저장소의 hybrid_moon_12m 폴더로 이동해 실행한다.
+
+export HYBRID_ROBOT_IP=리모_IP
+HYBRID_TRIAL_SECONDS=0 bash run_hybrid.sh
+
+오버레이 경로가 기본값과 다르면 실행 전에 HYBRID_ROS_SETUP을 지정한다.
+매핑을 재시작해 기준 위치가 바뀌면 이 창도 종료한 뒤 다시 실행한다.
+
+3. 실제 리모 Nav2·주행 실행기
+
+실제 리모의 새 터미널에서 실행한다. 4×4m 구역을 확보하고 현장에서 정지할 수 있게 준비한다.
+
+export HYBRID_LAPTOP_IP=노트북_IP
+cd ~/hybrid_execution_20261125/execution_prepared
+LIMO_USER_APPROVED=YES bash run_dashboard_navigation.sh /limo/limo_base /cmd_vel true
+
+이 창을 유지한다. OPERATOR-ARMED와 Managed nodes are active가 나오면 4단계로 간다.
+대시보드의 차체 노드나 속도 토픽이 다르면 실제 값으로 바꾼다.
+
+4. 탐사 시작·정지 (노트북 새 터미널)
+
+source /opt/ros/jazzy/setup.bash
+export ROS_DOMAIN_ID=74 ROS_LOCALHOST_ONLY=1 FASTDDS_BUILTIN_TRANSPORTS=UDPv4
+ros2 topic pub --once /hybrid/mission/start std_msgs/msg/Empty '{}'
+
+정지할 때 같은 창에서 실행한다.
+
+ros2 topic pub --once /hybrid/mission/stop std_msgs/msg/Empty '{}'
+
+시작이 보류되면 2단계 창에 나온 이유를 확인하고 원인을 조치한 뒤 다시 시작한다.
+실행기 응답 없음은 3단계 창과 양쪽 IP를, 지도 기준 불일치는 1·2단계의 재시작 순서를 확인한다.
