@@ -26,7 +26,7 @@ def main():
     lasers=[r.getFromProtoDef('EXPLORATION_LIDAR') for r in robots]
     media=Path(os.environ['CITY_MEDIA_DIR']) if os.environ.get('CITY_MEDIA_DIR') else None
     if media:media.mkdir(parents=True,exist_ok=True)
-    recording=False;recorded=False;stopped=False;last_shot=-15.;last_event_shot=''
+    recording=False;recorded=False;stopped=False;last_shot=-15.;last_event_shot='';final_frames=0
     tick=0
     while world.step(int(world.getBasicTimeStep()))!=-1:
         for _ in range(8):rclpy.spin_once(node,timeout_sec=0.)
@@ -66,7 +66,9 @@ def main():
                 world.exportImage(str(media/(name+'.png')),100)
                 (media/(name+'.json')).write_text(json.dumps(observation,indent=2))
                 last_shot=elapsed;last_event_shot=signature
-            if recording and (phase in ('COMPLETE','TIME_LIMIT','BATTERY_FAILURE') or (media/'stop_recording').exists()):
+            # Let task textures render before capturing the terminal frame.
+            final_frames=final_frames+1 if phase in ('COMPLETE','TIME_LIMIT','BATTERY_FAILURE') else 0
+            if recording and (final_frames>=3 or (media/'stop_recording').exists()):
                 world.exportImage(str(media/'final.png'),100)
                 (media/'final_state.json').write_text(json.dumps(observation,indent=2))
                 world.movieStopRecording();recording=False;stopped=True
