@@ -1,0 +1,13 @@
+{
+  "backend": "webots",
+  "phase": "COMPLETE",
+  "time_s": 308.40000000000003,
+  "completed": 7,
+  "total": 7,
+  "seed": 1128,
+  "robots": 10,
+  "policy": "PPO | learned allocation",
+  "model": "/home/chanseo/ros2_ws/src/webots_ros2_limo/disaster_city/rl/results/ppo_extended/ppo_allocation.zip",
+  "model_sha256": "b95a6ef0680df2195e64e66ea94666da0a6581c79c6de2f46b944908810bb48e",
+  "fire_growth_per_s": 0.6
+}

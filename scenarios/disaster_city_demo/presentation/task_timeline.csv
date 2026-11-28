@@ -1,0 +1,16 @@
+mission_time_s,event,task_id
+69.0,started,5
+98.8,completed,5
+130.0,started,0
+136.8,started,1
+156.6,completed,1
+167.4,started,3
+177.2,completed,3
+202.4,completed,0
+211.4,started,2
+212.4,started,6
+222.2,completed,6
+231.2,completed,2
+266.4,started,4
+308.4,completed,4
+308.4,mission_complete,

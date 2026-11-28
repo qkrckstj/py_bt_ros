@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+disaster_city/runtime/
+disaster_city/rl/results/
+recordings/
+.pytest_cache/
+# Curated reference results and required map textures are shared intentionally.
+!/results/
+!/results/**
+!disaster_city/profiles/**/*.jpg

@@ -1,0 +1,496 @@
+{
+  "profile": "disaster_city/profiles/junyong_10_damage",
+  "profile_sha256": "4fad95715936d2072d979aa0e1bdab99ba6eef18cccbdcac29122099579a8b21",
+  "randomize": false,
+  "baseline_policy": "disaster_city.examples.allocator:Allocator",
+  "baseline": [
+    {
+      "seed": 0,
+      "backend": "lightweight_grid",
+      "phase": "COMPLETE",
+      "time_s": 379.0,
+      "completed": 7,
+      "total": 7,
+      "fire_growth_s": 130.79999999999947,
+      "fire_completed_s": 379.0,
+      "team_releases": 2,
+      "invalid_actions": 0,
+      "robots": 10,
+      "fire_growth_per_s": 0.6,
+      "wall_seconds": 0.24706627399973513,
+      "events": [
+        {
+          "time_s": 0.0,
+          "kind": "assignment",
+          "robot": 1,
+          "previous": "idle",
+          "role": "work",
+          "task": "3"
+        },
+        {
+          "time_s": 5.0,
+          "kind": "assignment",
+          "robot": 4,
+          "previous": "idle",
+          "role": "work",
+          "task": "5"
+        },
+        {
+          "time_s": 5.0,
+          "kind": "assignment",
+          "robot": 3,
+          "previous": "idle",
+          "role": "work",
+          "task": "5"
+        },
+        {
+          "time_s": 5.0,
+          "kind": "assignment",
+          "robot": 9,
+          "previous": "idle",
+          "role": "work",
+          "task": "5"
+        },
+        {
+          "time_s": 10.0,
+          "kind": "assignment",
+          "robot": 2,
+          "previous": "idle",
+          "role": "work",
+          "task": "2"
+        },
+        {
+          "time_s": 10.0,
+          "kind": "assignment",
+          "robot": 8,
+          "previous": "idle",
+          "role": "work",
+          "task": "2"
+        },
+        {
+          "time_s": 15.0,
+          "kind": "assignment",
+          "robot": 7,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 15.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 15.0,
+          "kind": "assignment",
+          "robot": 6,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 15.0,
+          "kind": "assignment",
+          "robot": 5,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 25.0,
+          "kind": "started",
+          "task": "3"
+        },
+        {
+          "time_s": 34.0,
+          "kind": "completed",
+          "task": "3"
+        },
+        {
+          "time_s": 34.0,
+          "kind": "assignment",
+          "robot": 1,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 35.0,
+          "kind": "assignment",
+          "robot": 1,
+          "previous": "idle",
+          "role": "work",
+          "task": "6"
+        },
+        {
+          "time_s": 73.0,
+          "kind": "started",
+          "task": "5"
+        },
+        {
+          "time_s": 102.0,
+          "kind": "completed",
+          "task": "5"
+        },
+        {
+          "time_s": 102.0,
+          "kind": "assignment",
+          "robot": 3,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 102.0,
+          "kind": "assignment",
+          "robot": 4,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 102.0,
+          "kind": "assignment",
+          "robot": 9,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 105.0,
+          "kind": "assignment",
+          "robot": 3,
+          "previous": "idle",
+          "role": "work",
+          "task": "1"
+        },
+        {
+          "time_s": 105.0,
+          "kind": "assignment",
+          "robot": 9,
+          "previous": "idle",
+          "role": "work",
+          "task": "1"
+        },
+        {
+          "time_s": 108.0,
+          "kind": "started",
+          "task": "2"
+        },
+        {
+          "time_s": 125.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 125.0,
+          "kind": "assignment",
+          "robot": 5,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 125.0,
+          "kind": "assignment",
+          "robot": 6,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 125.0,
+          "kind": "assignment",
+          "robot": 7,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 125.0,
+          "kind": "team_released",
+          "task": "4",
+          "robots": [
+            0,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "time_s": 127.0,
+          "kind": "completed",
+          "task": "2"
+        },
+        {
+          "time_s": 127.0,
+          "kind": "assignment",
+          "robot": 2,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 127.0,
+          "kind": "assignment",
+          "robot": 8,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 130.0,
+          "kind": "assignment",
+          "robot": 2,
+          "previous": "idle",
+          "role": "work",
+          "task": "0"
+        },
+        {
+          "time_s": 130.0,
+          "kind": "assignment",
+          "robot": 8,
+          "previous": "idle",
+          "role": "work",
+          "task": "0"
+        },
+        {
+          "time_s": 155.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 155.0,
+          "kind": "assignment",
+          "robot": 7,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 155.0,
+          "kind": "assignment",
+          "robot": 6,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 155.0,
+          "kind": "assignment",
+          "robot": 5,
+          "previous": "idle",
+          "role": "work",
+          "task": "4"
+        },
+        {
+          "time_s": 166.0,
+          "kind": "started",
+          "task": "6"
+        },
+        {
+          "time_s": 170.0,
+          "kind": "assignment",
+          "robot": 2,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 170.0,
+          "kind": "assignment",
+          "robot": 8,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 170.0,
+          "kind": "team_released",
+          "task": "0",
+          "robots": [
+            2,
+            8
+          ]
+        },
+        {
+          "time_s": 175.0,
+          "kind": "completed",
+          "task": "6"
+        },
+        {
+          "time_s": 175.0,
+          "kind": "assignment",
+          "robot": 1,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 180.0,
+          "kind": "started",
+          "task": "4"
+        },
+        {
+          "time_s": 190.0,
+          "kind": "started",
+          "task": "1"
+        },
+        {
+          "time_s": 200.0,
+          "kind": "assignment",
+          "robot": 2,
+          "previous": "idle",
+          "role": "work",
+          "task": "0"
+        },
+        {
+          "time_s": 200.0,
+          "kind": "assignment",
+          "robot": 8,
+          "previous": "idle",
+          "role": "work",
+          "task": "0"
+        },
+        {
+          "time_s": 209.0,
+          "kind": "completed",
+          "task": "1"
+        },
+        {
+          "time_s": 209.0,
+          "kind": "assignment",
+          "robot": 3,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 209.0,
+          "kind": "assignment",
+          "robot": 9,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 219.0,
+          "kind": "started",
+          "task": "0"
+        },
+        {
+          "time_s": 229.0,
+          "kind": "completed",
+          "task": "4"
+        },
+        {
+          "time_s": 229.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 229.0,
+          "kind": "assignment",
+          "robot": 5,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 229.0,
+          "kind": "assignment",
+          "robot": 6,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 229.0,
+          "kind": "assignment",
+          "robot": 7,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 230.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "idle",
+          "role": "queue",
+          "task": null
+        },
+        {
+          "time_s": 231.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "queue",
+          "role": "charge",
+          "task": null
+        },
+        {
+          "time_s": 378.0,
+          "kind": "assignment",
+          "robot": 0,
+          "previous": "charge",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 378.0,
+          "kind": "charged",
+          "robot": 0
+        },
+        {
+          "time_s": 379.0,
+          "kind": "completed",
+          "task": "0"
+        },
+        {
+          "time_s": 379.0,
+          "kind": "assignment",
+          "robot": 2,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 379.0,
+          "kind": "assignment",
+          "robot": 8,
+          "previous": "work",
+          "role": "idle",
+          "task": null
+        },
+        {
+          "time_s": 379.0,
+          "kind": "mission_complete"
+        }
+      ],
+      "initial_battery": [
+        55,
+        62,
+        68,
+        74,
+        80,
+        86,
+        92,
+        98,
+        65,
+        85
+      ]
+    }
+  ]
+}

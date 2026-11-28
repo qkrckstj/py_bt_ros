@@ -79,3 +79,9 @@ to avoid a duplicate `webots_ros2_limo` package in an existing workspace.
 ## Four-robot lunar exploration demo
 
 Team/robot BT, frontier or radar-style allocation, multihop range constraint, SLAM and Webots assets: [simulation/webots_ros2_limo/EXPLORATION.md](simulation/webots_ros2_limo/EXPLORATION.md).
+
+## 도시 재난 다중 로봇 할당 실험
+
+[시뮬레이션 실행·설정 변경·할당 알고리즘 교체 안내](scenarios/disaster_city_demo/README.md)
+
+10대 LIMO, 작업별 필요 인원과 진행도/배속 표시, 경량 PPO 학습·평가, Webots 시연 영상과 결과를 포함합니다.

@@ -1,0 +1,8 @@
+{
+  "ready": true,
+  "phase": "RUNNING",
+  "time_s": 5.4,
+  "policy": "example_nearest_quorum",
+  "robots": 10,
+  "assigned": 4
+}

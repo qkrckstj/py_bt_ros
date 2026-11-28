@@ -1,0 +1,28 @@
+{
+  "algorithm": "MaskablePPO",
+  "seed": 0,
+  "requested_steps": 196608,
+  "actual_steps": 262144,
+  "wall_seconds": 407.9724498019996,
+  "initial_steps": 65536,
+  "resumed_from": "disaster_city/rl/results/ppo_damage_v2/ppo_allocation.zip",
+  "profile": "disaster_city/profiles/junyong_10_damage",
+  "profile_sha256": "4fad95715936d2072d979aa0e1bdab99ba6eef18cccbdcac29122099579a8b21",
+  "observation_size": 271,
+  "actions": 102,
+  "randomization": {
+    "battery": [
+      50,
+      100
+    ],
+    "task_multiplier": [
+      0.8,
+      1.2
+    ],
+    "fire_growth": [
+      0.3,
+      0.9
+    ]
+  },
+  "reward": "-elapsed_seconds/100; horizon penalty for failure; potential shaping gamma=0.999"
+}
