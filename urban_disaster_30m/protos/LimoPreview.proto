@@ -1,0 +1,37 @@
+#VRML_SIM R2025a utf8
+# Preview geometry shared with the workspace's hybrid LIMO model.
+
+PROTO LimoPreview [
+  field SFVec3f translation 0 0 0.1782
+  field SFRotation rotation 0 0 1 0
+]
+{
+  Pose {
+    translation IS translation
+    rotation IS rotation
+    children [
+      Pose {
+        translation 0 0 -0.15
+        rotation 0 0 1 1.57
+        children [
+          DEF BODY CadShape {
+            url "../../hybrid_moon_12m/moon/protos/meshes/limo_base.dae"
+            castShadows FALSE
+          }
+        ]
+      }
+      Pose {
+        translation 0.1 0.065 -0.1
+        children [
+          DEF WHEEL CadShape {
+            url "../../hybrid_moon_12m/moon/protos/meshes/limo_wheel.dae"
+            castShadows FALSE
+          }
+        ]
+      }
+      Pose { translation -0.1 0.065 -0.1 children [ USE WHEEL ] }
+      Pose { translation 0.1 -0.065 -0.1 rotation 1 0 0 3.14159 children [ USE WHEEL ] }
+      Pose { translation -0.1 -0.065 -0.1 rotation 1 0 0 3.14159 children [ USE WHEEL ] }
+    ]
+  }
+}
